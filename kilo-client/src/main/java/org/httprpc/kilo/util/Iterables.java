@@ -157,7 +157,7 @@ public class Iterables {
      * The element type.
      *
      * @param iterable
-     * The iterable.
+     * The iterable to search.
      *
      * @return
      * The iterable's first element, or {@code null} if the iterable is empty.
@@ -192,6 +192,32 @@ public class Iterables {
     }
 
     /**
+     * Collects iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The result type.
+     *
+     * @param iterable
+     * The iterable to collect.
+     *
+     * @param collector
+     * The collection function.
+     *
+     * @return
+     * The collection result.
+     */
+    public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) {
+        if (iterable == null || collector == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return collector.apply(iterable);
+    }
+
+    /**
      * Returns a function that calculates a sum.
      *
      * @param <T>
@@ -201,7 +227,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Integer> toSum(ToIntFunction<T> transform) {
         if (transform == null) {
@@ -229,7 +255,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Long> toSum(ToLongFunction<T> transform) {
         if (transform == null) {
@@ -257,7 +283,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Double> toSum(ToDoubleFunction<T> transform) {
         if (transform == null) {
@@ -285,7 +311,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Double> toAverage(ToIntFunction<T> transform) {
         if (transform == null) {
@@ -316,7 +342,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Double> toAverage(ToLongFunction<T> transform) {
         if (transform == null) {
@@ -347,7 +373,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Double> toAverage(ToDoubleFunction<T> transform) {
         if (transform == null) {
@@ -378,7 +404,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Integer> toMinimum(ToIntFunction<T> transform) {
         if (transform == null) {
@@ -409,7 +435,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Long> toMinimum(ToLongFunction<T> transform) {
         if (transform == null) {
@@ -440,7 +466,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Double> toMinimum(ToDoubleFunction<T> transform) {
         if (transform == null) {
@@ -471,7 +497,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Integer> toMaximum(ToIntFunction<T> transform) {
         if (transform == null) {
@@ -502,7 +528,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Long> toMaximum(ToLongFunction<T> transform) {
         if (transform == null) {
@@ -533,7 +559,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, Double> toMaximum(ToDoubleFunction<T> transform) {
         if (transform == null) {
@@ -561,7 +587,7 @@ public class Iterables {
      * The element type.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() {
         return toMinimum(Comparator.naturalOrder());
@@ -574,7 +600,7 @@ public class Iterables {
      * The element type.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() {
         return toMaximum(Comparator.naturalOrder());
@@ -590,7 +616,7 @@ public class Iterables {
      * The comparator.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, T> toMinimum(Comparator<? super T> comparator) {
         if (comparator == null) {
@@ -620,7 +646,7 @@ public class Iterables {
      * The comparator.
      *
      * @return
-     * The reduction function.
+     * The collection function.
      */
     public static <T> Function<Iterable<T>, T> toMaximum(Comparator<? super T> comparator) {
         if (comparator == null) {

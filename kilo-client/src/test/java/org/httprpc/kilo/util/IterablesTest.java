@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.httprpc.kilo.util.Optionals.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IterablesTest {
@@ -93,10 +92,15 @@ public class IterablesTest {
     }
 
     @Test
+    public void testCollect() {
+        // TODO Concatenate strings
+    }
+
+    @Test
     public void testToSumInt() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toSum(Integer::intValue)); // 15
+        var result = collect(values, toSum(Integer::intValue)); // 15
 
         assertEquals(15, result);
 
@@ -107,7 +111,7 @@ public class IterablesTest {
     public void testToSumLong() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toSum(Integer::longValue)); // 15L
+        var result = collect(values, toSum(Integer::longValue)); // 15L
 
         assertEquals(15L, result);
 
@@ -118,7 +122,7 @@ public class IterablesTest {
     public void testToSumDouble() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toSum(Integer::doubleValue)); // 15.0
+        var result = collect(values, toSum(Integer::doubleValue)); // 15.0
 
         assertEquals(15.0, result);
 
@@ -129,150 +133,150 @@ public class IterablesTest {
     public void testToAverageInt() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toAverage(Integer::intValue)); // 3.0
+        var result = collect(values, toAverage(Integer::intValue)); // 3.0
 
         assertEquals(3.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::intValue).average().orElse(Double.NaN));
 
-        assertEquals(Double.NaN, map(emptyListOf(Integer.class), toAverage(Integer::intValue)));
+        assertEquals(Double.NaN, collect(emptyListOf(Integer.class), toAverage(Integer::intValue)));
     }
 
     @Test
     public void testToAverageLong() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toAverage(Integer::longValue)); // 3.0
+        var result = collect(values, toAverage(Integer::longValue)); // 3.0
 
         assertEquals(3.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::longValue).average().orElse(Double.NaN));
 
-        assertEquals(Double.NaN, map(emptyListOf(Integer.class), toAverage(Integer::longValue)));
+        assertEquals(Double.NaN, collect(emptyListOf(Integer.class), toAverage(Integer::longValue)));
     }
 
     @Test
     public void testToAverageDouble() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toAverage(Integer::doubleValue)); // 3.0
+        var result = collect(values, toAverage(Integer::doubleValue)); // 3.0
 
         assertEquals(3.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).average().orElse(Double.NaN));
 
-        assertEquals(Double.NaN, map(emptyListOf(Integer.class), toAverage(Integer::doubleValue)));
+        assertEquals(Double.NaN, collect(emptyListOf(Integer.class), toAverage(Integer::doubleValue)));
     }
 
     @Test
     public void testToMinimumInt() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toMinimum(Integer::intValue)); // 1
+        var result = collect(values, toMinimum(Integer::intValue)); // 1
 
         assertEquals(1, result);
 
         assertEquals(result, values.stream().mapToInt(Integer::intValue).min().orElseThrow());
 
-        assertNull(map(emptyListOf(Integer.class), toMinimum(Integer::intValue)));
+        assertNull(collect(emptyListOf(Integer.class), toMinimum(Integer::intValue)));
     }
 
     @Test
     public void testToMinimumLong() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toMinimum(Integer::longValue)); // 1L
+        var result = collect(values, toMinimum(Integer::longValue)); // 1L
 
         assertEquals(1L, result);
 
         assertEquals(result, values.stream().mapToLong(Integer::longValue).min().orElseThrow());
 
-        assertNull(map(emptyListOf(Integer.class), toMinimum(Integer::longValue)));
+        assertNull(collect(emptyListOf(Integer.class), toMinimum(Integer::longValue)));
     }
 
     @Test
     public void testToMinimumDouble() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toMinimum(Integer::doubleValue)); // 1.0
+        var result = collect(values, toMinimum(Integer::doubleValue)); // 1.0
 
         assertEquals(1.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).min().orElseThrow());
 
-        assertNull(map(emptyListOf(Integer.class), toMinimum(Integer::doubleValue)));
+        assertNull(collect(emptyListOf(Integer.class), toMinimum(Integer::doubleValue)));
     }
 
     @Test
     public void testToMaximumInt() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toMaximum(Integer::intValue)); // 5
+        var result = collect(values, toMaximum(Integer::intValue)); // 5
 
         assertEquals(5, result);
 
         assertEquals(result, values.stream().mapToInt(Integer::intValue).max().orElseThrow());
 
-        assertNull(map(emptyListOf(Integer.class), toMaximum(Integer::intValue)));
+        assertNull(collect(emptyListOf(Integer.class), toMaximum(Integer::intValue)));
     }
 
     @Test
     public void testToMaximumLong() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toMaximum(Integer::longValue)); // 5L
+        var result = collect(values, toMaximum(Integer::longValue)); // 5L
 
         assertEquals(5L, result);
 
         assertEquals(result, values.stream().mapToLong(Integer::longValue).max().orElseThrow());
 
-        assertNull(map(emptyListOf(Integer.class), toMaximum(Integer::longValue)));
+        assertNull(collect(emptyListOf(Integer.class), toMaximum(Integer::longValue)));
     }
 
     @Test
     public void testToMaximumDouble() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = map(values, toMaximum(Integer::doubleValue)); // 5.0
+        var result = collect(values, toMaximum(Integer::doubleValue)); // 5.0
 
         assertEquals(5.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).max().orElseThrow());
 
-        assertNull(map(emptyListOf(Integer.class), toMaximum(Integer::doubleValue)));
+        assertNull(collect(emptyListOf(Integer.class), toMaximum(Integer::doubleValue)));
     }
 
     @Test
     public void testToMinimum() {
         var values = listOf("a", "b", "c", "d", "e");
 
-        var result = map(values, toMinimum()); // a
+        var result = collect(values, toMinimum()); // a
 
         assertEquals("a", result);
 
         assertEquals(result, values.stream().min(String::compareTo).orElse(null));
 
-        assertNull(map(emptyListOf(String.class), toMinimum()));
+        assertNull(collect(emptyListOf(String.class), toMinimum()));
     }
 
     @Test
     public void testToMaximum() {
         var values = listOf("a", "b", "c", "d", "e");
 
-        var result = map(values, toMaximum()); // e
+        var result = collect(values, toMaximum()); // e
 
         assertEquals("e", result);
 
         assertEquals(result, values.stream().max(String::compareTo).orElse(null));
 
-        assertNull(map(emptyListOf(String.class), toMaximum()));
+        assertNull(collect(emptyListOf(String.class), toMaximum()));
     }
 
     @Test
     public void testGroupingBy() {
         var values = listOf("a", "b", "ab", "bc", "abc");
 
-        var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
+        var result = collect(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
 
         assertEquals(mapOf(
             entry(1, listOf("a", "b")),

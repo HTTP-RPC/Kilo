@@ -1142,6 +1142,8 @@ public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> 
 public static <T> T firstOf(Iterable<T> iterable) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
+
+public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
@@ -1178,7 +1180,11 @@ var values = listOf(1, 2, 3);
 var result = exists(values, value -> value < 3); // true
 ```
 
-The following reduction functions are also provided:
+```java
+TODO
+```
+
+The following standard collection functions are also provided:
 
 ```java
 public static <T> Function<Iterable<T>, Integer> toSum(ToIntFunction<T> transform) { ... }
@@ -1211,19 +1217,19 @@ For example:
 ```java
 var values = listOf(1, 2, 3, 4, 5);
 
-var result = map(values, toSum(Integer::intValue)); // 15
+var result = collect(values, toSum(Integer::intValue)); // 15
 ```
 
 ```java
 var values = listOf("a", "b", "c", "d", "e");
 
-var result = map(values, toMinimum()); // a
+var result = collect(values, toMinimum()); // a
 ```
 
 ```java
 var values = listOf("a", "b", "ab", "bc", "abc");
 
-var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
+var result = collect(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
 ```
 
 Finally, `Iterables` provides this method, which coerces a value to a given type:
