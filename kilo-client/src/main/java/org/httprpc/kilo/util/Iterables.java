@@ -173,20 +173,22 @@ public class Iterables {
     }
 
     /**
-     * Determines if an iterable is empty.
+     * Determines if any element matches a given predicate.
+     *
+     * @param <T>
+     * The element type.
      *
      * @param iterable
-     * The iterable.
+     * The iterable to search.
+     *
+     * @param predicate
+     * The predicate function.
      *
      * @return
-     * {@code true} if the iterable is empty; {@code false}, otherwise.
+     * {@code true} if a matching element is found; {@code false}, otherwise.
      */
-    public static boolean isEmpty(Iterable<?> iterable) {
-        if (iterable == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return !iterable.iterator().hasNext();
+    public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) {
+        return firstOf(filter(iterable, predicate)) != null;
     }
 
     /**

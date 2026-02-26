@@ -78,16 +78,16 @@ public class IterablesTest {
     }
 
     @Test
-    public void testIsEmpty() {
-        var values = listOf();
+    public void testExists() {
+        var values = listOf(1, 2, 3);
 
-        var result = isEmpty(values); // true
+        var result = exists(values, value -> value.equals(2)); // true
 
         assertTrue(result);
 
-        assertEquals(result, values.stream().findFirst().isEmpty());
+        assertEquals(result, values.stream().anyMatch(value -> value.equals(2)));
 
-        assertFalse(isEmpty(listOf(1, 2, 3)));
+        assertFalse(exists(values, value -> value.equals(4)));
     }
 
     @Test
