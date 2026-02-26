@@ -1141,8 +1141,6 @@ public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> 
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
 public static <T> T firstOf(Iterable<T> iterable) { ... }
 public static boolean isEmpty(Iterable<?> iterable) { ... }
-
-public static <K, T> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
@@ -1171,12 +1169,6 @@ var values = listOf();
 var result = isEmpty(values); // true
 ```
 
-```java
-var values = listOf("a", "b", "ab", "bc", "abc");
-
-var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
-```
-
 The following reduction functions are also provided:
 
 ```java
@@ -1198,6 +1190,8 @@ public static <T> Function<Iterable<T>, Double> toMaximum(ToDoubleFunction<T> tr
 
 public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() { ... }
 public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() { ... }
+
+public static <K, T> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) { ... }
 ```
 
 For example:
@@ -1212,6 +1206,12 @@ var result = map(values, toSum(Integer::intValue)); // 15
 var values = listOf("a", "b", "c", "d", "e");
 
 var result = map(values, toMinimum()); // a
+```
+
+```java
+var values = listOf("a", "b", "ab", "bc", "abc");
+
+var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
 ```
 
 Finally, `Iterables` provides this method, which coerces a value to a given type:

@@ -189,37 +189,6 @@ public class Iterables {
     }
 
     /**
-     * Returns a function that groups elements by a classification function.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param classifier
-     * The classification function.
-     *
-     * @return
-     * The grouping function.
-     */
-    public static <K, T> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
-        if (classifier == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return iterable -> {
-            var map = new LinkedHashMap<K, List<T>>();
-
-            for (var element : iterable) {
-                map.computeIfAbsent(classifier.apply(element), key -> new ArrayList<>()).add(element);
-            }
-
-            return map;
-        };
-    }
-
-    /**
      * Returns a function that calculates a sum.
      *
      * @param <T>
@@ -625,6 +594,37 @@ public class Iterables {
             }
 
             return maximum;
+        };
+    }
+
+    /**
+     * Returns a function that groups elements by a classification function.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param classifier
+     * The classification function.
+     *
+     * @return
+     * The grouping function.
+     */
+    public static <K, T> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
+        if (classifier == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var map = new LinkedHashMap<K, List<T>>();
+
+            for (var element : iterable) {
+                map.computeIfAbsent(classifier.apply(element), key -> new ArrayList<>()).add(element);
+            }
+
+            return map;
         };
     }
 

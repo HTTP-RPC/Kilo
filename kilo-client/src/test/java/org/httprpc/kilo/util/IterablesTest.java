@@ -76,21 +76,6 @@ public class IterablesTest {
     }
 
     @Test
-    public void testGroupingBy() {
-        var values = listOf("a", "b", "ab", "bc", "abc");
-
-        var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
-
-        assertEquals(mapOf(
-            entry(1, listOf("a", "b")),
-            entry(2, listOf("ab", "bc")),
-            entry(3, listOf("abc"))
-        ), result);
-
-        assertEquals(result, values.stream().collect(Collectors.groupingBy(String::length)));
-    }
-
-    @Test
     public void testToSumInt() {
         var values = listOf(1, 2, 3, 4, 5);
 
@@ -264,6 +249,21 @@ public class IterablesTest {
         assertEquals(result, values.stream().max(String::compareTo).orElse(null));
 
         assertNull(map(emptyListOf(String.class), toMaximum()));
+    }
+
+    @Test
+    public void testGroupingBy() {
+        var values = listOf("a", "b", "ab", "bc", "abc");
+
+        var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
+
+        assertEquals(mapOf(
+            entry(1, listOf("a", "b")),
+            entry(2, listOf("ab", "bc")),
+            entry(3, listOf("abc"))
+        ), result);
+
+        assertEquals(result, values.stream().collect(Collectors.groupingBy(String::length)));
     }
 
     @Test
