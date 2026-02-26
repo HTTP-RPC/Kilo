@@ -17,6 +17,7 @@ package org.httprpc.kilo.util;
 import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -561,11 +562,44 @@ public class Iterables {
      * The reduction function.
      */
     public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() {
+        return toMinimum(Comparator.naturalOrder());
+    }
+
+    /**
+     * Returns a function that calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() {
+        return toMaximum(Comparator.naturalOrder());
+    }
+
+    /**
+     * Returns a function that calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param comparator
+     * The comparator.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, T> toMinimum(Comparator<? super T> comparator) {
+        if (comparator == null) {
+            throw new IllegalArgumentException();
+        }
+
         return iterable -> {
             T minimum = null;
 
             for (var element : iterable) {
-                if (minimum == null || element.compareTo(minimum) < 0) {
+                if (minimum == null || comparator.compare(element, minimum) < 0) {
                     minimum = element;
                 }
             }
@@ -580,15 +614,22 @@ public class Iterables {
      * @param <T>
      * The element type.
      *
+     * @param comparator
+     * The comparator.
+     *
      * @return
      * The reduction function.
      */
-    public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() {
+    public static <T> Function<Iterable<T>, T> toMaximum(Comparator<? super T> comparator) {
+        if (comparator == null) {
+            throw new IllegalArgumentException();
+        }
+
         return iterable -> {
             T maximum = null;
 
             for (var element : iterable) {
-                if (maximum == null || element.compareTo(maximum) > 0) {
+                if (maximum == null || comparator.compare(element, maximum) > 0) {
                     maximum = element;
                 }
             }
