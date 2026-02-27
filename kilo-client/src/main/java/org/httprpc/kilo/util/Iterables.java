@@ -23,26 +23,6 @@ import java.util.function.Predicate;
  * Provides static utility methods for working with iterables.
  */
 public class Iterables {
-    private static class MapAllIterator<T, R> implements Iterator<R> {
-        Iterator<T> iterator;
-        Function<? super T, ? extends R> transform;
-
-        MapAllIterator(Iterator<T> iterator, Function<? super T, ? extends R> transform) {
-            this.iterator = iterator;
-            this.transform = transform;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public R next() {
-            return transform.apply(iterator.next());
-        }
-    }
-
     private static class FilterIterator<T> implements Iterator<T> {
         Iterator<T> iterator;
         Predicate<? super T> predicate;
@@ -88,33 +68,49 @@ public class Iterables {
         }
     }
 
+    private static class MapAllIterator<T, R> implements Iterator<R> {
+        Iterator<T> iterator;
+        Function<? super T, ? extends R> transform;
+
+        MapAllIterator(Iterator<T> iterator, Function<? super T, ? extends R> transform) {
+            this.iterator = iterator;
+            this.transform = transform;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public R next() {
+            return transform.apply(iterator.next());
+        }
+    }
+
     private Iterables() {
     }
 
     /**
-     * Transforms iterable contents.
+     * Retrieves the first element from an iterable.
      *
      * @param <T>
      * The element type.
      *
-     * @param <R>
-     * The target type.
-     *
      * @param iterable
-     * The iterable to transform.
-     *
-     * @param transform
-     * The transform function.
+     * The iterable.
      *
      * @return
-     * The transformed iterable.
+     * The iterable's first element, or {@code null} if the iterable is empty.
      */
-    public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
-        if (iterable == null || transform == null) {
+    public static <T> T firstOf(Iterable<T> iterable) {
+        if (iterable == null) {
             throw new IllegalArgumentException();
         }
 
-        return () -> new MapAllIterator<>(iterable.iterator(), transform);
+        var iterator = iterable.iterator();
+
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     /**
@@ -141,25 +137,29 @@ public class Iterables {
     }
 
     /**
-     * Retrieves the first element from an iterable.
+     * Transforms iterable contents.
      *
      * @param <T>
      * The element type.
      *
+     * @param <R>
+     * The target type.
+     *
      * @param iterable
-     * The iterable to search.
+     * The iterable to transform.
+     *
+     * @param transform
+     * The transform function.
      *
      * @return
-     * The iterable's first element, or {@code null} if the iterable is empty.
+     * The transformed iterable.
      */
-    public static <T> T firstOf(Iterable<T> iterable) {
-        if (iterable == null) {
+    public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
+        if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
 
-        var iterator = iterable.iterator();
-
-        return iterator.hasNext() ? iterator.next() : null;
+        return () -> new MapAllIterator<>(iterable.iterator(), transform);
     }
 
     /**

@@ -1137,14 +1137,26 @@ var number = cast("abc", Double.class); // null
 The `Iterables` class contains methods for processing a sequence of values:
 
 ```java
-public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
-public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 public static <T> T firstOf(Iterable<T> iterable) { ... }
+public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
+public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
+
+```java
+var values = listOf(1, 2, 3);
+
+var result = firstOf(values); // 1
+```
+
+```java
+var values = listOf(1, 2, 3);
+
+var result = listOf(filter(values, value -> value < 3)); // 1, 2
+```
 
 ```java
 var values = listOf("a", "ab", "abc");
@@ -1158,18 +1170,6 @@ var values = Arrays.asList(DayOfWeek.values());
 var result = mapOf(mapAll(values, value -> entry(value, value.ordinal())));
 
 var i = result.get(DayOfWeek.MONDAY); // 0
-```
-
-```java
-var values = listOf(1, 2, 3);
-
-var result = listOf(filter(values, value -> value < 3)); // 1, 2
-```
-
-```java
-var values = listOf(1, 2, 3);
-
-var result = firstOf(values); // 1
 ```
 
 ```java
