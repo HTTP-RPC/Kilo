@@ -24,6 +24,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.stream.Streams.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("deprecation")
 public class StreamsTest {
     @Test
     public void testStreamOfIterable() {

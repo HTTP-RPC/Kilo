@@ -33,11 +33,7 @@ import java.util.stream.StreamSupport;
 
 /**
  * Provides static utility methods for working with streams.
- *
- * @deprecated
- * Use {@link org.httprpc.kilo.util.Iterables} instead.
  */
-@Deprecated
 public class Streams {
     private Streams() {
     }
@@ -53,7 +49,11 @@ public class Streams {
      *
      * @return
      * A stream over the iterable.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Iterables} instead.
      */
+    @Deprecated
     public static <T> Stream<T> streamOf(Iterable<T> iterable) {
         if (iterable == null) {
             throw new IllegalArgumentException();
@@ -73,7 +73,11 @@ public class Streams {
      *
      * @return
      * A stream over the collection.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Iterables} instead.
      */
+    @Deprecated
     public static <T> Stream<T> streamOf(Collection<T> collection) {
         if (collection == null) {
             throw new IllegalArgumentException();
@@ -99,7 +103,11 @@ public class Streams {
      *
      * @return
      * The collection result.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections} instead.
      */
+    @Deprecated
     public static <T, R> R collect(Stream<T> stream, Function<Stream<T>, R> collector) {
         if (stream == null || collector == null) {
             throw new IllegalArgumentException();
@@ -116,7 +124,11 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections} instead.
      */
+    @Deprecated
     public static <E> Function<Stream<E>, Iterable<E>> toIterable() {
         return stream -> stream::iterator;
     }
@@ -129,7 +141,11 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#listOf(Iterable)} instead.
      */
+    @Deprecated
     public static <E> Function<Stream<E>, List<E>> toList() {
         return Streams::listOf;
     }
@@ -142,7 +158,12 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#immutableListOf(Iterable)}
+     * instead.
      */
+    @Deprecated
     public static <E> Function<Stream<E>, List<E>> toImmutableList() {
         return stream -> java.util.Collections.unmodifiableList(listOf(stream));
     }
@@ -168,7 +189,11 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#mapOf(Iterable)} instead.
      */
+    @Deprecated
     public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toMap() {
         return Streams::mapOf;
     }
@@ -184,7 +209,12 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#immutableMapOf(Iterable)}
+     * instead.
      */
+    @Deprecated
     public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() {
         return stream -> java.util.Collections.unmodifiableMap(mapOf(stream));
     }
@@ -210,7 +240,12 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#sortedMapOf(Iterable)}
+     * instead.
      */
+    @Deprecated
     public static <K extends Comparable<? super K>, V> Function<Stream<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() {
         return Streams::sortedMapOf;
     }
@@ -233,7 +268,11 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#setOf(Iterable)} instead.
      */
+    @Deprecated
     public static <E> Function<Stream<E>, Set<E>> toSet() {
         return Streams::setOf;
     }
@@ -246,7 +285,12 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#immutableSetOf(Iterable)}
+     * instead.
      */
+    @Deprecated
     public static <E> Function<Stream<E>, Set<E>> toImmutableSet() {
         return stream -> java.util.Collections.unmodifiableSet(setOf(stream));
     }
@@ -269,7 +313,12 @@ public class Streams {
      *
      * @return
      * The collector function.
+     *
+     * @deprecated
+     * Use {@link org.httprpc.kilo.util.Collections#sortedSetOf(Iterable)}
+     * instead.
      */
+    @Deprecated
     public static <E extends Comparable<? super E>> Function<Stream<E>, SortedSet<E>> toSortedSet() {
         return Streams::sortedSetOf;
     }
@@ -295,7 +344,11 @@ public class Streams {
      *
      * @return
      * The coercion function.
+     *
+     * @deprecated
+     * Use {@link BeanAdapter#toType(Class)} instead.
      */
+    @Deprecated
     public static <T> Function<Object, T> toType(Class<T> type) {
         return value -> BeanAdapter.coerce(value, type);
     }
