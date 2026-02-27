@@ -15,7 +15,11 @@
 package org.httprpc.kilo.util;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -126,7 +130,7 @@ public class Iterables {
      * The predicate function.
      *
      * @return
-     * The filtered iterable.
+     * The filtered contents.
      */
     public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) {
         if (iterable == null || predicate == null) {
@@ -152,7 +156,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The transformed iterable.
+     * The transformed contents.
      */
     public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
         if (iterable == null || transform == null) {
@@ -160,6 +164,38 @@ public class Iterables {
         }
 
         return () -> new MapAllIterator<>(iterable.iterator(), transform);
+    }
+
+    /**
+     * Indexes iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param iterable
+     * The iterable to index.
+     *
+     * @param indexer
+     * The indexing function.
+     *
+     * @return
+     * The indexed contents.
+     */
+    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) {
+        if (iterable == null || indexer == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var map = new TreeMap<K, List<T>>();
+
+        for (var element : iterable) {
+            map.computeIfAbsent(indexer.apply(element), key -> new LinkedList<>()).add(element);
+        }
+
+        return map.entrySet();
     }
 
     /**

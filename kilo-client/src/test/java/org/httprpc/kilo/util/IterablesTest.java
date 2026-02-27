@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -76,6 +78,30 @@ public class IterablesTest {
         assertEquals(0, i);
 
         assertEquals(result, values.stream().collect(Collectors.toMap(value -> value, Enum::ordinal)));
+    }
+
+    @Test
+    public void testIndex() {
+        var values = listOf("a", "b", "c", "ab", "bc", "abc");
+
+        var result = sortedMapOf(mapAll(index(values, String::length), entry -> {
+            var length = entry.getKey();
+            var size = entry.getValue().size();
+
+            return entry(length, size);
+        })); // 1: 3, 2: 2, 3: 1
+
+        assertEquals(sortedMapOf(
+            entry(1, 3),
+            entry(2, 2),
+            entry(3, 1)
+        ), result);
+
+        assertEquals(result, values.stream()
+            .collect(Collectors.groupingBy(String::length)).entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size(), (v1, v2) -> {
+                    throw new IllegalStateException();
+                }, TreeMap::new)));
     }
 
     @Test

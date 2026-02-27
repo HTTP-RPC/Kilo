@@ -1140,6 +1140,7 @@ The `Iterables` class contains methods for processing a sequence of values:
 public static <T> T firstOf(Iterable<T> iterable) { ... }
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
+public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 ```
@@ -1170,6 +1171,17 @@ var values = Arrays.asList(DayOfWeek.values());
 var result = mapOf(mapAll(values, value -> entry(value, value.ordinal())));
 
 var i = result.get(DayOfWeek.MONDAY); // 0
+```
+
+```java
+var values = listOf("a", "b", "c", "ab", "bc", "abc");
+
+var result = sortedMapOf(mapAll(index(values, String::length), entry -> {
+    var length = entry.getKey();
+    var size = entry.getValue().size();
+
+    return entry(length, size);
+})); // 1: 3, 2: 2, 3: 1
 ```
 
 ```java
