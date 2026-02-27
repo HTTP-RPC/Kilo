@@ -1142,8 +1142,6 @@ public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> 
 public static <T> T firstOf(Iterable<T> iterable) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
-
-public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
@@ -1178,66 +1176,4 @@ var result = firstOf(values); // 1
 var values = listOf(1, 2, 3);
 
 var result = exists(values, value -> value < 3); // true
-```
-
-```java
-var values = listOf("a", "bc", "def");
-
-var result = collect(values, iterable -> {
-    var stringBuilder = new StringBuilder();
-
-    for (var element : iterable) {
-        stringBuilder.append(element);
-    }
-
-    return stringBuilder.toString();
-}); // abcdef
-```
-
-The following standard collection functions are included:
-
-```java
-public static <T> Function<Iterable<T>, Integer> toSum(ToIntFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Long> toSum(ToLongFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Double> toSum(ToDoubleFunction<T> transform) { ... }
-
-public static <T> Function<Iterable<T>, Double> toAverage(ToIntFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Double> toAverage(ToLongFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Double> toAverage(ToDoubleFunction<T> transform) { ... }
-
-public static <T> Function<Iterable<T>, Integer> toMinimum(ToIntFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Long> toMinimum(ToLongFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Double> toMinimum(ToDoubleFunction<T> transform) { ... }
-
-public static <T> Function<Iterable<T>, Integer> toMaximum(ToIntFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Long> toMaximum(ToLongFunction<T> transform) { ... }
-public static <T> Function<Iterable<T>, Double> toMaximum(ToDoubleFunction<T> transform) { ... }
-
-public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() { ... }
-public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() { ... }
-
-public static <T> Function<Iterable<T>, T> toMinimum(Comparator<? super T> comparator) { ... }
-public static <T> Function<Iterable<T>, T> toMaximum(Comparator<? super T> comparator) { ... }
-
-public static <T, K> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) { ... }
-```
-
-For example:
-
-```java
-var values = listOf(1, 2, 3, 4, 5);
-
-var result = collect(values, toSum(Integer::intValue)); // 15
-```
-
-```java
-var values = listOf("a", "b", "c", "d", "e");
-
-var result = collect(values, toMinimum()); // a
-```
-
-```java
-var values = listOf("a", "b", "ab", "bc", "abc");
-
-var result = collect(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
 ```
