@@ -270,27 +270,27 @@ public class CollectionsTest {
     }
 
     @Test
-    public void testIndexWhere() {
+    public void testIndexOf() {
         var strings = listOf("a", "bc", "def");
 
-        var i = indexWhere(strings, value -> value.length() == 3); // 2
+        var i = indexOf(strings, value -> value.length() == 3); // 2
 
         assertEquals(2, i);
 
-        var j = indexWhere(strings, String::isEmpty); // -1
+        var j = indexOf(strings, String::isEmpty); // -1
 
         assertEquals(-1, j);
     }
 
     @Test
-    public void testLastIndexWhere() {
+    public void testLastIndexOf() {
         var strings = listOf("a", "bc", "def");
 
-        var i = lastIndexWhere(strings, value -> value.length() == 1); // 0
+        var i = lastIndexOf(strings, value -> value.length() == 1); // 0
 
         assertEquals(0, i);
 
-        var j = lastIndexWhere(strings, String::isEmpty); // -1
+        var j = lastIndexOf(strings, String::isEmpty); // -1
 
         assertEquals(-1, j);
     }

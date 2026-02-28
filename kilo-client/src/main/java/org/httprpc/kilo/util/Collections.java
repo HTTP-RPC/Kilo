@@ -633,7 +633,7 @@ public class Collections {
      * @return
      * The index of the first matching element, or -1 if no match is found.
      */
-    public static <E> int indexWhere(List<E> list, Predicate<? super E> predicate) {
+    public static <E> int indexOf(List<E> list, Predicate<? super E> predicate) {
         if (list == null || predicate == null) {
             throw new IllegalArgumentException();
         }
@@ -667,7 +667,7 @@ public class Collections {
      * @return
      * The index of the last matching element, or -1 if no match is found.
      */
-    public static <E> int lastIndexWhere(List<E> list, Predicate<? super E> predicate) {
+    public static <E> int lastIndexOf(List<E> list, Predicate<? super E> predicate) {
         if (list == null || predicate == null) {
             throw new IllegalArgumentException();
         }

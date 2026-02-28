@@ -1079,11 +1079,11 @@ var set = setOf("a", "b", "c");
 System.out.println(set.contains("a")); // true
 ```
 
-`Collections` additionally provides the `indexWhere()` and `lastIndexWhere()` methods, which can be used to find the index of either the first or last list element that matches a given predicate:
+`Collections` additionally provides the `indexOf()` and `lastIndexOf()` methods, which can be used to find the index of either the first or last list element that matches a given predicate:
 
 ```java
-public static <E> int indexWhere(List<E> list, Predicate<? super E> predicate) { ... }
-public static <E> int lastIndexWhere(List<E> list, Predicate<? super E> predicate) { ... }
+public static <E> int indexOf(List<E> list, Predicate<? super E> predicate) { ... }
+public static <E> int lastIndexOf(List<E> list, Predicate<? super E> predicate) { ... }
 ```
 
 For example:
@@ -1091,7 +1091,7 @@ For example:
 ```java
 var strings = listOf("a", "bc", "def");
 
-var i = indexWhere(strings, value -> value.length() == 3); // 2
+var i = indexOf(strings, value -> value.length() == 3); // 2
 ```
 
 ## Optionals
