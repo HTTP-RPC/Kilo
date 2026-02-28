@@ -24,6 +24,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 
 /**
  * Provides static utility methods for working with iterables.
@@ -217,6 +219,64 @@ public class Iterables {
      */
     public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) {
         return firstOf(filter(iterable, predicate)) != null;
+    }
+
+    /**
+     * Calculates a sum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The sum of the transformed values.
+     */
+    public static <T> int sumOf(Iterable<T> iterable, ToIntFunction<T> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var total = 0;
+
+        for (var element : iterable) {
+            total += transform.applyAsInt(element);
+        }
+
+        return total;
+    }
+
+    /**
+     * Calculates a sum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The sum of the transformed values.
+     */
+    public static <T> long sumOf(Iterable<T> iterable, ToLongFunction<T> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var total = 0L;
+
+        for (var element : iterable) {
+            total += transform.applyAsLong(element);
+        }
+
+        return total;
     }
 
     /**
