@@ -236,6 +236,21 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testSynchronizedListOf() {
+        assertNotNull(synchronizedListOf(listOf()));
+    }
+
+    @Test
+    public void testSynchronizedMapOf() {
+        assertNotNull(synchronizedMapOf(mapOf()));
+    }
+
+    @Test
+    public void testSynchronizedSetOf() {
+        assertNotNull(synchronizedSetOf(setOf()));
+    }
+
+    @Test
     public void testIndexWhere() {
         var strings = listOf("a", "bc", "def");
 

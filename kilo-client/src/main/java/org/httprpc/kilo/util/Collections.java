@@ -524,6 +524,69 @@ public class Collections {
     }
 
     /**
+     * Creates a synchronized list.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param list
+     * The source list.
+     *
+     * @return
+     * The synchronized list.
+     */
+    public static <E> List<E> synchronizedListOf(List<E> list) {
+        if (list == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.synchronizedList(list);
+    }
+
+    /**
+     * Creates a synchronized map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param map
+     * The source map.
+     *
+     * @return
+     * The synchronized map.
+     */
+    public static <K, V> Map<K, V> synchronizedMapOf(Map<K, V> map) {
+        if (map == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.synchronizedMap(map);
+    }
+
+    /**
+     * Creates a synchronized set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param set
+     * The source set.
+     *
+     * @return
+     * The synchronized set.
+     */
+    public static <E> Set<E> synchronizedSetOf(Set<E> set) {
+        if (set == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.synchronizedSet(set);
+    }
+
+    /**
      * Returns the index of the first list element that matches a given
      * predicate.
      *
