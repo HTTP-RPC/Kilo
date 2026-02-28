@@ -19,7 +19,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 /**
  * Provides a vehicle by which a producer thread can submit a sequence of
@@ -116,30 +115,6 @@ public class Pipe<E> implements Iterable<E> {
         }
 
         this.timeout = timeout;
-    }
-
-    /**
-     * Submits elements to the pipe.
-     *
-     * @param stream
-     * A stream containing the elements to submit.
-     *
-     * @deprecated
-     * Use {@link #submit(Iterable)} instead.
-     */
-    @Deprecated
-    public void submit(Stream<? extends E> stream) {
-        if (stream == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var iterator = stream.iterator();
-
-        while (iterator.hasNext()) {
-            submit(iterator.next());
-        }
-
-        submit(TERMINATOR);
     }
 
     /**
