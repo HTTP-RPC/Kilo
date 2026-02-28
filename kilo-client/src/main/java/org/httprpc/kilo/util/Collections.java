@@ -199,7 +199,9 @@ public class Collections {
         var map = new LinkedHashMap<K, V>(entries.length);
 
         for (var entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
+            if (map.put(entry.getKey(), entry.getValue()) != null) {
+                throw new UnsupportedOperationException();
+            }
         }
 
         return map;
@@ -228,7 +230,9 @@ public class Collections {
         var map = new LinkedHashMap<K, V>();
 
         for (var entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
+            if (map.put(entry.getKey(), entry.getValue()) != null) {
+                throw new UnsupportedOperationException();
+            }
         }
 
         return map;
@@ -271,6 +275,29 @@ public class Collections {
      */
     public static <K, V> Map<K, V> immutableMapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) {
         return java.util.Collections.unmodifiableMap(mapOf(entries));
+    }
+
+    /**
+     * Creates an immutable map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param map
+     * The source map.
+     *
+     * @return
+     * The immutable map.
+     */
+    public static <K, V> Map<K, V> immutableMapOf(Map<? extends K, ? extends V> map) {
+        if (map == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.unmodifiableMap(map);
     }
 
     /**
@@ -319,7 +346,9 @@ public class Collections {
         var map = new TreeMap<K, V>();
 
         for (var entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
+            if (map.put(entry.getKey(), entry.getValue()) != null) {
+                throw new UnsupportedOperationException();
+            }
         }
 
         return map;
@@ -348,7 +377,9 @@ public class Collections {
         var map = new TreeMap<K, V>();
 
         for (var entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
+            if (map.put(entry.getKey(), entry.getValue()) != null) {
+                throw new UnsupportedOperationException();
+            }
         }
 
         return map;

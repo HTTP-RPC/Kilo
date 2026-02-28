@@ -57,18 +57,6 @@ public class BeanAdapterTest {
         }
     }
 
-    public static class DuplicateName {
-        @Name("x")
-        public String getFoo() {
-            return "foo";
-        }
-
-        @Name("x")
-        public String getBar() {
-            return "bar";
-        }
-    }
-
     public interface DefaultMethod {
         int getX();
 
@@ -476,11 +464,6 @@ public class BeanAdapterTest {
 
         assertEquals(10, readOnly.getX());
         assertEquals(100, readOnly.getY());
-    }
-
-    @Test
-    public void testDuplicateName() {
-        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateName()));
     }
 
     @Test

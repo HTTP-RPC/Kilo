@@ -101,6 +101,11 @@ public class CollectionsTest {
         actual.remove("c");
 
         assertEquals(2, actual.size());
+
+        assertThrows(UnsupportedOperationException.class, () -> mapOf(
+            entry("a", 1),
+            entry("a", 2)
+        ));
     }
 
     @Test
@@ -114,6 +119,11 @@ public class CollectionsTest {
         var actual = mapOf(expected.entrySet());
 
         assertEquals(expected, actual);
+
+        assertThrows(UnsupportedOperationException.class, () -> mapOf(
+            entry("a", 1),
+            entry("a", 2)
+        ));
     }
 
     @Test
@@ -139,6 +149,17 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testImmutableMapOfMap() {
+        var map = immutableMapOf(mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        ));
+
+        assertThrows(UnsupportedOperationException.class, () -> map.put("d", 4));
+    }
+
+    @Test
     public void testEmptyMapOf() {
         assertTrue(emptyMapOf(String.class, Integer.class).isEmpty());
     }
@@ -152,6 +173,11 @@ public class CollectionsTest {
         );
 
         assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedMap.values()));
+
+        assertThrows(UnsupportedOperationException.class, () -> mapOf(
+            entry("a", 1),
+            entry("a", 2)
+        ));
     }
 
     @Test
@@ -163,6 +189,11 @@ public class CollectionsTest {
         ).entrySet());
 
         assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedMap.values()));
+
+        assertThrows(UnsupportedOperationException.class, () -> mapOf(
+            entry("a", 1),
+            entry("a", 2)
+        ));
     }
 
     @Test

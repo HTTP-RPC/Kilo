@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -1045,9 +1044,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         }
 
-        var properties = new TreeMap<String, Property>();
-
-        for (var entry : accessors.entrySet()) {
+        return immutableMapOf(sortedMapOf(mapAll(accessors.entrySet(), entry -> {
             var propertyName = entry.getKey();
 
             var accessor = entry.getValue();
@@ -1058,14 +1055,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             var mutator = firstOf(filter(mutatorList, method -> method.getParameterTypes()[0] == propertyType));
 
-            var key = getKey(accessor, propertyName);
-
-            if (properties.put(key, new Property(accessor, mutator)) != null) {
-                throw new UnsupportedOperationException("Duplicate name.");
-            }
-        }
-
-        return java.util.Collections.unmodifiableMap(properties);
+            return entry(getKey(accessor, propertyName), new Property(accessor, mutator));
+        })));
     }
 
     private static String getPropertyName(Method method) {
