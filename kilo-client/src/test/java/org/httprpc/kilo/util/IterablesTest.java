@@ -132,24 +132,6 @@ public class IterablesTest {
     }
 
     @Test
-    public void testWhereLessThan() {
-        var values = listOf("a", "ab", "abc");
-
-        var result = listOf(filter(values, whereLessThan(String::length, 2))); // a
-
-        assertEquals(listOf("a"), result);
-    }
-
-    @Test
-    public void testWhereLessThanOrEqualTo() {
-        var values = listOf("a", "ab", "abc");
-
-        var result = listOf(filter(values, whereLessThanOrEqualTo(String::length, 2))); // a, ab
-
-        assertEquals(listOf("a", "ab"), result);
-    }
-
-    @Test
     public void testWhereGreaterThan() {
         var values = listOf("a", "ab", "abc");
 
@@ -165,6 +147,24 @@ public class IterablesTest {
         var result = listOf(filter(values, whereGreaterThanOrEqualTo(String::length, 2))); // ab, abc
 
         assertEquals(listOf("ab", "abc"), result);
+    }
+
+    @Test
+    public void testWhereLessThan() {
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereLessThan(String::length, 2))); // a
+
+        assertEquals(listOf("a"), result);
+    }
+
+    @Test
+    public void testWhereLessThanOrEqualTo() {
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereLessThanOrEqualTo(String::length, 2))); // a, ab
+
+        assertEquals(listOf("a", "ab"), result);
     }
 
     @Test

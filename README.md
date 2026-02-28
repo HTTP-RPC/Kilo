@@ -1146,10 +1146,10 @@ public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> pred
 
 public static <T, U extends Comparable<? super U>> Predicate<? super T> whereEqualTo(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<? super T> whereNotEqualTo(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
 
 public static <T> Predicate<? super T> whereNull(Function<? super T, Object> transform) { ... }
 public static <T> Predicate<? super T> whereNotNull(Function<? super T, Object> transform) { ... }

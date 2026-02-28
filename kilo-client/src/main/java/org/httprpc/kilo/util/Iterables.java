@@ -270,58 +270,6 @@ public class Iterables {
     }
 
     /**
-     * Creates a "less than" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param <U>
-     * The value type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @param value
-     * The value to compare.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> transform.apply(element).compareTo(value) < 0;
-    }
-
-    /**
-     * Creates a "less than or equal to" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param <U>
-     * The value type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @param value
-     * The value to compare.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> transform.apply(element).compareTo(value) <= 0;
-    }
-
-    /**
      * Creates a "greater than" predicate.
      *
      * @param <T>
@@ -371,6 +319,58 @@ public class Iterables {
         }
 
         return element -> transform.apply(element).compareTo(value) >= 0;
+    }
+
+    /**
+     * Creates a "less than" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <U>
+     * The value type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @param value
+     * The value to compare.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) {
+        if (transform == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> transform.apply(element).compareTo(value) < 0;
+    }
+
+    /**
+     * Creates a "less than or equal to" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <U>
+     * The value type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @param value
+     * The value to compare.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) {
+        if (transform == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> transform.apply(element).compareTo(value) <= 0;
     }
 
     /**
