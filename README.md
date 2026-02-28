@@ -1143,6 +1143,16 @@ public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T
 public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
+
+public static <T, U extends Comparable<? super U>> Predicate<? super T> whereEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<? super T> whereNotEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
+
+public static <T> Predicate<? super T> whereNull(Function<? super T, Object> transform) { ... }
+public static <T> Predicate<? super T> whereNotNull(Function<? super T, Object> transform) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
@@ -1188,6 +1198,12 @@ var result = sortedMapOf(mapAll(index(values, String::length), entry -> {
 var values = listOf(1, 2, 3);
 
 var result = exists(values, value -> value < 3); // true
+```
+
+```java
+var values = listOf("a", "ab", "abc");
+
+var result = firstOf(filter(values, whereEqualTo(String::length, 3))); // abc
 ```
 
 `Iterables` also provides the following statistical reduction methods:

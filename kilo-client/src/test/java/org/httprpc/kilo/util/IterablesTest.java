@@ -17,6 +17,7 @@ package org.httprpc.kilo.util;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
@@ -115,6 +116,64 @@ public class IterablesTest {
         assertEquals(result, values.stream().anyMatch(value -> value < 3));
 
         assertFalse(exists(values, value -> value > 3));
+    }
+
+    @Test
+    public void testWhereEqualTo() {
+        var values = listOf("a", "ab", "abc");
+
+        var result = firstOf(filter(values, whereEqualTo(String::length, 3))); // abc
+
+        assertEquals("abc", result);
+
+        var now = LocalDateTime.now();
+
+        assertTrue(exists(listOf(now), whereEqualTo(LocalDateTime::toLocalDate, now.toLocalDate())));
+    }
+
+    @Test
+    public void testWhereLessThan() {
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereLessThan(String::length, 2))); // a
+
+        assertEquals(listOf("a"), result);
+    }
+
+    @Test
+    public void testWhereLessThanOrEqualTo() {
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereLessThanOrEqualTo(String::length, 2))); // a, ab
+
+        assertEquals(listOf("a", "ab"), result);
+    }
+
+    @Test
+    public void testWhereGreaterThan() {
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereGreaterThan(String::length, 2))); // abc
+
+        assertEquals(listOf("abc"), result);
+    }
+
+    @Test
+    public void testWhereGreaterThanOrEqualTo() {
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereGreaterThanOrEqualTo(String::length, 2))); // ab, abc
+
+        assertEquals(listOf("ab", "abc"), result);
+    }
+
+    @Test
+    public void testWhereNull() {
+        var values = listOf(null, null, null);
+
+        var result = countOf(filter(values, whereNull(value -> value))); // 3
+
+        assertEquals(3, result);
     }
 
     @Test
