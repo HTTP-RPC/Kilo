@@ -135,7 +135,7 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        return immutableListOf();
+        return java.util.Collections.emptyList();
     }
 
     /**
@@ -296,7 +296,7 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        return immutableMapOf();
+        return java.util.Collections.emptyMap();
     }
 
     /**
@@ -473,7 +473,7 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        return immutableSetOf();
+        return java.util.Collections.emptySet();
     }
 
     /**

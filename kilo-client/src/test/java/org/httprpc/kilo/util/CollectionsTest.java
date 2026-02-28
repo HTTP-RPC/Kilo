@@ -65,11 +65,7 @@ public class CollectionsTest {
 
     @Test
     public void testEmptyListOf() {
-        var list1 = java.util.Collections.<Integer>emptyList();
-        var list2 = emptyListOf(Integer.class);
-
-        assertTrue(list2.isEmpty());
-        assertEquals(list1, list2);
+        assertTrue(emptyListOf(Integer.class).isEmpty());
     }
 
     @Test
@@ -144,11 +140,7 @@ public class CollectionsTest {
 
     @Test
     public void testEmptyMapOf() {
-        var map1 = java.util.Collections.<String, Integer>emptyMap();
-        var map2 = emptyMapOf(String.class, Integer.class);
-
-        assertTrue(map2.isEmpty());
-        assertEquals(map1, map2);
+        assertTrue(emptyMapOf(String.class, Integer.class).isEmpty());
     }
 
     @Test
@@ -214,11 +206,7 @@ public class CollectionsTest {
 
     @Test
     public void testEmptySetOf() {
-        var set1 = java.util.Collections.<String>emptySet();
-        var set2 = emptySetOf(String.class);
-
-        assertTrue(set2.isEmpty());
-        assertEquals(set1, set2);
+        assertTrue(emptySetOf(String.class).isEmpty());
     }
 
     @Test

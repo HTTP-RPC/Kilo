@@ -548,7 +548,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             var value = getMarkerValue(marker);
 
                             var iterator = switch (value) {
-                                case null -> java.util.Collections.emptyIterator();
+                                case null -> emptyListOf(Object.class).iterator();
                                 case Iterable<?> iterable -> iterable.iterator();
                                 default -> throw new IOException("Invalid section element.");
                             };
