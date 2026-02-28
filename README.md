@@ -1216,7 +1216,7 @@ For example:
 ```java
 var values = listOf(1, 2, 3, 4, 5);
 
-var result = sumOf(values, Integer::intValue); // 15.0
+var result = sumOf(values, Integer::intValue); // 15
 ```
 
 ```java
