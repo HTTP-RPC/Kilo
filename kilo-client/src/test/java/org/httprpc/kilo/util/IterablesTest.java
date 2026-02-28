@@ -118,10 +118,36 @@ public class IterablesTest {
     }
 
     @Test
-    public void testSumOf() {
+    public void testSumOfInt() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = sumOf(values, Integer::intValue); // 15.0
+        var result = sumOf(values, Integer::intValue); // 15
+
+        assertEquals(15, result);
+
+        assertEquals(result, values.stream().mapToInt(Integer::intValue).sum());
+
+        assertEquals(0, sumOf(emptyListOf(Integer.class), Integer::intValue));
+    }
+
+    @Test
+    public void testSumOfLong() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = sumOf(values, Integer::longValue); // 15L
+
+        assertEquals(15L, result);
+
+        assertEquals(result, values.stream().mapToLong(Integer::longValue).sum());
+
+        assertEquals(0L, sumOf(emptyListOf(Integer.class), Integer::longValue));
+    }
+
+    @Test
+    public void testSumOfDouble() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = sumOf(values, Integer::doubleValue); // 15.0
 
         assertEquals(15.0, result);
 
