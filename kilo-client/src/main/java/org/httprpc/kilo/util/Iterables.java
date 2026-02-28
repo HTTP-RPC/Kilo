@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.util;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
 
 /**
  * Provides static utility methods for working with iterables.
@@ -215,5 +217,245 @@ public class Iterables {
      */
     public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) {
         return firstOf(filter(iterable, predicate)) != null;
+    }
+
+    /**
+     * Calculates a sum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The sum of the transformed values.
+     */
+    public static <T> double sumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var total = 0.0;
+
+        for (var element : iterable) {
+            total += transform.applyAsDouble(element);
+        }
+
+        return total;
+    }
+
+    /**
+     * Calculates an average.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The average of the transformed values.
+     */
+    public static <T> double averageOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var total = 0.0;
+        var n = 0;
+
+        for (var element : iterable) {
+            total += transform.applyAsDouble(element);
+
+            n++;
+        }
+
+        return total / n;
+    }
+
+    /**
+     * Calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The minimum transformed value.
+     */
+    public static <T> double minimumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var minimum = Double.POSITIVE_INFINITY;
+
+        for (var element : iterable) {
+            minimum = Math.min(transform.applyAsDouble(element), minimum);
+        }
+
+        return minimum;
+    }
+
+    /**
+     * Calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The maximum transformed value.
+     */
+    public static <T> double maximumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var maximum = Double.NEGATIVE_INFINITY;
+
+        for (var element : iterable) {
+            maximum = Math.max(transform.applyAsDouble(element), maximum);
+        }
+
+        return maximum;
+    }
+
+    /**
+     * Calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @return
+     * The minimum value.
+     */
+    public static <T extends Comparable<? super T>> T minimumOf(Iterable<T> iterable) {
+        return minimumOf(iterable, Comparator.naturalOrder());
+    }
+
+    /**
+     * Calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @return
+     * The maximum value.
+     */
+    public static <T extends Comparable<? super T>> T maximumOf(Iterable<T> iterable) {
+        return maximumOf(iterable, Comparator.naturalOrder());
+    }
+
+    /**
+     * Calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param comparator
+     * The comparator.
+     *
+     * @return
+     * The minimum value.
+     */
+    public static <T> T minimumOf(Iterable<T> iterable, Comparator<? super T> comparator) {
+        if (iterable == null || comparator == null) {
+            throw new IllegalArgumentException();
+        }
+
+        T minimum = null;
+
+        for (var element : iterable) {
+            if (minimum == null || comparator.compare(element, minimum) < 0) {
+                minimum = element;
+            }
+        }
+
+        return minimum;
+    }
+
+    /**
+     * Calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @param comparator
+     * The comparator.
+     *
+     * @return
+     * The maximum value.
+     */
+    public static <T> T maximumOf(Iterable<T> iterable, Comparator<? super T> comparator) {
+        if (iterable == null || comparator == null) {
+            throw new IllegalArgumentException();
+        }
+
+        T maximum = null;
+
+        for (var element : iterable) {
+            if (maximum == null || comparator.compare(element, maximum) > 0) {
+                maximum = element;
+            }
+        }
+
+        return maximum;
+    }
+
+    /**
+     * Calculates an element count.
+     *
+     * @param iterable
+     * The iterable to reduce.
+     *
+     * @return
+     * The element count.
+     */
+    public static <T> int countOf(Iterable<?> iterable) {
+        if (iterable == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var n = 0;
+
+        var iterator = iterable.iterator();
+
+        while (iterator.hasNext()) {
+            iterator.next();
+
+            n++;
+        }
+
+        return n;
     }
 }

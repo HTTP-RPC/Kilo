@@ -116,4 +116,93 @@ public class IterablesTest {
 
         assertFalse(exists(values, value -> value > 3));
     }
+
+    @Test
+    public void testSumOf() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = sumOf(values, Integer::intValue); // 15.0
+
+        assertEquals(15.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).sum());
+
+        assertEquals(0.0, sumOf(emptyListOf(Integer.class), Integer::doubleValue));
+    }
+
+    @Test
+    public void testAverageOf() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = averageOf(values, Integer::doubleValue); // 3.0
+
+        assertEquals(3.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::longValue).average().orElseThrow());
+
+        assertEquals(Double.NaN, averageOf(emptyListOf(Integer.class), Integer::doubleValue));
+    }
+
+    @Test
+    public void testMinimumOf() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = minimumOf(values, Integer::doubleValue); // 1.0
+
+        assertEquals(1.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).min().orElseThrow());
+
+        assertEquals(Double.POSITIVE_INFINITY, minimumOf(emptyListOf(Integer.class), Integer::doubleValue));
+    }
+
+    @Test
+    public void testMaximumOf() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = maximumOf(values, Integer::doubleValue); // 5.0
+
+        assertEquals(5.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).max().orElseThrow());
+
+        assertEquals(Double.NEGATIVE_INFINITY, maximumOf(emptyListOf(Integer.class), Integer::doubleValue));
+    }
+
+    @Test
+    public void testMinimumOfComparable() {
+        var values = listOf("a", "b", "c", "d", "e");
+
+        var result = minimumOf(values); // a
+
+        assertEquals("a", result);
+
+        assertEquals(result, values.stream().min(String::compareTo).orElse(null));
+
+        assertNull(minimumOf(emptyListOf(String.class)));
+    }
+
+    @Test
+    public void testMaximumOfComparable() {
+        var values = listOf("a", "b", "c", "d", "e");
+
+        var result = maximumOf(values); // e
+
+        assertEquals("e", result);
+
+        assertEquals(result, values.stream().max(String::compareTo).orElse(null));
+
+        assertNull(maximumOf(emptyListOf(String.class)));
+    }
+
+    @Test
+    public void testCountOf() {
+        var values = listOf("a", "b", "c", "d", "e");
+
+        var result = countOf(values); // 5
+
+        assertEquals(5, result);
+
+        assertEquals(0, countOf(emptyListOf(String.class)));
+    }
 }

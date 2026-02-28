@@ -1189,3 +1189,40 @@ var values = listOf(1, 2, 3);
 
 var result = exists(values, value -> value < 3); // true
 ```
+
+`Iterables` also provides the following statistical reduction methods:
+
+```java
+public static <T> double sumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
+public static <T> double averageOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
+public static <T> double minimumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
+public static <T> double maximumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
+
+public static <T extends Comparable<? super T>> T minimumOf(Iterable<T> iterable) { ... }
+public static <T extends Comparable<? super T>> T maximumOf(Iterable<T> iterable) { ... }
+
+public static <T> T minimumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }
+public static <T> T maximumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }
+
+public static <T> int countOf(Iterable<?> iterable) { ... }
+```
+
+For example:
+
+```java
+var values = listOf(1, 2, 3, 4, 5);
+
+var result = sumOf(values, Integer::intValue); // 15.0
+```
+
+```java
+var values = listOf("a", "b", "c", "d", "e");
+
+var result = minimumOf(values); // a
+```
+
+```java
+var values = listOf("a", "b", "c", "d", "e");
+
+var result = countOf(values); // 5
+```
