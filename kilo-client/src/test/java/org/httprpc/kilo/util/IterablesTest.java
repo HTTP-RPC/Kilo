@@ -132,6 +132,11 @@ public class IterablesTest {
     }
 
     @Test
+    public void testWhereNotEqualTo() {
+        // TODO
+    }
+
+    @Test
     public void testWhereGreaterThan() {
         var values = listOf("a", "ab", "abc");
 
@@ -168,12 +173,42 @@ public class IterablesTest {
     }
 
     @Test
+    public void testWhereStartsWith() {
+        // TODO
+    }
+
+    @Test
+    public void testWhereEndsWith() {
+        // TODO
+    }
+
+    @Test
+    public void testWhereContains() {
+        // TODO
+    }
+
+    @Test
+    public void testWhereTrue() {
+        // TODO
+    }
+
+    @Test
+    public void testWhereFalse() {
+        // TODO
+    }
+
+    @Test
     public void testWhereNull() {
         var values = listOf(null, null, null);
 
         var result = countOf(filter(values, whereNull(value -> value))); // 3
 
         assertEquals(3, result);
+    }
+
+    @Test
+    public void testWhereNotNull() {
+        // TODO
     }
 
     @Test

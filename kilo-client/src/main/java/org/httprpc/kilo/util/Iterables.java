@@ -374,6 +374,111 @@ public class Iterables {
     }
 
     /**
+     * Creates a "where starts with" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @param value
+     * The value to compare.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T> Predicate<? super T> whereStartsWith(Function<? super T, String> transform, String value) {
+        if (transform == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> transform.apply(element).startsWith(value);
+    }
+
+    /**
+     * Creates a "where ends with" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @param value
+     * The value to compare.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T> Predicate<? super T> whereEndsWith(Function<? super T, String> transform, String value) {
+        if (transform == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> transform.apply(element).endsWith(value);
+    }
+
+    /**
+     * Creates a "where contains" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @param value
+     * The value to compare.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T> Predicate<? super T> whereContains(Function<? super T, String> transform, String value) {
+        if (transform == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> transform.apply(element).contains(value);
+    }
+
+    /**
+     * Creates a "where true" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T> Predicate<? super T> whereTrue(Function<? super T, Boolean> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return transform::apply;
+    }
+
+    /**
+     * Creates a "where false" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T> Predicate<? super T> whereFalse(Function<? super T, Boolean> transform) {
+        return whereTrue(transform).negate();
+    }
+
+    /**
      * Creates a "where null" predicate.
      *
      * @param <T>
