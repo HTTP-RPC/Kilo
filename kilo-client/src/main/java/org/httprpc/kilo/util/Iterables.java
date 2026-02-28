@@ -222,7 +222,7 @@ public class Iterables {
     }
 
     /**
-     * Creates an "equal to" predicate.
+     * Creates a "where equal to" predicate.
      *
      * @param <T>
      * The element type.
@@ -248,7 +248,7 @@ public class Iterables {
     }
 
     /**
-     * Creates a "not equal to" predicate.
+     * Creates a "where not equal to" predicate.
      *
      * @param <T>
      * The element type.
@@ -270,7 +270,7 @@ public class Iterables {
     }
 
     /**
-     * Creates a "greater than" predicate.
+     * Creates a "where greater than" predicate.
      *
      * @param <T>
      * The element type.
@@ -296,7 +296,7 @@ public class Iterables {
     }
 
     /**
-     * Creates a "greater than or equal to" predicate.
+     * Creates a "where greater than or equal to" predicate.
      *
      * @param <T>
      * The element type.
@@ -322,7 +322,7 @@ public class Iterables {
     }
 
     /**
-     * Creates a "less than" predicate.
+     * Creates a "where less than" predicate.
      *
      * @param <T>
      * The element type.
@@ -348,7 +348,7 @@ public class Iterables {
     }
 
     /**
-     * Creates a "less than or equal to" predicate.
+     * Creates a "where less than or equal to" predicate.
      *
      * @param <T>
      * The element type.
@@ -374,7 +374,7 @@ public class Iterables {
     }
 
     /**
-     * Creates an "is null" predicate.
+     * Creates a "where null" predicate.
      *
      * @param <T>
      * The element type.
@@ -394,7 +394,7 @@ public class Iterables {
     }
 
     /**
-     * Creates an "is not null" predicate.
+     * Creates a "where not null" predicate.
      *
      * @param <T>
      * The element type.
