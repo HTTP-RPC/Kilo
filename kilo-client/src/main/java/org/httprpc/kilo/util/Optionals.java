@@ -126,4 +126,30 @@ public class Optionals {
             return null;
         }
     }
+
+    /**
+     * Indicates that a value is null.
+     *
+     * @param value
+     * The value to test.
+     *
+     * @return
+     * {@code true} if the value is null; {@code false}, otherwise.
+     */
+    public static boolean isNull(Object value) {
+        return value == null;
+    }
+
+    /**
+     * Indicates that a value is not null.
+     *
+     * @param value
+     * The value to test.
+     *
+     * @return
+     * {@code true} if the value is null; {@code false}, otherwise.
+     */
+    public static boolean isNotNull(Object value) {
+        return value != null;
+    }
 }

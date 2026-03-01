@@ -1154,9 +1154,6 @@ public static <T> Predicate<? super T> whereNotEmpty(Function<? super T, String>
 
 public static <T> Predicate<? super T> whereTrue(Function<? super T, Boolean> transform) { ... }
 public static <T> Predicate<? super T> whereFalse(Function<? super T, Boolean> transform) { ... }
-
-public static <T> Predicate<? super T> whereNull(Function<? super T, Object> transform) { ... }
-public static <T> Predicate<? super T> whereNotNull(Function<? super T, Object> transform) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:

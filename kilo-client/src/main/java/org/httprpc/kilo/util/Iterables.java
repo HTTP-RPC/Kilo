@@ -499,42 +499,6 @@ public class Iterables {
     }
 
     /**
-     * Creates a "where null" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T> Predicate<? super T> whereNull(Function<? super T, Object> transform) {
-        if (transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> transform.apply(element) == null;
-    }
-
-    /**
-     * Creates a "where not null" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T> Predicate<? super T> whereNotNull(Function<? super T, Object> transform) {
-        return whereNull(transform).negate();
-    }
-
-    /**
      * Calculates a sum.
      *
      * @param <T>

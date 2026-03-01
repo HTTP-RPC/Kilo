@@ -69,4 +69,16 @@ public class OptionalsTest {
 
         assertNull(number);
     }
+
+    @Test
+    public void testIsNull() {
+        assertTrue(isNull(null));
+        assertFalse(isNull(this));
+    }
+
+    @Test
+    public void testIsNotNull() {
+        assertFalse(isNotNull(null));
+        assertTrue(isNotNull(this));
+    }
 }
