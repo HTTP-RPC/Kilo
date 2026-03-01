@@ -58,6 +58,13 @@ public class CollectionsTest {
 
     @Test
     public void testImmutableListOfIterable() {
+        var list = immutableListOf((Iterable<Integer>)listOf(1, 2, 3));
+
+        assertThrows(UnsupportedOperationException.class, () -> list.add(4));
+    }
+
+    @Test
+    public void testImmutableListOfList() {
         var list = immutableListOf(listOf(1, 2, 3));
 
         assertThrows(UnsupportedOperationException.class, () -> list.add(4));
@@ -230,6 +237,13 @@ public class CollectionsTest {
 
     @Test
     public void testImmutableSetOfIterable() {
+        var set = immutableSetOf((Iterable<Integer>)setOf(1, 2, 3));
+
+        assertThrows(UnsupportedOperationException.class, () -> set.add(4));
+    }
+
+    @Test
+    public void testImmutableSetOfSet() {
         var set = immutableSetOf(setOf(1, 2, 3));
 
         assertThrows(UnsupportedOperationException.class, () -> set.add(4));

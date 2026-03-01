@@ -119,6 +119,26 @@ public class Collections {
     }
 
     /**
+     * Creates an immutable list.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param list
+     * The source list.
+     *
+     * @return
+     * The immutable list.
+     */
+    public static <E> List<E> immutableListOf(List<? extends E> list) {
+        if (list == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.unmodifiableList(list);
+    }
+
+    /**
      * Creates an empty list.
      *
      * @param <E>
@@ -485,6 +505,26 @@ public class Collections {
      */
     public static <E> Set<E> immutableSetOf(Iterable<? extends E> elements) {
         return java.util.Collections.unmodifiableSet(setOf(elements));
+    }
+
+    /**
+     * Creates an immutable set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param set
+     * The source set.
+     *
+     * @return
+     * The immutable set.
+     */
+    public static <E> Set<E> immutableSetOf(Set<? extends E> set) {
+        if (set == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.unmodifiableSet(set);
     }
 
     /**
