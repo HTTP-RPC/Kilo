@@ -244,7 +244,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).compareTo(value) == 0;
+        return element -> transform.apply(element).compareTo(value) == 0;
     }
 
     /**
@@ -266,7 +266,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
-        return element -> element != null && transform.apply(element).compareTo(value) != 0;
+        return element -> transform.apply(element).compareTo(value) != 0;
     }
 
     /**
@@ -292,7 +292,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).compareTo(value) > 0;
+        return element -> transform.apply(element).compareTo(value) > 0;
     }
 
     /**
@@ -318,7 +318,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).compareTo(value) >= 0;
+        return element -> transform.apply(element).compareTo(value) >= 0;
     }
 
     /**
@@ -344,7 +344,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).compareTo(value) < 0;
+        return element -> transform.apply(element).compareTo(value) < 0;
     }
 
     /**
@@ -370,7 +370,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).compareTo(value) <= 0;
+        return element -> transform.apply(element).compareTo(value) <= 0;
     }
 
     /**
@@ -393,7 +393,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).startsWith(value);
+        return element -> transform.apply(element).startsWith(value);
     }
 
     /**
@@ -416,7 +416,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).endsWith(value);
+        return element -> transform.apply(element).endsWith(value);
     }
 
     /**
@@ -439,7 +439,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element).contains(value);
+        return element -> transform.apply(element).contains(value);
     }
 
     /**
@@ -459,7 +459,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && !transform.apply(element).isEmpty();
+        return element -> !transform.apply(element).isEmpty();
     }
 
     /**
@@ -479,7 +479,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> element != null && transform.apply(element);
+        return transform::apply;
     }
 
     /**
@@ -495,7 +495,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) {
-        return element -> element != null && !transform.apply(element);
+        return element -> !transform.apply(element);
     }
 
     /**
