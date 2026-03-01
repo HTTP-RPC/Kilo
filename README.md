@@ -1140,12 +1140,12 @@ public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 
-public static <T, U extends Comparable<U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
 
 public static <T> Predicate<T> whereStartsWith(Function<? super T, String> transform, String value) { ... }
 public static <T> Predicate<T> whereEndsWith(Function<? super T, String> transform, String value) { ... }
@@ -1219,8 +1219,8 @@ public static <T> double averageOf(Iterable<T> iterable, ToDoubleFunction<T> tra
 public static <T> double minimumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
 public static <T> double maximumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
 
-public static <T extends Comparable<T>> T minimumOf(Iterable<T> iterable) { ... }
-public static <T extends Comparable<T>> T maximumOf(Iterable<T> iterable) { ... }
+public static <T extends Comparable<? super T>> T minimumOf(Iterable<T> iterable) { ... }
+public static <T extends Comparable<? super T>> T maximumOf(Iterable<T> iterable) { ... }
 
 public static <T> T minimumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }
 public static <T> T maximumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }

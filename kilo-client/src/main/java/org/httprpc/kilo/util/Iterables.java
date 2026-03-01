@@ -239,7 +239,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -265,7 +265,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
         return element -> element != null && transform.apply(element).compareTo(value) != 0;
     }
 
@@ -287,7 +287,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -313,7 +313,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -339,7 +339,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -365,7 +365,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -687,7 +687,7 @@ public class Iterables {
      * @return
      * The minimum value.
      */
-    public static <T extends Comparable<T>> T minimumOf(Iterable<T> iterable) {
+    public static <T extends Comparable<? super T>> T minimumOf(Iterable<T> iterable) {
         return minimumOf(iterable, Comparator.naturalOrder());
     }
 
@@ -703,7 +703,7 @@ public class Iterables {
      * @return
      * The maximum value.
      */
-    public static <T extends Comparable<T>> T maximumOf(Iterable<T> iterable) {
+    public static <T extends Comparable<? super T>> T maximumOf(Iterable<T> iterable) {
         return maximumOf(iterable, Comparator.naturalOrder());
     }
 

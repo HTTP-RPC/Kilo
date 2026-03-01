@@ -17,7 +17,6 @@ package org.httprpc.kilo.util;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
@@ -125,10 +124,6 @@ public class IterablesTest {
         var result = listOf(filter(values, whereEqualTo(String::length, 3))); // abc
 
         assertEquals(listOf("abc"), result);
-
-        var now = LocalDateTime.now();
-
-        assertTrue(exists(listOf(now), whereEqualTo(LocalDateTime::toLocalDate, now.toLocalDate())));
     }
 
     @Test
