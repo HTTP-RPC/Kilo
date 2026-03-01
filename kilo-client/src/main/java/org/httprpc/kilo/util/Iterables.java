@@ -239,7 +239,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<? super U>> Predicate<? super T> whereEqualTo(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -265,7 +265,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T, U extends Comparable<? super U>> Predicate<? super T> whereNotEqualTo(Function<? super T, U> transform, U value) {
+    public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
         return element -> element != null && transform.apply(element).compareTo(value) != 0;
     }
 
@@ -388,7 +388,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T> Predicate<? super T> whereStartsWith(Function<? super T, String> transform, String value) {
+    public static <T> Predicate<T> whereStartsWith(Function<? super T, String> transform, String value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -411,7 +411,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T> Predicate<? super T> whereEndsWith(Function<? super T, String> transform, String value) {
+    public static <T> Predicate<T> whereEndsWith(Function<? super T, String> transform, String value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -434,7 +434,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T> Predicate<? super T> whereContains(Function<? super T, String> transform, String value) {
+    public static <T> Predicate<T> whereContains(Function<? super T, String> transform, String value) {
         if (transform == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -454,7 +454,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T> Predicate<? super T> whereNotEmpty(Function<? super T, String> transform) {
+    public static <T> Predicate<T> whereNotEmpty(Function<? super T, String> transform) {
         if (transform == null) {
             throw new IllegalArgumentException();
         }
@@ -474,7 +474,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T> Predicate<? super T> whereTrue(Function<? super T, Boolean> transform) {
+    public static <T> Predicate<T> whereTrue(Function<? super T, Boolean> transform) {
         if (transform == null) {
             throw new IllegalArgumentException();
         }
@@ -494,7 +494,7 @@ public class Iterables {
      * @return
      * The comparison predicate.
      */
-    public static <T> Predicate<? super T> whereFalse(Function<? super T, Boolean> transform) {
+    public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) {
         return element -> element != null && !transform.apply(element);
     }
 

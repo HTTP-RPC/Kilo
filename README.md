@@ -1140,20 +1140,20 @@ public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 
-public static <T, U extends Comparable<? super U>> Predicate<? super T> whereEqualTo(Function<? super T, U> transform, U value) { ... }
-public static <T, U extends Comparable<? super U>> Predicate<? super T> whereNotEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) { ... }
+public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
 
-public static <T> Predicate<? super T> whereStartsWith(Function<? super T, String> transform, String value) { ... }
-public static <T> Predicate<? super T> whereEndsWith(Function<? super T, String> transform, String value) { ... }
-public static <T> Predicate<? super T> whereContains(Function<? super T, String> transform, String value) { ... }
-public static <T> Predicate<? super T> whereNotEmpty(Function<? super T, String> transform) { ... }
+public static <T> Predicate<T> whereStartsWith(Function<? super T, String> transform, String value) { ... }
+public static <T> Predicate<T> whereEndsWith(Function<? super T, String> transform, String value) { ... }
+public static <T> Predicate<T> whereContains(Function<? super T, String> transform, String value) { ... }
+public static <T> Predicate<T> whereNotEmpty(Function<? super T, String> transform) { ... }
 
-public static <T> Predicate<? super T> whereTrue(Function<? super T, Boolean> transform) { ... }
-public static <T> Predicate<? super T> whereFalse(Function<? super T, Boolean> transform) { ... }
+public static <T> Predicate<T> whereTrue(Function<? super T, Boolean> transform) { ... }
+public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
