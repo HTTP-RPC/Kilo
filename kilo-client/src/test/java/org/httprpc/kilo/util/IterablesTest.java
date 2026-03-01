@@ -122,9 +122,9 @@ public class IterablesTest {
     public void testWhereEqualTo() {
         var values = listOf("a", "ab", "abc");
 
-        var result = firstOf(filter(values, whereEqualTo(String::length, 3))); // abc
+        var result = listOf(filter(values, whereEqualTo(String::length, 3))); // abc
 
-        assertEquals("abc", result);
+        assertEquals(listOf("abc"), result);
 
         var now = LocalDateTime.now();
 
@@ -133,7 +133,11 @@ public class IterablesTest {
 
     @Test
     public void testWhereNotEqualTo() {
-        // TODO
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereNotEqualTo(String::length, 3))); // a, ab
+
+        assertEquals(listOf("a", "ab"), result);
     }
 
     @Test
@@ -174,41 +178,65 @@ public class IterablesTest {
 
     @Test
     public void testWhereStartsWith() {
-        // TODO
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereStartsWith(String::toString, "ab"))); // ab, abc
+
+        assertEquals(listOf("ab", "abc"), result);
     }
 
     @Test
     public void testWhereEndsWith() {
-        // TODO
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereEndsWith(String::toString, "bc"))); // abc
+
+        assertEquals(listOf("abc"), result);
     }
 
     @Test
     public void testWhereContains() {
-        // TODO
+        var values = listOf("a", "ab", "abc");
+
+        var result = listOf(filter(values, whereContains(String::toString, "a"))); // a, ab, abc
+
+        assertEquals(listOf("a", "ab", "abc"), result);
     }
 
     @Test
     public void testWhereTrue() {
-        // TODO
+        var values = listOf(true, false, false);
+
+        var result = countOf(filter(values, whereTrue(Boolean::booleanValue))); // 1
+
+        assertEquals(1, result);
     }
 
     @Test
     public void testWhereFalse() {
-        // TODO
+        var values = listOf(true, false, false);
+
+        var result = countOf(filter(values, whereFalse(Boolean::booleanValue))); // 2
+
+        assertEquals(2, result);
     }
 
     @Test
     public void testWhereNull() {
-        var values = listOf(null, null, null);
+        var values = listOf(1, null, 2, null, 3);
 
-        var result = countOf(filter(values, whereNull(value -> value))); // 3
+        var result = countOf(filter(values, whereNull(value -> value))); // 2
 
-        assertEquals(3, result);
+        assertEquals(2, result);
     }
 
     @Test
     public void testWhereNotNull() {
-        // TODO
+        var values = listOf(1, null, 2, null, 3);
+
+        var result = countOf(filter(values, whereNotNull(value -> value))); // 3
+
+        assertEquals(3, result);
     }
 
     @Test
