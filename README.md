@@ -1206,7 +1206,7 @@ var result = exists(values, value -> value < 3); // true
 ```java
 var values = listOf("a", "ab", "abc");
 
-var result = firstOf(filter(values, whereEqualTo(String::length, 3))); // abc
+var result = listOf(filter(values, whereEqualTo(String::length, 3))); // abc
 ```
 
 `Iterables` also provides the following statistical reduction methods:
