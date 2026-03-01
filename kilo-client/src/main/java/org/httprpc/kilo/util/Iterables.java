@@ -443,26 +443,6 @@ public class Iterables {
     }
 
     /**
-     * Creates a "where not empty" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T> Predicate<T> whereNotEmpty(Function<? super T, String> transform) {
-        if (transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> !transform.apply(element).isEmpty();
-    }
-
-    /**
      * Creates a "where true" predicate.
      *
      * @param <T>
