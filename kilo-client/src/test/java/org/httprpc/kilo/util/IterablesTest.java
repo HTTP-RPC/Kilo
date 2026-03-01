@@ -18,8 +18,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -185,6 +187,15 @@ public class IterablesTest {
         var values = listOf(true, false, false);
 
         var result = countOf(filter(values, whereFalse(Boolean::booleanValue))); // 2
+
+        assertEquals(2, result);
+    }
+
+    @Test
+    public void testOptionalPredicate() {
+        List<Supplier<Boolean>> values = listOf(() -> true, () -> false, () -> false, () -> null);
+
+        var result = countOf(filter(values, whereFalse(Supplier::get)));
 
         assertEquals(2, result);
     }
