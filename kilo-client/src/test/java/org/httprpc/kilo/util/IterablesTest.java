@@ -135,9 +135,9 @@ public class IterablesTest {
     public void testWhereNotEqualTo() {
         var values = listOf("a", "ab", "abc", null);
 
-        var result = listOf(filter(values, whereNotEqualTo(String::length, 3))); // a, ab, null
+        var result = listOf(filter(values, whereNotEqualTo(String::length, 3))); // a, ab
 
-        assertEquals(listOf("a", "ab", null), result);
+        assertEquals(listOf("a", "ab"), result);
     }
 
     @Test
@@ -225,9 +225,9 @@ public class IterablesTest {
     public void testWhereFalse() {
         var values = listOf(true, false, false, null);
 
-        var result = countOf(filter(values, whereFalse(Boolean::booleanValue))); // 3
+        var result = countOf(filter(values, whereFalse(Boolean::booleanValue))); // 2
 
-        assertEquals(3, result);
+        assertEquals(2, result);
     }
 
     @Test

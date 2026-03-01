@@ -266,7 +266,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<? super T> whereNotEqualTo(Function<? super T, U> transform, U value) {
-        return whereEqualTo(transform, value).negate();
+        return element -> element != null && transform.apply(element).compareTo(value) != 0;
     }
 
     /**
@@ -495,7 +495,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T> Predicate<? super T> whereFalse(Function<? super T, Boolean> transform) {
-        return whereTrue(transform).negate();
+        return element -> element != null && !transform.apply(element);
     }
 
     /**
