@@ -120,7 +120,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereEqualTo() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereEqualTo(String::length, 3))); // abc
 
@@ -133,16 +133,16 @@ public class IterablesTest {
 
     @Test
     public void testWhereNotEqualTo() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
-        var result = listOf(filter(values, whereNotEqualTo(String::length, 3))); // a, ab
+        var result = listOf(filter(values, whereNotEqualTo(String::length, 3))); // a, ab, null
 
-        assertEquals(listOf("a", "ab"), result);
+        assertEquals(listOf("a", "ab", null), result);
     }
 
     @Test
     public void testWhereGreaterThan() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereGreaterThan(String::length, 2))); // abc
 
@@ -151,7 +151,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereGreaterThanOrEqualTo() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereGreaterThanOrEqualTo(String::length, 2))); // ab, abc
 
@@ -160,7 +160,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereLessThan() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereLessThan(String::length, 2))); // a
 
@@ -169,7 +169,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereLessThanOrEqualTo() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereLessThanOrEqualTo(String::length, 2))); // a, ab
 
@@ -178,7 +178,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereStartsWith() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereStartsWith(String::toString, "ab"))); // ab, abc
 
@@ -187,7 +187,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereEndsWith() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereEndsWith(String::toString, "bc"))); // abc
 
@@ -196,7 +196,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereContains() {
-        var values = listOf("a", "ab", "abc");
+        var values = listOf("a", "ab", "abc", null);
 
         var result = listOf(filter(values, whereContains(String::toString, "a"))); // a, ab, abc
 
@@ -205,7 +205,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereNotEmpty() {
-        var values = listOf("a", "b", "c", "");
+        var values = listOf("a", "b", "c", "", null);
 
         var result = countOf(filter(values, whereNotEmpty(String::toString))); // 3
 
@@ -214,7 +214,7 @@ public class IterablesTest {
 
     @Test
     public void testWhereTrue() {
-        var values = listOf(true, false, false);
+        var values = listOf(true, false, false, null);
 
         var result = countOf(filter(values, whereTrue(Boolean::booleanValue))); // 1
 
@@ -223,11 +223,11 @@ public class IterablesTest {
 
     @Test
     public void testWhereFalse() {
-        var values = listOf(true, false, false);
+        var values = listOf(true, false, false, null);
 
-        var result = countOf(filter(values, whereFalse(Boolean::booleanValue))); // 2
+        var result = countOf(filter(values, whereFalse(Boolean::booleanValue))); // 3
 
-        assertEquals(2, result);
+        assertEquals(3, result);
     }
 
     @Test
