@@ -96,6 +96,27 @@ public class Iterables {
         }
     }
 
+    private static class OptionalPredicate<T, U> implements Predicate<T> {
+        Function<? super T, U> transform;
+        Predicate<U> condition;
+
+        OptionalPredicate(Function<? super T, U> transform, Predicate<U> condition) {
+            this.transform = transform;
+            this.condition = condition;
+        }
+
+        @Override
+        public boolean test(T element) {
+            var result = transform.apply(element);
+
+            if (result != null) {
+                return condition.test(result);
+            } else {
+                return false;
+            }
+        }
+    }
+
     private Iterables() {
     }
 
@@ -244,7 +265,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) == 0;
+        return new OptionalPredicate<>(transform, result -> result.compareTo(value) == 0);
     }
 
     /**
@@ -266,7 +287,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
-        return element -> transform.apply(element).compareTo(value) != 0;
+        return new OptionalPredicate<>(transform, result -> result.compareTo(value) != 0);
     }
 
     /**
@@ -292,7 +313,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) > 0;
+        return new OptionalPredicate<>(transform, result -> result.compareTo(value) > 0);
     }
 
     /**
@@ -318,7 +339,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) >= 0;
+        return new OptionalPredicate<>(transform, result -> result.compareTo(value) >= 0);
     }
 
     /**
@@ -344,7 +365,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) < 0;
+        return new OptionalPredicate<>(transform, result -> result.compareTo(value) < 0);
     }
 
     /**
@@ -370,76 +391,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) <= 0;
-    }
-
-    /**
-     * Creates a "where starts with" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @param value
-     * The value to compare.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T> Predicate<T> whereStartsWith(Function<? super T, String> transform, String value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> transform.apply(element).startsWith(value);
-    }
-
-    /**
-     * Creates a "where ends with" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @param value
-     * The value to compare.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T> Predicate<T> whereEndsWith(Function<? super T, String> transform, String value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> transform.apply(element).endsWith(value);
-    }
-
-    /**
-     * Creates a "where contains" predicate.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @param value
-     * The value to compare.
-     *
-     * @return
-     * The comparison predicate.
-     */
-    public static <T> Predicate<T> whereContains(Function<? super T, String> transform, String value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> transform.apply(element).contains(value);
+        return new OptionalPredicate<>(transform, result -> result.compareTo(value) <= 0);
     }
 
     /**
@@ -459,7 +411,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return transform::apply;
+        return new OptionalPredicate<>(transform, result -> result);
     }
 
     /**
@@ -475,7 +427,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) {
-        return element -> !transform.apply(element);
+        return new OptionalPredicate<>(transform, result -> !result);
     }
 
     /**

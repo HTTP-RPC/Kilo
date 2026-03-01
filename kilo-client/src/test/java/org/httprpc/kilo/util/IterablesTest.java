@@ -172,33 +172,6 @@ public class IterablesTest {
     }
 
     @Test
-    public void testWhereStartsWith() {
-        var values = listOf("a", "ab", "abc");
-
-        var result = listOf(filter(values, whereStartsWith(String::toString, "ab"))); // ab, abc
-
-        assertEquals(listOf("ab", "abc"), result);
-    }
-
-    @Test
-    public void testWhereEndsWith() {
-        var values = listOf("a", "ab", "abc");
-
-        var result = listOf(filter(values, whereEndsWith(String::toString, "bc"))); // abc
-
-        assertEquals(listOf("abc"), result);
-    }
-
-    @Test
-    public void testWhereContains() {
-        var values = listOf("a", "ab", "abc");
-
-        var result = listOf(filter(values, whereContains(String::toString, "a"))); // a, ab, abc
-
-        assertEquals(listOf("a", "ab", "abc"), result);
-    }
-
-    @Test
     public void testWhereTrue() {
         var values = listOf(true, false, false);
 

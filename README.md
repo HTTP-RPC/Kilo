@@ -1147,10 +1147,6 @@ public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan
 public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) { ... }
 
-public static <T> Predicate<T> whereStartsWith(Function<? super T, String> transform, String value) { ... }
-public static <T> Predicate<T> whereEndsWith(Function<? super T, String> transform, String value) { ... }
-public static <T> Predicate<T> whereContains(Function<? super T, String> transform, String value) { ... }
-
 public static <T> Predicate<T> whereTrue(Function<? super T, Boolean> transform) { ... }
 public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) { ... }
 ```
