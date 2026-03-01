@@ -244,7 +244,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) == 0;
+        return element -> element != null && transform.apply(element).compareTo(value) == 0;
     }
 
     /**
@@ -292,7 +292,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) > 0;
+        return element -> element != null && transform.apply(element).compareTo(value) > 0;
     }
 
     /**
@@ -318,7 +318,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) >= 0;
+        return element -> element != null && transform.apply(element).compareTo(value) >= 0;
     }
 
     /**
@@ -344,7 +344,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) < 0;
+        return element -> element != null && transform.apply(element).compareTo(value) < 0;
     }
 
     /**
@@ -370,7 +370,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).compareTo(value) <= 0;
+        return element -> element != null && transform.apply(element).compareTo(value) <= 0;
     }
 
     /**
@@ -393,7 +393,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).startsWith(value);
+        return element -> element != null && transform.apply(element).startsWith(value);
     }
 
     /**
@@ -416,7 +416,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).endsWith(value);
+        return element -> element != null && transform.apply(element).endsWith(value);
     }
 
     /**
@@ -439,7 +439,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> transform.apply(element).contains(value);
+        return element -> element != null && transform.apply(element).contains(value);
     }
 
     /**
@@ -459,7 +459,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return element -> !transform.apply(element).isEmpty();
+        return element -> element != null && !transform.apply(element).isEmpty();
     }
 
     /**
@@ -479,7 +479,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return transform::apply;
+        return element -> element != null && transform.apply(element);
     }
 
     /**
