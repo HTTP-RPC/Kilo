@@ -249,6 +249,26 @@ public class IterablesTest {
     }
 
     @Test
+    public void testAnd() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = listOf(filter(values, whereGreaterThan(Integer::intValue, 1)
+            .and(whereLessThan(Integer::intValue, 5)))); // 2, 3, 4
+
+        assertEquals(listOf(2, 3, 4), result);
+    }
+
+    @Test
+    public void testOr() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = listOf(filter(values, whereGreaterThan(Integer::intValue, 4)
+            .or(whereLessThan(Integer::intValue, 2)))); // 1, 5
+
+        assertEquals(listOf(1, 5), result);
+    }
+
+    @Test
     public void testSumOfInt() {
         var values = listOf(1, 2, 3, 4, 5);
 

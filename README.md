@@ -1202,7 +1202,7 @@ var result = exists(values, value -> value < 3); // true
 ```
 
 ```java
-var values = listOf("a", "ab", "abc");
+var values = listOf("a", "ab", "abc", null);
 
 var result = listOf(filter(values, whereEqualTo(String::length, 3))); // abc
 ```
