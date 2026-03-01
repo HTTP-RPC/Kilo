@@ -1225,7 +1225,7 @@ public static <T extends Comparable<? super T>> T maximumOf(Iterable<T> iterable
 public static <T> T minimumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }
 public static <T> T maximumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }
 
-public static <T> int countOf(Iterable<?> iterable) { ... }
+public static int countOf(Iterable<?> iterable) { ... }
 ```
 
 For example:

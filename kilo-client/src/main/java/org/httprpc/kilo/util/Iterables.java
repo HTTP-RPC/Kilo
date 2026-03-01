@@ -778,7 +778,7 @@ public class Iterables {
      * @return
      * The element count.
      */
-    public static <T> int countOf(Iterable<?> iterable) {
+    public static int countOf(Iterable<?> iterable) {
         if (iterable == null) {
             throw new IllegalArgumentException();
         }
