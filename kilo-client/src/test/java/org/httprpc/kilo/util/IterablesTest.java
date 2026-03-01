@@ -204,6 +204,15 @@ public class IterablesTest {
     }
 
     @Test
+    public void testWhereNotEmpty() {
+        var values = listOf("a", "b", "c", "");
+
+        var result = countOf(filter(values, whereNotEmpty(String::toString))); // 3
+
+        assertEquals(3, result);
+    }
+
+    @Test
     public void testWhereTrue() {
         var values = listOf(true, false, false);
 
