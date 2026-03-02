@@ -237,7 +237,7 @@ public class Iterables {
      * The condition to test.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T, U> Predicate<T> where(Function<? super T, U> transform, Predicate<U> condition) {
         if (transform == null || condition == null) {
@@ -271,7 +271,7 @@ public class Iterables {
      * The value to compare.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) {
         return where(transform, result -> result.compareTo(value) == 0);
@@ -293,7 +293,7 @@ public class Iterables {
      * The value to compare.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
         return where(transform, result -> result.compareTo(value) != 0);
@@ -315,7 +315,7 @@ public class Iterables {
      * The value to compare.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) {
         return where(transform, result -> result.compareTo(value) > 0);
@@ -337,7 +337,7 @@ public class Iterables {
      * The value to compare.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) {
         return where(transform, result -> result.compareTo(value) >= 0);
@@ -359,7 +359,7 @@ public class Iterables {
      * The value to compare.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) {
         return where(transform, result -> result.compareTo(value) < 0);
@@ -381,7 +381,7 @@ public class Iterables {
      * The value to compare.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) {
         return where(transform, result -> result.compareTo(value) <= 0);
@@ -397,7 +397,7 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T> Predicate<T> whereTrue(Function<? super T, Boolean> transform) {
         return where(transform, result -> result);
@@ -413,10 +413,50 @@ public class Iterables {
      * The transform function.
      *
      * @return
-     * The comparison predicate.
+     * The filter predicate.
      */
     public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) {
         return where(transform, result -> !result);
+    }
+
+    /**
+     * Creates a "where null" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The filter predicate.
+     */
+    public static <T> Predicate<T> whereNull(Function<? super T, ?> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> transform.apply(element) == null;
+    }
+
+    /**
+     * Creates a "where not null" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The filter predicate.
+     */
+    public static <T> Predicate<T> whereNotNull(Function<? super T, ?> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> transform.apply(element) != null;
     }
 
     /**

@@ -201,19 +201,19 @@ public class IterablesTest {
     }
 
     @Test
-    public void testIsNull() {
-        var values = listOf(1, null, 2, null, 3);
+    public void testWhereNull() {
+        List<Supplier<String>> values = listOf(() -> "a", () -> "b", () -> "c", () -> null);
 
-        var result = countOf(filter(values, Optionals::isNull)); // 2
+        var result = countOf(filter(values, whereNull(Supplier::get)));
 
-        assertEquals(2, result);
+        assertEquals(1, result);
     }
 
     @Test
-    public void testIsNotNull() {
-        var values = listOf(1, null, 2, null, 3);
+    public void testWhereNotNull() {
+        List<Supplier<String>> values = listOf(() -> "a", () -> "b", () -> "c", () -> null);
 
-        var result = countOf(filter(values, Optionals::isNotNull)); // 3
+        var result = countOf(filter(values, whereNotNull(Supplier::get)));
 
         assertEquals(3, result);
     }
