@@ -274,7 +274,7 @@ public class Iterables {
      * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) {
-        return where(transform, result -> result.compareTo(value) == 0);
+        return where(transform, result -> value != null && result.compareTo(value) == 0);
     }
 
     /**
@@ -296,7 +296,7 @@ public class Iterables {
      * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
-        return where(transform, result -> result.compareTo(value) != 0);
+        return where(transform, result -> value != null && result.compareTo(value) != 0);
     }
 
     /**
@@ -318,7 +318,7 @@ public class Iterables {
      * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) {
-        return where(transform, result -> result.compareTo(value) > 0);
+        return where(transform, result -> value != null && result.compareTo(value) > 0);
     }
 
     /**
@@ -340,7 +340,7 @@ public class Iterables {
      * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) {
-        return where(transform, result -> result.compareTo(value) >= 0);
+        return where(transform, result -> value != null && result.compareTo(value) >= 0);
     }
 
     /**
@@ -362,7 +362,7 @@ public class Iterables {
      * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) {
-        return where(transform, result -> result.compareTo(value) < 0);
+        return where(transform, result -> value != null && result.compareTo(value) < 0);
     }
 
     /**
@@ -384,7 +384,7 @@ public class Iterables {
      * The filter predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) {
-        return where(transform, result -> result.compareTo(value) <= 0);
+        return where(transform, result -> value != null && result.compareTo(value) <= 0);
     }
 
     /**

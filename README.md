@@ -1220,7 +1220,7 @@ var values = listOf("a", "ab", "abc");
 var result = listOf(filter(values, whereEqualTo(String::length, 3))); // abc
 ```
 
-As with SQL, predicates are only evaluated when the value produced by a transform is not `null`.
+As with SQL, predicates are not evaluated if any operand is `null`.
 
 `Iterables` also provides the following statistical reduction methods:
 
