@@ -96,27 +96,6 @@ public class Iterables {
         }
     }
 
-    private static class OptionalPredicate<T, U> implements Predicate<T> {
-        Function<? super T, U> transform;
-        Predicate<U> condition;
-
-        OptionalPredicate(Function<? super T, U> transform, Predicate<U> condition) {
-            this.transform = transform;
-            this.condition = condition;
-        }
-
-        @Override
-        public boolean test(T element) {
-            var result = transform.apply(element);
-
-            if (result != null) {
-                return condition.test(result);
-            } else {
-                return false;
-            }
-        }
-    }
-
     private Iterables() {
     }
 
@@ -261,11 +240,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new OptionalPredicate<>(transform, result -> result.compareTo(value) == 0);
+        return where(transform, result -> result.compareTo(value) == 0);
     }
 
     /**
@@ -287,7 +262,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) {
-        return new OptionalPredicate<>(transform, result -> result.compareTo(value) != 0);
+        return where(transform, result -> result.compareTo(value) != 0);
     }
 
     /**
@@ -309,11 +284,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new OptionalPredicate<>(transform, result -> result.compareTo(value) > 0);
+        return where(transform, result -> result.compareTo(value) > 0);
     }
 
     /**
@@ -335,11 +306,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThanOrEqualTo(Function<? super T, U> transform, U value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new OptionalPredicate<>(transform, result -> result.compareTo(value) >= 0);
+        return where(transform, result -> result.compareTo(value) >= 0);
     }
 
     /**
@@ -361,11 +328,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThan(Function<? super T, U> transform, U value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new OptionalPredicate<>(transform, result -> result.compareTo(value) < 0);
+        return where(transform, result -> result.compareTo(value) < 0);
     }
 
     /**
@@ -387,11 +350,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T, U extends Comparable<? super U>> Predicate<T> whereLessThanOrEqualTo(Function<? super T, U> transform, U value) {
-        if (transform == null || value == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new OptionalPredicate<>(transform, result -> result.compareTo(value) <= 0);
+        return where(transform, result -> result.compareTo(value) <= 0);
     }
 
     /**
@@ -407,11 +366,7 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T> Predicate<T> whereTrue(Function<? super T, Boolean> transform) {
-        if (transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new OptionalPredicate<>(transform, result -> result);
+        return where(transform, result -> result);
     }
 
     /**
@@ -427,7 +382,23 @@ public class Iterables {
      * The comparison predicate.
      */
     public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) {
-        return new OptionalPredicate<>(transform, result -> !result);
+        return where(transform, result -> !result);
+    }
+
+    private static <T, U> Predicate<T> where(Function<? super T, U> transform, Predicate<U> condition) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> {
+            var result = transform.apply(element);
+
+            if (result != null) {
+                return condition.test(result);
+            } else {
+                return false;
+            }
+        };
     }
 
     /**
