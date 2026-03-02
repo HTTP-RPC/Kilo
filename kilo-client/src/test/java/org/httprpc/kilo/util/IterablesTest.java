@@ -120,6 +120,15 @@ public class IterablesTest {
     }
 
     @Test
+    public void testWhere() {
+        List<Supplier<String>> values = listOf(() -> "a", () -> "b", () -> "c", () -> null);
+
+        var result = countOf(filter(values, where(Supplier::get, value -> value.equalsIgnoreCase("A"))));
+
+        assertEquals(1, result);
+    }
+
+    @Test
     public void testWhereEqualTo() {
         var values = listOf("a", "ab", "abc");
 
@@ -187,15 +196,6 @@ public class IterablesTest {
         var values = listOf(true, false, false);
 
         var result = countOf(filter(values, whereFalse(Boolean::booleanValue))); // 2
-
-        assertEquals(2, result);
-    }
-
-    @Test
-    public void testOptionalPredicate() {
-        List<Supplier<Boolean>> values = listOf(() -> true, () -> false, () -> false, () -> null);
-
-        var result = countOf(filter(values, whereFalse(Supplier::get)));
 
         assertEquals(2, result);
     }

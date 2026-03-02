@@ -222,6 +222,40 @@ public class Iterables {
     }
 
     /**
+     * Creates a "where" predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <U>
+     * The value type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @param condition
+     * The condition to test.
+     *
+     * @return
+     * The comparison predicate.
+     */
+    public static <T, U> Predicate<T> where(Function<? super T, U> transform, Predicate<U> condition) {
+        if (transform == null || condition == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return element -> {
+            var result = transform.apply(element);
+
+            if (result != null) {
+                return condition.test(result);
+            } else {
+                return false;
+            }
+        };
+    }
+
+    /**
      * Creates a "where equal to" predicate.
      *
      * @param <T>
@@ -383,22 +417,6 @@ public class Iterables {
      */
     public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform) {
         return where(transform, result -> !result);
-    }
-
-    private static <T, U> Predicate<T> where(Function<? super T, U> transform, Predicate<U> condition) {
-        if (transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return element -> {
-            var result = transform.apply(element);
-
-            if (result != null) {
-                return condition.test(result);
-            } else {
-                return false;
-            }
-        };
     }
 
     /**

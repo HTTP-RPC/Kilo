@@ -1140,6 +1140,8 @@ public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 
+public static <T, U> Predicate<T> where(Function<? super T, U> transform, Predicate<U> condition) { ... }
+
 public static <T, U extends Comparable<? super U>> Predicate<T> whereEqualTo(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereNotEqualTo(Function<? super T, U> transform, U value) { ... }
 public static <T, U extends Comparable<? super U>> Predicate<T> whereGreaterThan(Function<? super T, U> transform, U value) { ... }
