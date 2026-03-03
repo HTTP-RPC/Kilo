@@ -45,17 +45,12 @@ public class Examples {
     public static void main(String[] args) {
         execute("Math Service 1", Examples::mathService1);
         execute("Math Service 2", Examples::mathService2);
+
         execute("JSON Encoder", Examples::jsonEncoder);
         execute("Text Encoder", Examples::textEncoder);
         execute("CSV Encoder", Examples::csvEncoder);
+
         execute("Template Encoder", Examples::templateEncoder);
-        execute("Adapt Bean", Examples::adaptBean);
-        execute("Coerce Bean", Examples::coerceBean);
-        execute("Interface Proxy", Examples::interfaceProxy);
-        execute("Required Property 1", Examples::requiredProperty1);
-        execute("Required Property 2", Examples::requiredProperty2);
-        execute("Element Adapter", Examples::elementAdapter);
-        execute("Collections", Examples::collections);
         execute("Variables", Examples::variables);
         execute("Repeating Sections", Examples::repeatingSections);
         execute("Conditional Sections", Examples::conditionalSections);
@@ -63,6 +58,16 @@ public class Examples {
         execute("Resources", Examples::resources);
         execute("Includes", Examples::includes);
         execute("Comments", Examples::comments);
+
+        execute("Adapt Bean", Examples::adaptBean);
+        execute("Coerce Bean", Examples::coerceBean);
+        execute("Interface Proxy", Examples::interfaceProxy);
+        execute("Required Property 1", Examples::requiredProperty1);
+        execute("Required Property 2", Examples::requiredProperty2);
+
+        execute("Element Adapter", Examples::elementAdapter);
+
+        execute("Collections", Examples::collections);
     }
 
     private static void execute(String label, Example example) {
@@ -162,6 +167,55 @@ public class Examples {
         var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
 
         templateEncoder.write(map, System.out);
+    }
+
+    public static void variables() throws IOException {
+        templateExample("variables");
+    }
+
+    public static void repeatingSections() throws IOException {
+        templateExample("repeating-sections");
+    }
+
+    public static void conditionalSections() throws IOException {
+        templateExample("conditional-sections");
+    }
+
+    public static void invertedSections() throws IOException {
+        templateExample("inverted-sections");
+    }
+
+    public static void resources() throws IOException {
+        templateExample("resources");
+    }
+
+    public static void includes() throws IOException {
+        templateExample("includes");
+    }
+
+    public static void comments() throws IOException {
+        templateExample("comments");
+    }
+
+    private static void templateExample(String name) throws IOException {
+        var jsonDecoder = new JSONDecoder();
+
+        Object dictionary;
+        try (var inputStream = Examples.class.getResourceAsStream(String.format("%s.json", name))) {
+            dictionary = jsonDecoder.read(new InputStreamReader(inputStream));
+        }
+
+        var templateEncoder = new TemplateEncoder(Examples.class, String.format("%s.html", name));
+
+        try {
+            var resourceBundle = ResourceBundle.getBundle(String.format("%s.%s", Examples.class.getPackageName(), name));
+
+            templateEncoder.setResourceBundle(resourceBundle);
+        } catch (MissingResourceException exception) {
+            // No-op
+        }
+
+        templateEncoder.write(dictionary, System.out);
     }
 
     public static void adaptBean() {
@@ -281,54 +335,5 @@ public class Examples {
         var set = setOf("a", "b", "c");
 
         System.out.println(set.contains("a")); // true
-    }
-
-    public static void variables() throws IOException {
-        templateExample("variables");
-    }
-
-    public static void repeatingSections() throws IOException {
-        templateExample("repeating-sections");
-    }
-
-    public static void conditionalSections() throws IOException {
-        templateExample("conditional-sections");
-    }
-
-    public static void invertedSections() throws IOException {
-        templateExample("inverted-sections");
-    }
-
-    public static void resources() throws IOException {
-        templateExample("resources");
-    }
-
-    public static void includes() throws IOException {
-        templateExample("includes");
-    }
-
-    public static void comments() throws IOException {
-        templateExample("comments");
-    }
-
-    private static void templateExample(String name) throws IOException {
-        var jsonDecoder = new JSONDecoder();
-
-        Object dictionary;
-        try (var inputStream = Examples.class.getResourceAsStream(String.format("%s.json", name))) {
-            dictionary = jsonDecoder.read(new InputStreamReader(inputStream));
-        }
-
-        var templateEncoder = new TemplateEncoder(Examples.class, String.format("%s.html", name));
-
-        try {
-            var resourceBundle = ResourceBundle.getBundle(String.format("%s.%s", Examples.class.getPackageName(), name));
-
-            templateEncoder.setResourceBundle(resourceBundle);
-        } catch (MissingResourceException exception) {
-            // No-op
-        }
-
-        templateEncoder.write(dictionary, System.out);
     }
 }

@@ -542,9 +542,7 @@ csvEncoder.write(rows, System.out);
 ```
 
 ## TemplateEncoder
-The `TemplateEncoder` class transforms an object hierarchy (known as a "data dictionary") into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. 
-
-For example, this code applies a template named _example.html_ to a map instance:
+The `TemplateEncoder` class transforms an object hierarchy (known as a "data dictionary") into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. For example:
 
 ```java
 var map = mapOf(
