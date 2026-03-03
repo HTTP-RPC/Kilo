@@ -843,19 +843,9 @@ public abstract class WebService extends HttpServlet {
 
         path = path.substring(0, path.length() - 2);
 
-        root = index(type.getMethods());
+        root = new Resource();
 
-        serviceDescriptor = new ServiceDescriptor(path, type);
-
-        describeResource(path, root);
-
-        synchronized (WebService.class) {
-            instances.put(type, this);
-        }
-    }
-
-    private static Resource index(Method[] methods) throws ServletException {
-        var root = new Resource();
+        var methods = type.getMethods();
 
         for (var i = 0; i < methods.length; i++) {
             var handler = methods[i];
@@ -889,7 +879,13 @@ public abstract class WebService extends HttpServlet {
 
         sort(root);
 
-        return root;
+        serviceDescriptor = new ServiceDescriptor(path, type);
+
+        describeResource(path, root);
+
+        synchronized (WebService.class) {
+            instances.put(type, this);
+        }
     }
 
     private static void sort(Resource root) {
