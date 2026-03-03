@@ -15,14 +15,15 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 
-public class BulkUploadServiceTest {
-    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
+import static org.junit.jupiter.api.Assertions.*;
 
+public class BulkUploadServiceTest {
     public static class Rows implements Iterable<Row> {
         private int count;
 
@@ -52,27 +53,32 @@ public class BulkUploadServiceTest {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    private static final int ROW_COUNT = 15000;
+
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
+
+    @Test
+    public void testBulkUpload() throws IOException {
         var t0 = System.currentTimeMillis();
 
-        logTiming(baseURI, "bulk-upload", 15000, t0);
+        uploadRows("bulk-upload");
 
         var t1 = System.currentTimeMillis();
 
-        logTiming(baseURI, "bulk-upload/batch", 15000, t1);
+        uploadRows("bulk-upload/batch");
+
+        var t2 = System.currentTimeMillis();
+
+        assertTrue(t2 - t1 < (t1 - t0) / 5.0);
     }
 
-    private static void logTiming(URI baseURI, String path, int count, long start) throws IOException {
+    private static void uploadRows(String path) throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve(path));
 
-        webServiceProxy.setBody(new Rows(count));
+        webServiceProxy.setBody(new Rows(ROW_COUNT));
 
         webServiceProxy.setChunkSize(4096);
 
         webServiceProxy.invoke();
-
-        var current = System.currentTimeMillis();
-
-        System.out.println(String.format("Uploaded %d rows in %.1fs", count, (current - start) / 1000.0));
     }
 }
