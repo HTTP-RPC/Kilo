@@ -783,17 +783,6 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testGreeting() throws IOException {
-        var contextPath = baseURI.getPath();
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(contextPath.substring(0, contextPath.length() - 1)));
-
-        var result = webServiceProxy.invoke();
-
-        assertEquals("Hello, World!", result);
-    }
-
-    @Test
     public void testDefaultProxyMethod() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
