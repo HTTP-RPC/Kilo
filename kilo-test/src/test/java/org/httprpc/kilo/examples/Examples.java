@@ -20,7 +20,6 @@ import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
-import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
@@ -29,7 +28,6 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -47,8 +45,8 @@ public class Examples {
     public static void main(String[] args) {
         execute("Math Service 1", Examples::mathService1);
         execute("Math Service 2", Examples::mathService2);
-        execute("JSON Encoder", Examples::jsonEncoderAndDecoder);
-        execute("Text Encoder/Decoder", Examples::textEncoderAndDecoder);
+        execute("JSON Encoder", Examples::jsonEncoder);
+        execute("Text Encoder", Examples::textEncoder);
         execute("CSV Encoder", Examples::csvEncoder);
         execute("Template Encoder", Examples::templateEncoder);
         execute("Adapt Bean", Examples::adaptBean);
@@ -102,10 +100,7 @@ public class Examples {
         System.out.println(webServiceProxy.invoke()); // 6.0
     }
 
-    @SuppressWarnings("unchecked")
-    public static void jsonEncoderAndDecoder() throws IOException {
-        var file = Files.createTempFile("kilo", ".json");
-
+    public static void jsonEncoder() throws IOException {
         var map = mapOf(
             entry("vegetables", listOf(
                 "carrots",
@@ -119,47 +114,21 @@ public class Examples {
             ))
         );
 
-        try {
-            try (var outputStream = Files.newOutputStream(file)) {
-                var jsonEncoder = new JSONEncoder();
+        var jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.write(map, outputStream);
-            }
+        jsonEncoder.write(map, System.out);
 
-            try (var inputStream = Files.newInputStream(file)) {
-                var jsonDecoder = new JSONDecoder();
-
-                map = (Map<String, List<String>>)jsonDecoder.read(inputStream);
-            }
-
-            System.out.println(map.get("vegetables").getFirst()); // carrots
-        } finally {
-            Files.delete(file);
-        }
+        System.out.println();
     }
 
-    public static void textEncoderAndDecoder() throws IOException {
-        var file = Files.createTempFile("kilo", ".txt");
-
+    public static void textEncoder() throws IOException {
         var text = "Hello, World!";
 
-        try {
-            try (var outputStream = Files.newOutputStream(file)) {
-                var textEncoder = new TextEncoder();
+        var textEncoder = new TextEncoder();
 
-                textEncoder.write(text, outputStream);
-            }
+        textEncoder.write(text, System.out);
 
-            try (var inputStream = Files.newInputStream(file)) {
-                var textDecoder = new TextDecoder();
-
-                text = textDecoder.read(inputStream);
-            }
-
-            System.out.println(text); // Hello, World!
-        } finally {
-            Files.delete(file);
-        }
+        System.out.println();
     }
 
     public static void csvEncoder() throws IOException {

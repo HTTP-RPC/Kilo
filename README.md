@@ -465,8 +465,8 @@ The `JSONEncoder` and `JSONDecoder` classes are used internally by `WebService` 
 ```java
 var map = mapOf(
     entry("vegetables", listOf(
-        "carrots", 
-        "peas", 
+        "carrots",
+        "peas",
         "potatoes"
     )),
     entry("desserts", listOf(
@@ -476,19 +476,24 @@ var map = mapOf(
     ))
 );
 
-try (var outputStream = Files.newOutputStream(file)) {
-    var jsonEncoder = new JSONEncoder();
+var jsonEncoder = new JSONEncoder();
 
-    jsonEncoder.write(map, outputStream);
+jsonEncoder.write(map, System.out);
+```
+
+```json
+{
+  "vegetables": [
+    "carrots",
+    "peas",
+    "potatoes"
+  ],
+  "desserts": [
+    "cookies",
+    "cake",
+    "ice cream"
+  ]
 }
-
-try (var inputStream = Files.newInputStream(file)) {
-    var jsonDecoder = new JSONDecoder();
-
-    map = (Map<String, List<String>>)jsonDecoder.read(inputStream);
-}
-
-System.out.println(map.get("vegetables").get(0)); // carrots
 ```
 
 ## TextEncoder and TextDecoder
@@ -497,19 +502,13 @@ The `TextEncoder` and `TextDecoder` classes can be used to write and read plain 
 ```java
 var text = "Hello, World!";
 
-try (var outputStream = Files.newOutputStream(file)) {
-    var textEncoder = new TextEncoder();
+var textEncoder = new TextEncoder();
 
-    textEncoder.write(text, outputStream);
-}
+textEncoder.write(text, System.out);
+```
 
-try (var inputStream = Files.newInputStream(file)) {
-    var textDecoder = new TextDecoder();
-
-    text = textDecoder.read(inputStream);
-}
-
-System.out.println(text); // Hello, World!
+```
+Hello, World!
 ```
 
 ## CSVEncoder
@@ -536,9 +535,7 @@ var csvEncoder = new CSVEncoder(keys);
 csvEncoder.write(rows, System.out);
 ```
 
-This code would produce the following output:
-
-```csv
+```
 "a","b","c"
 "hello",123,true
 "goodbye",456,false
