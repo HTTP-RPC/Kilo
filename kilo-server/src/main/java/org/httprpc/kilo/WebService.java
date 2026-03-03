@@ -731,17 +731,16 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
+    private enum Verb {
+        GET,
+        POST,
+        PUT,
+        DELETE
+    }
+
     private static class Resource {
         Map<String, Resource> resources = new TreeMap<>();
-
-        Map<String, List<Method>> handlerMap = new TreeMap<>((method1, method2) -> {
-            var i1 = methodOrder.indexOf(method1);
-            var i2 = methodOrder.indexOf(method2);
-
-            return Integer.compare((i1 == -1) ? methodOrder.size() : i1, (i2 == -1) ? methodOrder.size() : i2);
-        });
-
-        static final List<String> methodOrder = immutableListOf("GET", "POST", "PUT", "DELETE");
+        Map<Verb, List<Method>> handlers = new TreeMap<>();
     }
 
     private Resource root = null;
@@ -750,8 +749,7 @@ public abstract class WebService extends HttpServlet {
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
-    private static final Comparator<Method> methodNameComparator = Comparator.comparing(Method::getName);
-    private static final Comparator<Method> methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
+    private static final Comparator<Method> handlerComparator = Comparator.comparing(Method::getName).thenComparing(Method::getParameterCount).reversed();
 
     private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
 
@@ -852,29 +850,36 @@ public abstract class WebService extends HttpServlet {
 
             var requestMethod = handler.getAnnotation(RequestMethod.class);
 
-            if (requestMethod != null) {
-                var method = requestMethod.value().toUpperCase();
-
-                var resource = root;
-
-                var resourcePath = handler.getAnnotation(ResourcePath.class);
-
-                if (resourcePath != null) {
-                    var components = resourcePath.value().split("/");
-
-                    for (var j = 0; j < components.length; j++) {
-                        var component = components[j];
-
-                        if (component.isEmpty()) {
-                            throw new ServletException("Invalid resource path.");
-                        }
-
-                        resource = resource.resources.computeIfAbsent(component, key -> new Resource());
-                    }
-                }
-
-                resource.handlerMap.computeIfAbsent(method, key -> new LinkedList<>()).add(handler);
+            if (requestMethod == null) {
+                continue;
             }
+
+            Verb verb;
+            try {
+                verb = Verb.valueOf(requestMethod.value().toUpperCase());
+            } catch (Exception exception) {
+                throw new ServletException("Invalid verb.");
+            }
+
+            var resource = root;
+
+            var resourcePath = handler.getAnnotation(ResourcePath.class);
+
+            if (resourcePath != null) {
+                var components = resourcePath.value().split("/");
+
+                for (var j = 0; j < components.length; j++) {
+                    var component = components[j];
+
+                    if (component.isEmpty()) {
+                        throw new ServletException("Invalid resource path.");
+                    }
+
+                    resource = resource.resources.computeIfAbsent(component, key -> new Resource());
+                }
+            }
+
+            resource.handlers.computeIfAbsent(verb, key -> new LinkedList<>()).add(handler);
         }
 
         sort(root);
@@ -889,8 +894,8 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static void sort(Resource root) {
-        for (var handlers : root.handlerMap.values()) {
-            handlers.sort(methodNameComparator.thenComparing(methodParameterCountComparator.reversed()));
+        for (var handlers : root.handlers.values()) {
+            handlers.sort(handlerComparator);
         }
 
         for (var resource : root.resources.values()) {
@@ -1051,9 +1056,17 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        var handlerList = resource.handlerMap.get(request.getMethod().toUpperCase());
+        Verb verb;
+        try {
+            verb = Verb.valueOf(request.getMethod().toUpperCase());
+        } catch (Exception exception) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
-        if (handlerList == null) {
+        var handlers = resource.handlers.get(verb);
+
+        if (handlers == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
@@ -1100,9 +1113,14 @@ public abstract class WebService extends HttpServlet {
             || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
             || contentType.startsWith(MULTIPART_FORM_DATA);
 
-        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
+        var handler = getHandler(handlers, keys.size(), argumentMap.keySet(), empty);
 
         if (handler == null) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
+        if (verb == Verb.POST && contentType != null && empty && handler.getAnnotation(FormData.class) == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
@@ -1468,7 +1486,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeResource(String path, Resource resource) {
-        if (!resource.handlerMap.isEmpty()) {
+        if (!resource.handlers.isEmpty()) {
             var endpoint = new EndpointDescriptor(path);
 
             var keyCount = 0;
@@ -1481,9 +1499,9 @@ public abstract class WebService extends HttpServlet {
                 }
             }
 
-            for (var entry : resource.handlerMap.entrySet()) {
+            for (var entry : resource.handlers.entrySet()) {
                 for (var handler : entry.getValue()) {
-                    var operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
+                    var operation = new OperationDescriptor(entry.getKey().toString(), handler);
 
                     operation.produces = describeGenericType(handler.getGenericReturnType());
 

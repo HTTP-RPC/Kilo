@@ -32,6 +32,7 @@ public class DocumentationTest {
     public void testDocumentation() throws IOException {
         testDocumentation("math");
         testDocumentation("catalog");
+        testDocumentation("test");
     }
 
     private void testDocumentation(String name) throws IOException {

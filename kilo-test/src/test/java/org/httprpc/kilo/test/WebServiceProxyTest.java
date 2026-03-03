@@ -156,7 +156,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testParameters() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/foo/1/bar/2"));
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/foo/1/bar/2"));
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 3),
@@ -606,7 +606,8 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
-            entry("string", null)
+            entry("string", null),
+            entry("number", 1)
         ));
 
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
