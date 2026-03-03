@@ -14,18 +14,14 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("owner")
-@Description("Represents an owner.")
-public interface Owner {
+public record Owner(
     @Column("name")
     @PrimaryKey
-    @Index
-    @Description("The owner's name.")
-    String getName();
+    String name
+) {
 }

@@ -785,13 +785,11 @@ Temporal values (such as "birth" and "death" above) are automatically converted 
 
 ```java
 @Table("owner")
-@Description("Represents an owner.")
-public interface Owner {
+public record Owner(
     @Column("name")
     @PrimaryKey
-    @Index
-    @Description("The owner's name.")
-    String getName();
+    String name
+) {
 }
 ```
 
