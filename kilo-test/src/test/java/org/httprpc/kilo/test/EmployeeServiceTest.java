@@ -21,9 +21,9 @@ import java.net.URI;
 import java.util.List;
 
 public class EmployeeServiceTest {
-    public static void main(String[] args) throws IOException {
-        var baseURI = URI.create("http://localhost:8080/kilo-test/");
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
+    public static void main(String[] args) throws IOException {
         logTiming(baseURI, "employees");
         logTiming(baseURI, "employees/stream");
     }

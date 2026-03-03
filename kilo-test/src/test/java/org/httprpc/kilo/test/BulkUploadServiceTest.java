@@ -21,6 +21,8 @@ import java.net.URI;
 import java.util.Iterator;
 
 public class BulkUploadServiceTest {
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
+
     public static class Rows implements Iterable<Row> {
         private int count;
 
@@ -51,15 +53,13 @@ public class BulkUploadServiceTest {
     }
 
     public static void main(String[] args) throws IOException {
-        var baseURI = URI.create("http://localhost:8080/kilo-test/bulk-upload/");
-
         var t0 = System.currentTimeMillis();
 
-        logTiming(baseURI, "upload", 15000, t0);
+        logTiming(baseURI, "bulk-upload", 15000, t0);
 
         var t1 = System.currentTimeMillis();
 
-        logTiming(baseURI, "upload-batch", 15000, t1);
+        logTiming(baseURI, "bulk-upload/batch", 15000, t1);
     }
 
     private static void logTiming(URI baseURI, String path, int count, long start) throws IOException {

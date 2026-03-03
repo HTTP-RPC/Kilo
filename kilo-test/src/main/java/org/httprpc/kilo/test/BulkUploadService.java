@@ -28,7 +28,6 @@ public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 5000;
 
     @RequestMethod("POST")
-    @ResourcePath("upload")
     public void upload(List<Row> rows) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
@@ -43,7 +42,7 @@ public class BulkUploadService extends AbstractDatabaseService {
     }
 
     @RequestMethod("POST")
-    @ResourcePath("upload-batch")
+    @ResourcePath("batch")
     public void uploadBatch(List<Row> rows) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
