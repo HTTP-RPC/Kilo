@@ -282,7 +282,7 @@ Descriptions can also be associated with bean types, records, and enums:
 
 ```java
 @Table("item")
-@Description("Represents an item in the catalog.")
+@Description("Represents a catalog item.")
 public interface Item {
     @Name("id")
     @Column("id")

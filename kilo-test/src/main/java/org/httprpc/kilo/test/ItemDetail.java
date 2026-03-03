@@ -20,7 +20,7 @@ import org.httprpc.kilo.sql.Final;
 
 import java.util.Date;
 
-@Description("Represents detailed information about an item in the catalog.")
+@Description("Represents detailed information about a catalog item.")
 public interface ItemDetail extends Item {
     @Column("size")
     @Description("The item's size.")

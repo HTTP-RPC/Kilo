@@ -22,7 +22,7 @@ import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("actor")
-@Description("Represents an actor.")
+@Description("Represents a film actor.")
 public interface Actor {
     @Name("id")
     @Column("actor_id")

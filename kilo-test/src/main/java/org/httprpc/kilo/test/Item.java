@@ -23,7 +23,7 @@ import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("item")
-@Description("Represents an item in the catalog.")
+@Description("Represents a catalog item.")
 public interface Item {
     @Name("id")
     @Column("id")

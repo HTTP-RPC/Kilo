@@ -219,7 +219,7 @@
   "path": "/catalog",
   "structures": [
     {
-      "description": "Represents an item in the catalog.",
+      "description": "Represents a catalog item.",
       "name": "Item",
       "properties": [
         {
@@ -272,7 +272,7 @@
       ]
     },
     {
-      "description": "Represents detailed information about an item in the catalog.",
+      "description": "Represents detailed information about a catalog item.",
       "name": "ItemDetail",
       "properties": [
         {
