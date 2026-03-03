@@ -26,10 +26,15 @@ import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -67,6 +72,7 @@ public class Examples {
         execute("Resources", Examples::resources);
         execute("Includes", Examples::includes);
         execute("Comments", Examples::comments);
+        execute("XML Transform", Examples::xmlTransform);
     }
 
     private static void execute(String label, Example example) {
@@ -385,5 +391,52 @@ public class Examples {
         }
 
         templateEncoder.write(dictionary, System.out);
+    }
+
+    public static void xmlTransform() throws Exception {
+        var t0 = System.currentTimeMillis();
+
+        transformXML1();
+
+        var t1 = System.currentTimeMillis();
+
+        System.out.printf("%s %dms\n", Transformer.class.getSimpleName(), (t1 - t0));
+
+        transformXML2();
+
+        var t2 = System.currentTimeMillis();
+
+        System.out.printf("%s %dms\n", TemplateEncoder.class.getSimpleName(), (t2 - t1));
+    }
+
+    private static void transformXML1() throws Exception {
+        var source = new StreamSource(Examples.class.getResourceAsStream("breakfast-menu.xslt"));
+
+        var transformer = TransformerFactory.newInstance().newTransformer(source);
+
+        var xmlSource = new StreamSource(Examples.class.getResourceAsStream("breakfast-menu.xml"));
+
+        var outputFile = Paths.get(System.getProperty("user.home"), "breakfast-menu-1.html");
+
+        try (var outputStream = Files.newOutputStream(outputFile)) {
+            transformer.transform(xmlSource, new StreamResult(outputStream));
+        }
+    }
+
+    private static void transformXML2() throws Exception {
+        var documentBuilder = ElementAdapter.newDocumentBuilder();
+
+        Document document;
+        try (var inputStream = Examples.class.getResourceAsStream("breakfast-menu.xml")) {
+            document = documentBuilder.parse(inputStream);
+        }
+
+        var templateEncoder = new TemplateEncoder(Examples.class, "breakfast-menu.html");
+
+        var outputFile = Paths.get(System.getProperty("user.home"), "breakfast-menu-2.html");
+
+        try (var outputStream = Files.newOutputStream(outputFile)) {
+            templateEncoder.write(new ElementAdapter(document.getDocumentElement()), outputStream);
+        }
     }
 }
