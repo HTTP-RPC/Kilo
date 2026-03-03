@@ -22,7 +22,7 @@ import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FilmsTest {
+public class FilmServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test

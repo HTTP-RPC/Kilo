@@ -26,7 +26,7 @@ import java.util.List;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PetsTest {
+public class PetServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test

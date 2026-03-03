@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 
-public class BulkUploadTest {
+public class BulkUploadServiceTest {
     public static class Rows implements Iterable<Row> {
         private int count;
 

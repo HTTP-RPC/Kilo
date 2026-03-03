@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-public class EmployeesTest {
+public class EmployeeServiceTest {
     public static void main(String[] args) throws IOException {
         var baseURI = URI.create("http://localhost:8080/kilo-test/");
 

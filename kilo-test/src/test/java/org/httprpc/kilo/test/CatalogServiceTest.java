@@ -25,7 +25,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CatalogTest {
+public class CatalogServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test
