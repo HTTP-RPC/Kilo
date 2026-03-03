@@ -427,29 +427,21 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testXMLPostProxy() throws IOException {
         var documentBuilder = ElementAdapter.newDocumentBuilder();
 
-        Document document;
-        try (var inputStream = getClass().getResourceAsStream("account.xml")) {
-            document = documentBuilder.parse(inputStream);
+        Document document1;
+        try (var inputStream = getClass().getResourceAsStream("test.xml")) {
+            document1 = documentBuilder.parse(inputStream);
         } catch (SAXException exception) {
             throw new IOException(exception);
         }
 
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        document = testServiceProxy.testXMLPost(1, 2, document);
+        var document2 = testServiceProxy.testXMLPost(1, 2, document1);
 
-        var accountAdapter = new ElementAdapter(document.getDocumentElement());
-
-        assertEquals("101", accountAdapter.get("@id"));
-
-        var holder = (Map<String, Object>)accountAdapter.get("holder");
-
-        assertEquals("John", holder.get("firstName").toString());
-        assertEquals("Smith", holder.get("lastName").toString());
+        assertTrue(document1.isEqualNode(document2));
     }
 
     @Test
