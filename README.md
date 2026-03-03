@@ -447,10 +447,10 @@ public interface MathServiceProxy {
 ```java
 var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURI);
 
-System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
-System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
+var sum1 = mathServiceProxy.getSum(4.0, 2.0); // 6.0
+var sum2 = mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0)); // 6.0
 
-System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
+var average = mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0)); // 3.0
 ```
 
 The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. The `WebServiceProxy.Configuration` annotation can be used to further customize request processing.
@@ -722,24 +722,6 @@ public class Person {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-}
-```
-
-The preceding class would be serialized to JSON like this:
-
-```json
-{
-  "first_name": "John",
-  "last_name": "Smith"
-}
-```
-
-rather than this:
-
-```json
-{
-  "firstName": "John",
-  "lastName": "Smith"
 }
 ```
 

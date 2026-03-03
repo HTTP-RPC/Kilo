@@ -22,8 +22,6 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
-import org.httprpc.kilo.test.MathServiceProxy;
-import org.httprpc.kilo.test.Person;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -54,7 +52,6 @@ public class Examples {
     public static void main(String[] args) {
         execute("Math Service 1", Examples::mathService1);
         execute("Math Service 2", Examples::mathService2);
-        execute("Math Service 3", Examples::mathService3);
         execute("JSON Encoder", Examples::jsonEncoderAndDecoder);
         execute("Text Encoder/Decoder", Examples::textEncoderAndDecoder);
         execute("CSV Encoder", Examples::csvEncoder);
@@ -64,7 +61,6 @@ public class Examples {
         execute("Interface Proxy", Examples::interfaceProxy);
         execute("Required Property 1", Examples::requiredProperty1);
         execute("Required Property 2", Examples::requiredProperty2);
-        execute("Custom Property Keys", Examples::customPropertyKeys);
         execute("Element Adapter", Examples::elementAdapter);
         execute("Collections", Examples::collections);
         execute("Variables", Examples::variables);
@@ -110,15 +106,6 @@ public class Examples {
         ));
 
         System.out.println(webServiceProxy.invoke()); // 6.0
-    }
-
-    public static void mathService3() throws IOException {
-        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURI);
-
-        System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
-        System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
-
-        System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
     }
 
     @SuppressWarnings("unchecked")
@@ -282,19 +269,6 @@ public class Examples {
         } catch (UnsupportedOperationException exception) {
             System.out.println(exception.getMessage());
         }
-    }
-
-    public static void customPropertyKeys() throws IOException {
-        var person = new Person();
-
-        person.setFirstName("first");
-        person.setLastName("last");
-
-        var jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.write(person, System.out);
-
-        System.out.println();
     }
 
     @SuppressWarnings("unchecked")

@@ -735,6 +735,21 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testMathProxy() throws IOException {
+        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURI);
+
+        var sum1 = mathServiceProxy.getSum(4.0, 2.0); // 6.0
+        var sum2 = mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0)); // 6.0
+
+        assertEquals(6.0, sum1);
+        assertEquals(6.0, sum2);
+
+        var average = mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0)); // 3.0
+
+        assertEquals(3.0, average);
+    }
+
+    @Test
     public void testMathDelegation1() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/math/sum"));
 
