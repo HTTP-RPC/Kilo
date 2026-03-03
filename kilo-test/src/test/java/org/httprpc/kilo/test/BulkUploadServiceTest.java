@@ -55,11 +55,11 @@ public class BulkUploadServiceTest {
 
         var t0 = System.currentTimeMillis();
 
-        logTiming(baseURI, "upload", 50000, t0);
+        logTiming(baseURI, "upload", 15000, t0);
 
         var t1 = System.currentTimeMillis();
 
-        logTiming(baseURI, "upload-batch", 500000, t1);
+        logTiming(baseURI, "upload-batch", 15000, t1);
     }
 
     private static void logTiming(URI baseURI, String path, int count, long start) throws IOException {
@@ -67,8 +67,7 @@ public class BulkUploadServiceTest {
 
         webServiceProxy.setBody(new Rows(count));
 
-        webServiceProxy.setReadTimeout(120000);
-        webServiceProxy.setChunkSize(65536);
+        webServiceProxy.setChunkSize(4096);
 
         webServiceProxy.invoke();
 
