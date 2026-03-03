@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.PrimaryKey;
@@ -23,35 +22,28 @@ import org.httprpc.kilo.sql.Table;
 import java.time.LocalDate;
 
 @Table("employees")
-@Description("Represents an employee.")
 public interface Employee {
     @Column("emp_no")
     @PrimaryKey
-    @Description("The employee's employee number.")
     Integer getEmployeeNumber();
 
     @Column("first_name")
     @Required
-    @Description("The employee's first name.")
     String getFirstName();
 
     @Column("last_name")
     @Required
-    @Description("The employee's last name.")
     String getLastName();
 
     @Column("gender")
     @Required
-    @Description("The employee's gender.")
     String getGender();
 
     @Column("birth_date")
     @Required
-    @Description("The employee's birth date.")
     LocalDate getBirthDate();
 
     @Column("hire_date")
     @Required
-    @Description("The employee's hire date.")
     LocalDate getHireDate();
 }

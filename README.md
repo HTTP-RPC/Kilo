@@ -130,7 +130,7 @@ Parameters that must be provided by the caller can be indicated by the `Required
 
 ```java
 @RequestMethod("GET")
-public List<Pet> getPets(@Required String owner) throws SQLException { 
+public List<Pet> getPets(@Required String owner) throws SQLException {
     ... 
 }
 ```
@@ -795,33 +795,26 @@ public record Owner(
 
 ```java
 @Table("pet")
-@Description("Represents a pet.")
 public interface Pet {
     @Column("name")
     @PrimaryKey
     @Index
-    @Description("The pet's name.")
     String getName();
 
     @Column("owner")
     @ForeignKey(Owner.class)
-    @Description("The pet's owner.")
     String getOwner();
 
     @Column("species")
-    @Description("The pet's species.")
     String getSpecies();
 
     @Column("sex")
-    @Description("The pet's gender.")
     String getSex();
 
     @Column("birth")
-    @Description("The pet's date of birth.")
     LocalDate getBirth();
 
     @Column("death")
-    @Description("The pet's date of death.")
     LocalDate getDeath();
 }
 ```
@@ -941,36 +934,29 @@ For example, the following code executes a SQL query that retrieves all rows fro
 
 ```java
 @Table("employees")
-@Description("Represents an employee.")
 public interface Employee {
     @Column("emp_no")
     @PrimaryKey
-    @Description("The employee's employee number.")
     Integer getEmployeeNumber();
 
     @Column("first_name")
     @Required
-    @Description("The employee's first name.")
     String getFirstName();
 
     @Column("last_name")
     @Required
-    @Description("The employee's last name.")
     String getLastName();
 
     @Column("gender")
     @Required
-    @Description("The employee's gender.")
     String getGender();
 
     @Column("birth_date")
     @Required
-    @Description("The employee's birth date.")
     LocalDate getBirthDate();
 
     @Column("hire_date")
     @Required
-    @Description("The employee's hire date.")
     LocalDate getHireDate();
 }
 ```

@@ -15,7 +15,6 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
-import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
@@ -34,13 +33,9 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
 @WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
-@Description("Pet service.")
 public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
-    @Description("Returns a list of pets.")
-    public List<Pet> getPets(
-        @Description("The name of the owner.") @Required String owner
-    ) throws SQLException {
+    public List<Pet> getPets(@Required String owner) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("select * from pet where owner = :owner order by name");
@@ -55,10 +50,7 @@ public class PetService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     @ResourcePath("stream")
-    @Description("Returns a list of pets.")
-    public void getPetsStream(
-        @Description("The name of the owner.") @Required String owner
-    ) throws SQLException, IOException {
+    public void getPetsStream(@Required String owner) throws SQLException, IOException {
         var response = getResponse();
 
         var accept = getRequest().getHeader("Accept");
