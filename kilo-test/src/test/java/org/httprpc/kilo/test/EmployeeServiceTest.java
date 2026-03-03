@@ -15,28 +15,34 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EmployeeServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
-    public static void main(String[] args) throws IOException {
-        logTiming(baseURI, "employees");
-        logTiming(baseURI, "employees/stream");
-    }
-
-    private static void logTiming(URI baseURI, String path) throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(path));
-
+    @Test
+    public void testEmployees() throws IOException {
         var t0 = System.currentTimeMillis();
 
-        var result = (List<?>)webServiceProxy.invoke();
+        loadEmployees("employees");
 
         var t1 = System.currentTimeMillis();
 
-        System.out.println(String.format("Retrieved %d rows from %s in %.1fs", result.size(), path, (t1 - t0) / 1000.0));
+        loadEmployees("employees/stream");
+
+        var t2 = System.currentTimeMillis();
+
+        assertTrue(t2 - t1 < t1 - t0);
+    }
+
+    private static void loadEmployees(String path) throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(path));
+
+        webServiceProxy.invoke();
     }
 }
