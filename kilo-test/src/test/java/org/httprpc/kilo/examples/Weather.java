@@ -12,29 +12,13 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.examples;
 
-import org.httprpc.kilo.Required;
+import java.time.LocalDate;
 
-public class Vehicle {
-    private String manufacturer;
-    private Integer year;
-
-    @Required
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    @Required
-    public Integer getYear() {
-        return year;
-    }
-
-    public void setYear(Integer year) {
-        this.year = year;
-    }
+public interface Weather {
+    LocalDate getDate();
+    String getConditions();
+    double getHigh();
+    double getLow();
 }

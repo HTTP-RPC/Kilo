@@ -12,34 +12,29 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.examples;
 
-public class Course {
-    private String name;
-    private String building;
-    private int roomNumber;
+import org.httprpc.kilo.Required;
 
-    public String getName() {
-        return name;
+public class Vehicle {
+    private String manufacturer;
+    private Integer year;
+
+    @Required
+    public String getManufacturer() {
+        return manufacturer;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
-    public String getBuilding() {
-        return building;
+    @Required
+    public Integer getYear() {
+        return year;
     }
 
-    public void setBuilding(String building) {
-        this.building = building;
-    }
-
-    public int getRoomNumber() {
-        return roomNumber;
-    }
-
-    public void setRoomNumber(int roomNumber) {
-        this.roomNumber = roomNumber;
+    public void setYear(Integer year) {
+        this.year = year;
     }
 }

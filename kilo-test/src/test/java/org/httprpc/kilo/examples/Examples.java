@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.examples;
 
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -22,6 +22,8 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
+import org.httprpc.kilo.test.MathServiceProxy;
+import org.httprpc.kilo.test.Person;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
