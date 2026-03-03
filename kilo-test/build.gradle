@@ -17,7 +17,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletAPIVersion}"
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
 
     implementation project(':kilo-server')
     implementation "org.mariadb.jdbc:mariadb-java-client:${connectorJVersion}"

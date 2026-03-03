@@ -27,7 +27,7 @@ java {
 }
 
 dependencies {
-    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletAPIVersion}"
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
 
     api project(':kilo-client')
 }
