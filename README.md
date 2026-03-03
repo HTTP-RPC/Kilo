@@ -970,7 +970,7 @@ For example, the following code executes a SQL query that retrieves all rows fro
 public interface Employee {
     @Column("emp_no")
     @PrimaryKey
-    @Description("The employee number.")
+    @Description("The employee's employee number.")
     Integer getEmployeeNumber();
 
     @Column("first_name")

@@ -27,7 +27,7 @@ import java.time.LocalDate;
 public interface Employee {
     @Column("emp_no")
     @PrimaryKey
-    @Description("The employee number.")
+    @Description("The employee's employee number.")
     Integer getEmployeeNumber();
 
     @Column("first_name")
