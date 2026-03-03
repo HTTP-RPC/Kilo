@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.ForeignKey;
 import org.httprpc.kilo.sql.Index;
@@ -23,25 +24,32 @@ import org.httprpc.kilo.sql.Table;
 import java.time.LocalDate;
 
 @Table("pet")
+@Description("Represents a pet.")
 public interface Pet {
     @Column("name")
     @PrimaryKey
     @Index
+    @Description("The pet's name.")
     String getName();
 
     @Column("owner")
     @ForeignKey(Owner.class)
+    @Description("The pet's owner.")
     String getOwner();
 
     @Column("species")
+    @Description("The pet's species.")
     String getSpecies();
 
     @Column("sex")
+    @Description("The pet's gender.")
     String getSex();
 
     @Column("birth")
+    @Description("The pet's date of birth.")
     LocalDate getBirth();
 
     @Column("death")
+    @Description("The pet's date of death.")
     LocalDate getDeath();
 }

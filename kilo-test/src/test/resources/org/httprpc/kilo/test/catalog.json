@@ -1,5 +1,5 @@
 {
-  "description": "Catalog example service.",
+  "description": "Catalog service.",
   "endpoints": [
     {
       "operations": [

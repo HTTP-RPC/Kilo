@@ -41,7 +41,7 @@ For example, the following service implements some simple mathematical operation
 
 ```java
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
-@Description("Math example service.")
+@Description("Math service.")
 public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
@@ -265,7 +265,7 @@ Implementations can provide additional information about service types and opera
 
 ```java
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
-@Description("Catalog example service.")
+@Description("Catalog service.")
 public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("items")
@@ -808,36 +808,45 @@ Temporal values (such as "birth" and "death" above) are automatically converted 
 
 ```java
 @Table("owner")
+@Description("Represents an owner.")
 public interface Owner {
     @Column("name")
     @PrimaryKey
     @Index
+    @Description("The owner's name.")
     String getName();
 }
 ```
 
 ```java
 @Table("pet")
+@Description("Represents a pet.")
 public interface Pet {
     @Column("name")
     @PrimaryKey
     @Index
+    @Description("The pet's name.")
     String getName();
 
     @Column("owner")
     @ForeignKey(Owner.class)
+    @Description("The pet's owner.")
     String getOwner();
 
     @Column("species")
+    @Description("The pet's species.")
     String getSpecies();
 
     @Column("sex")
+    @Description("The pet's gender.")
     String getSex();
 
     @Column("birth")
+    @Description("The pet's date of birth.")
     LocalDate getBirth();
 
     @Column("death")
+    @Description("The pet's date of death.")
     LocalDate getDeath();
 }
 ```
@@ -957,29 +966,36 @@ For example, the following code executes a SQL query that retrieves all rows fro
 
 ```java
 @Table("employees")
+@Description("Represents an employee.")
 public interface Employee {
     @Column("emp_no")
     @PrimaryKey
+    @Description("The employee number.")
     Integer getEmployeeNumber();
 
     @Column("first_name")
     @Required
+    @Description("The employee's first name.")
     String getFirstName();
 
     @Column("last_name")
     @Required
+    @Description("The employee's last name.")
     String getLastName();
 
     @Column("gender")
     @Required
+    @Description("The employee's gender.")
     String getGender();
 
     @Column("birth_date")
     @Required
+    @Description("The employee's birth date.")
     LocalDate getBirthDate();
 
     @Column("hire_date")
     @Required
+    @Description("The employee's hire date.")
     LocalDate getHireDate();
 }
 ```

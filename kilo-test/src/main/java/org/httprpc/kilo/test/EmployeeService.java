@@ -16,6 +16,7 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
@@ -32,6 +33,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
+@Description("Employee service.")
 public class EmployeeService extends WebService {
     private static ExecutorService executorService = null;
 
@@ -55,6 +57,7 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
+    @Description("Returns a list of employees.")
     public List<Employee> getEmployees() throws SQLException {
         var queryBuilder = QueryBuilder.select(Employee.class);
 
@@ -66,6 +69,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("stream")
+    @Description("Returns a list of employees.")
     public Iterable<Employee> getEmployeesStream() {
         var pipe = new Pipe<Employee>(4096, 15000);
 

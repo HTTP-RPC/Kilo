@@ -20,7 +20,7 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.WebService;
 
 @WebServlet(urlPatterns = {"/*"}, loadOnStartup = 1)
-@Description("Greeting example service.")
+@Description("Greeting service.")
 public class GreetingService extends WebService {
     @RequestMethod("GET")
     @Description("Returns a friendly greeting.")

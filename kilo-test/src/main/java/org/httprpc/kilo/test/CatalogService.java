@@ -31,7 +31,7 @@ import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
-@Description("Catalog example service.")
+@Description("Catalog service.")
 public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("items")

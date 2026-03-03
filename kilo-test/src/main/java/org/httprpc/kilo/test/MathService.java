@@ -23,7 +23,7 @@ import org.httprpc.kilo.WebService;
 import java.util.List;
 
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
-@Description("Math example service.")
+@Description("Math service.")
 public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
