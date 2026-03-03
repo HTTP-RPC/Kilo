@@ -13,7 +13,7 @@ This guide introduces the Kilo framework and provides an overview of its key fea
 Kilo is distributed via Maven Central: 
 
 * [org.httprpc:kilo-client](https://central.sonatype.com/artifact/org.httprpc/kilo-client/versions) - includes support for consuming web services, interacting with relational databases, and working with common file formats (Java 21 or later required)
-* [org.httprpc:kilo-server](https://central.sonatype.com/artifact/org.httprpc/kilo-server/versions) - depends on client; includes support for creating web services (Jakarta Servlet specification 6.0 or later required)
+* [org.httprpc:kilo-server](https://central.sonatype.com/artifact/org.httprpc/kilo-server/versions) - depends on client; includes support for creating web services (Jakarta Servlet specification 6.1 or later required)
 
 # Kilo Classes
 Classes provided by the Kilo framework include:
@@ -35,7 +35,7 @@ Classes provided by the Kilo framework include:
 Each is discussed in more detail below.
 
 ## WebService
-`WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/6.0/).
+`WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/6.1/).
 
 For example, the following service implements some simple mathematical operations:
 
@@ -115,7 +115,7 @@ The following multi-value types are also supported:
 * `java.util.Set`
 * array/varargs
 
-Additionally, `java.util.Map`, bean, record, and `org.w3c.dom.Document` types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted as [multi-part form data](https://jakarta.ee/specifications/servlet/6.0/jakarta-servlet-spec-6.0#_MultipartConfig).
+Additionally, `java.util.Map`, bean, record, and `org.w3c.dom.Document` types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted as [multi-part form data](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig).
 
 Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
