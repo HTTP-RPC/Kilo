@@ -13,7 +13,7 @@ This guide introduces the Kilo framework and provides an overview of its key fea
 Kilo is distributed via Maven Central: 
 
 * [org.httprpc:kilo-client](https://central.sonatype.com/artifact/org.httprpc/kilo-client/versions) - includes support for consuming web services, interacting with relational databases, and working with common file formats (Java 21 or later required)
-* [org.httprpc:kilo-server](https://central.sonatype.com/artifact/org.httprpc/kilo-server/versions) - depends on client; includes support for creating web services (Jakarta Servlet specification 6.1 or later required)
+* [org.httprpc:kilo-server](https://central.sonatype.com/artifact/org.httprpc/kilo-server/versions) - depends on client; includes support for creating web services (Jakarta Servlet 6.1 or later required)
 
 # Kilo Classes
 Classes provided by the Kilo framework include:
@@ -115,7 +115,7 @@ The following multi-value types are also supported:
 * `java.util.Set`
 * array/varargs
 
-Additionally, `java.util.Map`, bean, record, and `org.w3c.dom.Document` types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted as [multi-part form data](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig).
+Additionally, `java.util.Map`, bean, record, and `org.w3c.dom.Document` types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` handler methods annotated with `FormData`.
 
 Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
@@ -340,7 +340,7 @@ public enum Size implements Numeric {
 }
 ```  
 
-The `FormData` annotation can be used to indicate that a method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Deprecated elements will be identified as such in the output.
+Deprecated elements will be identified as such in the output.
 
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
