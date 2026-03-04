@@ -45,4 +45,13 @@ public class EmployeeServiceTest {
 
         webServiceProxy.invoke();
     }
+
+    @Test
+    public void testAverageSalary() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("employees/average-salary"));
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals(63810.74, result);
+    }
 }
