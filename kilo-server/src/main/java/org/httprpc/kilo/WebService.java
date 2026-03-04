@@ -1064,9 +1064,9 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        var handlers = resource.handlers.get(verb);
+        var handlerList = resource.handlers.get(verb);
 
-        if (handlers == null) {
+        if (handlerList == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
@@ -1113,7 +1113,7 @@ public abstract class WebService extends HttpServlet {
             || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
             || contentType.startsWith(MULTIPART_FORM_DATA);
 
-        var handler = getHandler(handlers, keys.size(), argumentMap.keySet(), empty);
+        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
