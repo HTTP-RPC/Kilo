@@ -914,19 +914,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Object toRecord(Map<?, ?> map, Class<?> type) {
-        var recordComponents = type.getRecordComponents();
+        var properties = getProperties(type);
 
-        var parameterTypes = new Class<?>[recordComponents.length];
-        var arguments = new Object[recordComponents.length];
+        var n = properties.size();
 
-        for (var i = 0; i < recordComponents.length; i++) {
-            var recordComponent = recordComponents[i];
+        var parameterTypes = new Class<?>[n];
+        var arguments = new Object[n];
 
-            parameterTypes[i] = recordComponent.getType();
+        var i = 0;
 
-            var accessor = recordComponent.getAccessor();
+        for (var entry : properties.entrySet()) {
+            var key = entry.getKey();
 
-            var key = getKey(accessor, recordComponent.getName());
+            var accessor = entry.getValue().accessor;
 
             var value = map.get(key);
 
@@ -934,7 +934,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 throw new RequiredValueException(key, type);
             }
 
-            arguments[i] = coerceGeneric(value, recordComponent.getGenericType());
+            parameterTypes[i] = accessor.getReturnType();
+
+            arguments[i] = coerceGeneric(value, accessor.getGenericReturnType());
+
+            i++;
         }
 
         Constructor<?> constructor;
@@ -970,13 +974,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             for (var entry : getProperties(type).entrySet()) {
+                var key = entry.getKey();
+
                 var property = entry.getValue();
 
                 if (property.mutator == null) {
                     continue;
                 }
-
-                var key = entry.getKey();
 
                 var value = map.get(key);
 
@@ -996,7 +1000,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the properties for a given type, sorted by name.
+     * Returns the properties for a given type.
      *
      * @param type
      * The bean type.
@@ -1009,18 +1013,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Map<String, Property> computeProperties(Class<?> type) {
-        var accessors = new HashMap<String, Method>();
-        var mutatorMap = new HashMap<String, List<Method>>();
-
+        Map<String, Property> properties;
         if (type.isRecord()) {
+            properties = new LinkedHashMap<>();
+
             var recordComponents = type.getRecordComponents();
 
             for (var i = 0; i < recordComponents.length; i++) {
                 var recordComponent = recordComponents[i];
 
-                accessors.put(recordComponent.getName(), recordComponent.getAccessor());
+                var accessor = recordComponent.getAccessor();
+
+                properties.put(getKey(accessor, recordComponent.getName()), new Property(accessor, null));
             }
         } else {
+            var accessors = new HashMap<String, Method>();
+            var mutatorLists = new HashMap<String, List<Method>>();
+
             var methods = type.getMethods();
 
             for (var i = 0; i < methods.length; i++) {
@@ -1039,24 +1048,26 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (method.getParameterCount() == 0) {
                     accessors.put(propertyName, method);
                 } else {
-                    mutatorMap.computeIfAbsent(propertyName, key -> new LinkedList<>()).add(method);
+                    mutatorLists.computeIfAbsent(propertyName, key -> new LinkedList<>()).add(method);
                 }
             }
+
+            properties = sortedMapOf(mapAll(accessors.entrySet(), entry -> {
+                var propertyName = entry.getKey();
+
+                var accessor = entry.getValue();
+
+                var propertyType = accessor.getReturnType();
+
+                var mutatorList = coalesce(mutatorLists.get(propertyName), () -> emptyListOf(Method.class));
+
+                var mutator = firstOf(filter(mutatorList, method -> method.getParameterTypes()[0] == propertyType));
+
+                return entry(getKey(accessor, propertyName), new Property(accessor, mutator));
+            }));
         }
 
-        return immutableMapOf(sortedMapOf(mapAll(accessors.entrySet(), entry -> {
-            var propertyName = entry.getKey();
-
-            var accessor = entry.getValue();
-
-            var propertyType = accessor.getReturnType();
-
-            var mutatorList = coalesce(mutatorMap.get(propertyName), () -> emptyListOf(Method.class));
-
-            var mutator = firstOf(filter(mutatorList, method -> method.getParameterTypes()[0] == propertyType));
-
-            return entry(getKey(accessor, propertyName), new Property(accessor, mutator));
-        })));
+        return immutableMapOf(properties);
     }
 
     private static String getPropertyName(Method method) {

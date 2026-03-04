@@ -740,7 +740,7 @@ public abstract class WebService extends HttpServlet {
 
     private static class Resource {
         Map<String, Resource> resources = new TreeMap<>();
-        Map<Verb, List<Method>> handlers = new TreeMap<>();
+        Map<Verb, List<Method>> handlerLists = new TreeMap<>();
     }
 
     private Resource root = null;
@@ -885,7 +885,7 @@ public abstract class WebService extends HttpServlet {
                 }
             }
 
-            resource.handlers.computeIfAbsent(verb, key -> new LinkedList<>()).add(handler);
+            resource.handlerLists.computeIfAbsent(verb, key -> new LinkedList<>()).add(handler);
         }
 
         sort(root);
@@ -900,8 +900,8 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static void sort(Resource root) {
-        for (var handlers : root.handlers.values()) {
-            handlers.sort(handlerComparator);
+        for (var handlerList : root.handlerLists.values()) {
+            handlerList.sort(handlerComparator);
         }
 
         for (var resource : root.resources.values()) {
@@ -1070,7 +1070,7 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        var handlerList = resource.handlers.get(verb);
+        var handlerList = resource.handlerLists.get(verb);
 
         if (handlerList == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -1487,7 +1487,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeResource(String path, Resource resource) {
-        if (!resource.handlers.isEmpty()) {
+        if (!resource.handlerLists.isEmpty()) {
             var endpoint = new EndpointDescriptor(path);
 
             var keyCount = 0;
@@ -1500,7 +1500,7 @@ public abstract class WebService extends HttpServlet {
                 }
             }
 
-            for (var entry : resource.handlers.entrySet()) {
+            for (var entry : resource.handlerLists.entrySet()) {
                 for (var handler : entry.getValue()) {
                     var operation = new OperationDescriptor(entry.getKey().toString(), handler);
 
