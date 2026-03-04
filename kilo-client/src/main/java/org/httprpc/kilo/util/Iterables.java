@@ -131,7 +131,7 @@ public class Iterables {
      * The iterable to filter.
      *
      * @param predicate
-     * The predicate function.
+     * The filter predicate.
      *
      * @return
      * The filtered contents.
