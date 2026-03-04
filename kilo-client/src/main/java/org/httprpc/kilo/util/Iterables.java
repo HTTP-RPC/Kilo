@@ -205,7 +205,7 @@ public class Iterables {
      * The iterable to search.
      *
      * @param predicate
-     * The predicate function.
+     * The filter predicate.
      *
      * @return
      * {@code true} if a matching element is found; {@code false}, otherwise.
