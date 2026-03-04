@@ -392,7 +392,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static final String SET_PREFIX = "set";
 
-    private static final Map<Class<?>, Map<String, Property>> typeProperties = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Map<String, Property>> types = new ConcurrentHashMap<>();
 
     /**
      * Constructs a new bean adapter.
@@ -1009,7 +1009,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The properties defined by the requested type.
      */
     public static Map<String, Property> getProperties(Class<?> type) {
-        return typeProperties.computeIfAbsent(type, BeanAdapter::computeProperties);
+        return types.computeIfAbsent(type, BeanAdapter::computeProperties);
     }
 
     private static Map<String, Property> computeProperties(Class<?> type) {
