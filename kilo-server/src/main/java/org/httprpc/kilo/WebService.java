@@ -1120,11 +1120,6 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        if (verb == Verb.POST && contentType != null && empty && handler.getAnnotation(FormData.class) == null) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return;
-        }
-
         Object[] arguments;
         try {
             arguments = getArguments(handler.getParameters(), keys, argumentMap, empty, request);
