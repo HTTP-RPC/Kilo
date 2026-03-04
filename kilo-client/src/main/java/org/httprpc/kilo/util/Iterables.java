@@ -155,6 +155,29 @@ public class Iterables {
     }
 
     /**
+     * Transforms iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The target type.
+     *
+     * @param iterable
+     * The iterable to transform.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The transformed contents.
+     */
+    public static <T, R> Iterable<R> flatMapAll(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+        // TODO
+        return null;
+    }
+
+    /**
      * Groups iterable contents.
      *
      * @param <T>
@@ -184,15 +207,6 @@ public class Iterables {
         }
 
         return map.entrySet();
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #group(Iterable, Function)} instead.
-     */
-    @Deprecated
-    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) {
-        return group(iterable, indexer);
     }
 
     /**

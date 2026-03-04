@@ -1120,8 +1120,12 @@ The `Iterables` class contains methods for processing a sequence of values:
 
 ```java
 public static <T> T firstOf(Iterable<T> iterable) { ... }
+
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
+
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
+public static <T, R> Iterable<R> flatMapAll(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
+
 public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> group(Iterable<T> iterable, Function<? super T, ? extends K> classifier) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
@@ -1145,31 +1149,6 @@ var result = listOf(filter(values, value -> value < 3)); // 1, 2
 var values = listOf("a", "ab", "abc");
 
 var result = listOf(mapAll(values, String::length)); // 1, 2, 3
-```
-
-```java
-var values = Arrays.asList(DayOfWeek.values());
-
-var result = mapOf(mapAll(values, value -> entry(value, value.ordinal())));
-
-var i = result.get(DayOfWeek.MONDAY); // 0
-```
-
-```java
-var values = listOf("a", "b", "c", "ab", "bc", "abc");
-
-var result = sortedMapOf(mapAll(group(values, String::length), entry -> {
-    var length = entry.getKey();
-    var size = entry.getValue().size();
-
-    return entry(length, size);
-})); // 1: 3, 2: 2, 3: 1
-```
-
-```java
-var values = listOf(1, 2, 3);
-
-var result = exists(values, value -> value < 3); // true
 ```
 
 The following methods can be used to facilitate SQL-like filtering of an iterable:
@@ -1234,10 +1213,4 @@ var result = sumOf(values, Integer::intValue); // 15
 var values = listOf("a", "b", "c", "d", "e");
 
 var result = minimumOf(values); // a
-```
-
-```java
-var values = listOf("a", "b", "c", "d", "e");
-
-var result = countOf(values); // 5
 ```

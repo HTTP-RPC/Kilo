@@ -83,6 +83,11 @@ public class IterablesTest {
     }
 
     @Test
+    public void testFlatMapAll() {
+        // TODO
+    }
+
+    @Test
     public void testGroup() {
         var values = listOf("a", "b", "c", "ab", "bc", "abc");
 
