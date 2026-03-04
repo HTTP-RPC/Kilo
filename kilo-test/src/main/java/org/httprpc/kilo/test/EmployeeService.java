@@ -84,4 +84,17 @@ public class EmployeeService extends WebService {
 
         return pipe;
     }
+
+    @RequestMethod("GET")
+    @ResourcePath("average-salary")
+    public Double getAverageSalary() throws SQLException {
+        var queryBuilder = QueryBuilder.select(EmployeeSalary.class);
+
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = queryBuilder.executeQuery(statement)) {
+            var average = averageOf(mapAll(results, BeanAdapter.toType(EmployeeSalary.class)), EmployeeSalary::salary);
+
+            return Double.isNaN(average) ? null : average;
+        }
+    }
 }

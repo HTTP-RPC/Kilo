@@ -392,7 +392,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static final String SET_PREFIX = "set";
 
-    private static Map<Class<?>, Map<String, Property>> typeProperties = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Map<String, Property>> typeProperties = new ConcurrentHashMap<>();
 
     /**
      * Constructs a new bean adapter.
