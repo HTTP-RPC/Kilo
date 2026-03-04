@@ -14,55 +14,6 @@
           ],
           "produces": {
             "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "int",
-            "valueType": null
-          },
-          "queryParameters": [
-            {
-              "description": null,
-              "name": "value",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "int",
-                "valueType": null
-              }
-            },
-            {
-              "description": null,
-              "name": "delay",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "int",
-                "valueType": null
-              }
-            }
-          ]
-        },
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "formData": false,
-          "method": "GET",
-          "parameters": true,
-          "pathParameters": [
-          ],
-          "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
             "keyType": null,
@@ -316,6 +267,55 @@
                 "keyType": null,
                 "map": false,
                 "name": "UUID",
+                "valueType": null
+              }
+            }
+          ]
+        },
+        {
+          "bodyParameter": null,
+          "deprecated": false,
+          "description": null,
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": true,
+            "iterable": false,
+            "keyType": null,
+            "map": false,
+            "name": "int",
+            "valueType": null
+          },
+          "queryParameters": [
+            {
+              "description": null,
+              "name": "value",
+              "required": false,
+              "type": {
+                "elementType": null,
+                "intrinsic": true,
+                "iterable": false,
+                "keyType": null,
+                "map": false,
+                "name": "int",
+                "valueType": null
+              }
+            },
+            {
+              "description": null,
+              "name": "delay",
+              "required": false,
+              "type": {
+                "elementType": null,
+                "intrinsic": true,
+                "iterable": false,
+                "keyType": null,
+                "map": false,
+                "name": "int",
                 "valueType": null
               }
             }

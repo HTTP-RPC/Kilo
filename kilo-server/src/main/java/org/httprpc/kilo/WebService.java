@@ -749,7 +749,13 @@ public abstract class WebService extends HttpServlet {
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
-    private static final Comparator<Method> handlerComparator = Comparator.comparing(Method::getName).thenComparing(Method::getParameterCount).reversed();
+    private static final Comparator<Method> handlerComparator;
+    static {
+        var nameComparator = Comparator.comparing(Method::getName);
+        var parameterCountComparator = Comparator.comparing(Method::getParameterCount);
+
+        handlerComparator = nameComparator.thenComparing(parameterCountComparator.reversed());
+    }
 
     private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
 
