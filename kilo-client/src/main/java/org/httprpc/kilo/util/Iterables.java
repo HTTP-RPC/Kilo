@@ -171,7 +171,7 @@ public class Iterables {
     }
 
     /**
-     * Indexes iterable contents.
+     * Groups iterable contents.
      *
      * @param <T>
      * The element type.
@@ -182,24 +182,33 @@ public class Iterables {
      * @param iterable
      * The iterable to index.
      *
-     * @param indexer
-     * The indexing function.
+     * @param classifier
+     * The classification function.
      *
      * @return
-     * The indexed contents.
+     * The grouped contents.
      */
-    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) {
-        if (iterable == null || indexer == null) {
+    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> group(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
+        if (iterable == null || classifier == null) {
             throw new IllegalArgumentException();
         }
 
         var map = new TreeMap<K, List<T>>();
 
         for (var element : iterable) {
-            map.computeIfAbsent(indexer.apply(element), key -> new LinkedList<>()).add(element);
+            map.computeIfAbsent(classifier.apply(element), key -> new LinkedList<>()).add(element);
         }
 
         return map.entrySet();
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #group(Iterable, Function)} instead.
+     */
+    @Deprecated
+    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) {
+        return group(iterable, indexer);
     }
 
     /**
