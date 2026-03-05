@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.util;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
@@ -156,40 +156,6 @@ public class Iterables {
     }
 
     /**
-     * Transforms iterable contents.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param <R>
-     * The target type.
-     *
-     * @param iterable
-     * The iterable to transform.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @return
-     * The transformed contents.
-     */
-    public static <T, R> Iterable<R> flatMapAll(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
-        if (iterable == null || transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var list = new ArrayList<R>();
-
-        for (var elements : mapAll(iterable, transform)) {
-            for (var element : elements) {
-                list.add(element);
-            }
-        }
-
-        return list;
-    }
-
-    /**
      * Limits iterable contents.
      *
      * @param <T>
@@ -230,6 +196,40 @@ public class Iterables {
                 return iterator.next();
             }
         };
+    }
+
+    /**
+     * Collects iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The target type.
+     *
+     * @param iterable
+     * The iterable to collect.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The collected contents.
+     */
+    public static <T, R extends Comparable<? super R>> Iterable<R> collect(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var set = new TreeSet<R>();
+
+        for (var elements : mapAll(iterable, transform)) {
+            for (var element : elements) {
+                set.add(element);
+            }
+        }
+
+        return set;
     }
 
     /**
