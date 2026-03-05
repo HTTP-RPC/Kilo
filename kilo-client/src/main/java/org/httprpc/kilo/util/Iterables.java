@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -155,6 +156,36 @@ public class Iterables {
     }
 
     /**
+     * Transforms iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The target type.
+     *
+     * @param iterable
+     * The iterable to transform.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The transformed contents.
+     */
+    public static <T, R> Iterable<R> flatMapAll(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+        var result = new ArrayList<R>();
+
+        for (var elements : mapAll(iterable, transform)) {
+            for (var element : elements) {
+                result.add(element);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Limits iterable contents.
      *
      * @param <T>
@@ -174,31 +205,27 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        // TODO
-        return null;
-    }
+        return () -> new Iterator<>() {
+            Iterator<T> iterator = iterable.iterator();
 
-    /**
-     * Transforms iterable contents.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param <R>
-     * The target type.
-     *
-     * @param iterable
-     * The iterable to transform.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @return
-     * The transformed contents.
-     */
-    public static <T, R> Iterable<R> flatMapAll(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
-        // TODO
-        return null;
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < count && iterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                i++;
+
+                return iterator.next();
+            }
+        };
     }
 
     /**

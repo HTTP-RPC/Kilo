@@ -84,12 +84,28 @@ public class IterablesTest {
 
     @Test
     public void testFlatMapAll() {
-        // TODO
+        List<Supplier<List<Integer>>> values = listOf(
+            () -> listOf(1),
+            () -> listOf(1, 2),
+            () -> listOf(1, 2, 3)
+        );
+
+        var result = setOf(flatMapAll(values, Supplier::get)); // 1, 2, 3
+
+        assertEquals(setOf(1, 2, 3), result);
+
+        assertEquals(result, values.stream().flatMap(value -> value.get().stream()).collect(Collectors.toSet()));
     }
 
     @Test
     public void testLimit() {
-        // TODO
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = listOf(limit(values, 3)); // 1, 2, 3
+
+        assertEquals(listOf(1, 2, 3), result);
+
+        assertEquals(result, values.stream().limit(3).collect(Collectors.toList()));
     }
 
     @Test
