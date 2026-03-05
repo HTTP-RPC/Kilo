@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -172,7 +173,7 @@ public class Iterables {
      * @return
      * The grouped contents.
      */
-    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
+    public static <T, K extends Comparable<? super K>> SortedMap<K, List<T>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
         if (iterable == null || classifier == null) {
             throw new IllegalArgumentException();
         }
@@ -183,7 +184,7 @@ public class Iterables {
             map.computeIfAbsent(classifier.apply(element), key -> new LinkedList<>()).add(element);
         }
 
-        return map.entrySet();
+        return map;
     }
 
     /**
@@ -192,7 +193,9 @@ public class Iterables {
      */
     @Deprecated
     public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) {
-        return groupBy(iterable, indexer);
+        Map<K, List<T>> map = groupBy(iterable, indexer);
+
+        return map.entrySet();
     }
 
     /**
