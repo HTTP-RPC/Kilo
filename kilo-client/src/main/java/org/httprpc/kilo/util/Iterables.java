@@ -174,15 +174,19 @@ public class Iterables {
      * The transformed contents.
      */
     public static <T, R> Iterable<R> flatMapAll(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
-        var result = new ArrayList<R>();
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var list = new ArrayList<R>();
 
         for (var elements : mapAll(iterable, transform)) {
             for (var element : elements) {
-                result.add(element);
+                list.add(element);
             }
         }
 
-        return result;
+        return list;
     }
 
     /**
