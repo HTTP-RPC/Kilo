@@ -195,7 +195,7 @@ public class Iterables {
      * @return
      * The grouped contents.
      */
-    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> group(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
+    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
         if (iterable == null || classifier == null) {
             throw new IllegalArgumentException();
         }
