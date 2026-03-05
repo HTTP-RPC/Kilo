@@ -155,6 +155,30 @@ public class Iterables {
     }
 
     /**
+     * Limits iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to filter.
+     *
+     * @param count
+     * The limit count.
+     *
+     * @return
+     * The limited contents.
+     */
+    public static <T> Iterable<T> limit(Iterable<T> iterable, int count) {
+        if (iterable == null || count < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        // TODO
+        return null;
+    }
+
+    /**
      * Transforms iterable contents.
      *
      * @param <T>

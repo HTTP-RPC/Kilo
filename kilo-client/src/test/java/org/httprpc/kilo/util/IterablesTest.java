@@ -87,6 +87,12 @@ public class IterablesTest {
         // TODO
     }
 
+    @Test
+    public void testLimit() {
+        // TODO
+    }
+
+    @Test
     public void testGroupBy() {
         var values = listOf("a", "b", "c", "ab", "bc", "abc");
 
