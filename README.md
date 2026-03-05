@@ -1125,6 +1125,7 @@ public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> 
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
 public static <T> Iterable<T> limit(Iterable<T> iterable, int count) { ... }
 
+public static <T, R> List<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
 public static <T, R extends Comparable<? super R>> SortedSet<R> collect(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
 public static <T, K extends Comparable<? super K>> SortedMap<K, List<T>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) { ... }
 

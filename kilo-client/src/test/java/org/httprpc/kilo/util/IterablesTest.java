@@ -95,6 +95,22 @@ public class IterablesTest {
     }
 
     @Test
+    public void testFlatten() {
+        List<Supplier<List<Integer>>> values = listOf(
+            () -> listOf(1),
+            () -> listOf(1, 2),
+            () -> listOf(1, 2, 3)
+        );
+
+        var result = flatten(values, Supplier::get); // 1, 1, 2, 1, 2, 3
+
+        assertEquals(listOf(1, 1, 2, 1, 2, 3), result);
+
+        assertEquals(result, values.stream().flatMap(value -> value.get().stream())
+            .collect(Collectors.toList()));
+    }
+
+    @Test
     public void testCollect() {
         List<Supplier<List<Integer>>> values = listOf(
             () -> listOf(1),

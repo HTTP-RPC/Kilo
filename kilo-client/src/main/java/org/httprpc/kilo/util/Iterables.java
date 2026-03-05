@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -197,6 +198,40 @@ public class Iterables {
                 return iterator.next();
             }
         };
+    }
+
+    /**
+     * Flattens iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The target type.
+     *
+     * @param iterable
+     * The iterable to flatten.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The flattened contents.
+     */
+    public static <T, R> List<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var list = new ArrayList<R>();
+
+        for (var elements : mapAll(iterable, transform)) {
+            for (var element : elements) {
+                list.add(element);
+            }
+        }
+
+        return list;
     }
 
     /**
