@@ -1126,7 +1126,7 @@ public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T
 public static <T> Iterable<T> limit(Iterable<T> iterable, int count) { ... }
 
 public static <T, R extends Comparable<? super R>> Iterable<R> collect(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
-public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) { ... }
+public static <T, K extends Comparable<? super K>> SortedMap<K, List<T>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 ```
