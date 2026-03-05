@@ -83,10 +83,10 @@ public class IterablesTest {
     }
 
     @Test
-    public void testGroup() {
+    public void testGroupBy() {
         var values = listOf("a", "b", "c", "ab", "bc", "abc");
 
-        var result = sortedMapOf(mapAll(group(values, String::length), entry -> {
+        var result = sortedMapOf(mapAll(groupBy(values, String::length), entry -> {
             var length = entry.getKey();
             var size = entry.getValue().size();
 

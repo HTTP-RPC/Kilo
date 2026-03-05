@@ -172,7 +172,7 @@ public class Iterables {
      * @return
      * The grouped contents.
      */
-    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> group(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
+    public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
         if (iterable == null || classifier == null) {
             throw new IllegalArgumentException();
         }
@@ -188,11 +188,11 @@ public class Iterables {
 
     /**
      * @deprecated
-     * Use {@link #group(Iterable, Function)} instead.
+     * Use {@link #groupBy(Iterable, Function)} instead.
      */
     @Deprecated
     public static <T, K extends Comparable<? super K>> Iterable<Map.Entry<K, List<T>>> index(Iterable<T> iterable, Function<? super T, ? extends K> indexer) {
-        return group(iterable, indexer);
+        return groupBy(iterable, indexer);
     }
 
     /**
