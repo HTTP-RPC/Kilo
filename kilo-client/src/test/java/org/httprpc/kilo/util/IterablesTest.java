@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -103,9 +104,10 @@ public class IterablesTest {
 
         var result = collect(values, Supplier::get); // 1, 2, 3
 
-        assertEquals(setOf(1, 2, 3), result);
+        assertEquals(sortedSetOf(1, 2, 3), result);
 
-        assertEquals(result, values.stream().flatMap(value -> value.get().stream()).collect(Collectors.toSet()));
+        assertEquals(result, values.stream().flatMap(value -> value.get().stream())
+            .collect(Collectors.toCollection(TreeSet::new)));
     }
 
     @Test

@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -216,7 +217,7 @@ public class Iterables {
      * @return
      * The collected contents.
      */
-    public static <T, R extends Comparable<? super R>> Iterable<R> collect(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+    public static <T, R extends Comparable<? super R>> SortedSet<R> collect(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
