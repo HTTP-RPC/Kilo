@@ -178,15 +178,29 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        var list = new ArrayList<R>();
+        return () -> new Iterator<>() {
+            Iterator<T> iterator = iterable.iterator();
 
-        for (var elements : mapAll(iterable, transform)) {
-            for (var element : elements) {
-                list.add(element);
+            Iterator<? extends R> current = null;
+
+            @Override
+            public boolean hasNext() {
+                while ((current == null || !current.hasNext()) && iterator.hasNext()) {
+                    current = transform.apply(iterator.next()).iterator();
+                }
+
+                return current != null && current.hasNext();
             }
-        }
 
-        return list;
+            @Override
+            public R next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                return current.next();
+            }
+        };
     }
 
     /**
