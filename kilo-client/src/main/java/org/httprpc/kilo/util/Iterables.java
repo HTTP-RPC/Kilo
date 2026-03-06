@@ -156,6 +156,40 @@ public class Iterables {
     }
 
     /**
+     * Flattens iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The target type.
+     *
+     * @param iterable
+     * The iterable to flatten.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The flattened contents.
+     */
+    public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var list = new ArrayList<R>();
+
+        for (var elements : mapAll(iterable, transform)) {
+            for (var element : elements) {
+                list.add(element);
+            }
+        }
+
+        return list;
+    }
+
+    /**
      * Limits iterable contents.
      *
      * @param <T>
@@ -196,40 +230,6 @@ public class Iterables {
                 return iterator.next();
             }
         };
-    }
-
-    /**
-     * Flattens iterable contents.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param <R>
-     * The target type.
-     *
-     * @param iterable
-     * The iterable to flatten.
-     *
-     * @param transform
-     * The transform function.
-     *
-     * @return
-     * The flattened contents.
-     */
-    public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
-        if (iterable == null || transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var list = new ArrayList<R>();
-
-        for (var elements : mapAll(iterable, transform)) {
-            for (var element : elements) {
-                list.add(element);
-            }
-        }
-
-        return list;
     }
 
     /**
