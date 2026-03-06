@@ -1121,9 +1121,8 @@ public static <T> T firstOf(Iterable<T> iterable) { ... }
 
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
+public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
 public static <T> Iterable<T> limit(Iterable<T> iterable, int count) { ... }
-
-public static <T, R> List<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
 
 public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier) { ... }
 public static <T, V> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) { ... }

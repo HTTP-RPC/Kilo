@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -83,6 +84,21 @@ public class IterablesTest {
     }
 
     @Test
+    public void testFlatten() {
+        List<Supplier<List<Integer>>> values = listOf(
+            () -> listOf(1),
+            () -> listOf(1, 2),
+            () -> listOf(1, 2, 3)
+        );
+
+        var result = listOf(flatten(values, Supplier::get)); // 1, 1, 2, 1, 2, 3
+
+        assertEquals(listOf(1, 1, 2, 1, 2, 3), result);
+
+        assertEquals(result, values.stream().flatMap(value -> value.get().stream()).collect(Collectors.toList()));
+    }
+
+    @Test
     public void testLimit() {
         var values = listOf(1, 2, 3, 4, 5);
 
@@ -94,24 +110,14 @@ public class IterablesTest {
     }
 
     @Test
-    public void testFlatten() {
-        List<Supplier<List<Integer>>> values = listOf(
-            () -> listOf(1),
-            () -> listOf(1, 2),
-            () -> listOf(1, 2, 3)
-        );
-
-        var result = flatten(values, Supplier::get); // 1, 1, 2, 1, 2, 3
-
-        assertEquals(listOf(1, 1, 2, 1, 2, 3), result);
-
-        assertEquals(result, values.stream().flatMap(value -> value.get().stream())
-            .collect(Collectors.toList()));
-    }
-
-    @Test
     public void testSortBy() {
-        // TODO
+        var values = listOf("abc", "ab", "a");
+
+        var result = sortBy(values, String::length);
+
+        assertEquals(listOf("a", "ab", "abc"), result);
+
+        assertEquals(result, values.stream().sorted(Comparator.comparing(String::length)).collect(Collectors.toList()));
     }
 
     @Test

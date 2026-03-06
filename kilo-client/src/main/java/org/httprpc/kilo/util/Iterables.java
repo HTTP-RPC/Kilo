@@ -216,7 +216,7 @@ public class Iterables {
      * @return
      * The flattened contents.
      */
-    public static <T, R> List<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+    public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
@@ -276,6 +276,10 @@ public class Iterables {
      * The sorted contents.
      */
     public static <T, V> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) {
+        if (iterable == null || identifier == null || comparator == null) {
+            throw new IllegalArgumentException();
+        }
+
         var list = new ArrayList<T>();
 
         for (var element : iterable) {
