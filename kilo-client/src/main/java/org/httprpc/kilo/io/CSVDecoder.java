@@ -14,6 +14,23 @@
 
 package org.httprpc.kilo.io;
 
-public class CSVEncoderTest {
-    // TODO
+import java.io.IOException;
+import java.io.Reader;
+import java.util.List;
+
+/**
+ * Decodes CSV content.
+ */
+public class CSVDecoder extends Decoder<List<List<String>>> {
+    @Override
+    public List<List<String>> read(Reader reader) throws IOException {
+        if (reader == null) {
+            throw new IllegalArgumentException();
+        }
+
+        reader = new BufferedReader(reader);
+
+        // TODO
+        return null;
+    }
 }

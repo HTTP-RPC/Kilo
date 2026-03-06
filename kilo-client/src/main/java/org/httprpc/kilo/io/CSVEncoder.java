@@ -14,65 +14,21 @@
 
 package org.httprpc.kilo.io;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.function.Function;
 
 /**
  * Encodes CSV content.
  */
-public class CSVEncoder extends Encoder<Iterable<?>> {
-    private Collection<?> keys;
-
-    private ResourceBundle resourceBundle = null;
-
+public class CSVEncoder extends Encoder<Iterable<? extends Iterable<?>>> {
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
     private static final char DELIMITER = ',';
-
-    /**
-     * Constructs a new CSV encoder.
-     *
-     * @param keys
-     * The column keys.
-     */
-    public CSVEncoder(Collection<?> keys) {
-        if (keys == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.keys = keys;
-    }
-
-    /**
-     * Returns the resource bundle.
-     *
-     * @return
-     * The resource bundle, or {@code null} if a resource bundle has not been
-     * set.
-     */
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    /**
-     * Sets the resource bundle.
-     *
-     * @param resourceBundle
-     * The resource bundle, or {@code null} for no resource bundle.
-     */
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
-    }
 
     /**
      * Associates a formatter with a type.
@@ -100,7 +56,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     }
 
     @Override
-    public void write(Iterable<?> rows, Writer writer) throws IOException {
+    public void write(Iterable<? extends Iterable<?>> rows, Writer writer) throws IOException {
         if (rows == null || writer == null) {
             throw new IllegalArgumentException();
         }
@@ -108,59 +64,23 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         writer = new BufferedWriter(writer);
 
         try {
-            encode(rows, writer);
+            for (var row : rows) {
+                var i = 0;
+
+                for (var value : row) {
+                    if (i > 0) {
+                        writer.write(DELIMITER);
+                    }
+
+                    encode(value, writer);
+
+                    i++;
+                }
+
+                writer.write("\r\n");
+            }
         } finally {
             writer.flush();
-        }
-    }
-
-    private void encode(Iterable<?> rows, Writer writer) throws IOException {
-        var i = 0;
-
-        for (var key : keys) {
-            if (key == null) {
-                throw new IllegalStateException("Missing key.");
-            }
-
-            if (i > 0) {
-                writer.write(DELIMITER);
-            }
-
-            var heading = key;
-
-            if (resourceBundle != null) {
-                try {
-                    heading = resourceBundle.getObject(key.toString());
-                } catch (MissingResourceException exception) {
-                    // No-op
-                }
-            }
-
-            encode(heading, writer);
-
-            i++;
-        }
-
-        writer.write("\r\n");
-
-        for (var row : rows) {
-            if (!(BeanAdapter.adapt(row) instanceof Map<?, ?> map)) {
-                throw new IllegalArgumentException("Invalid row type.");
-            }
-
-            i = 0;
-
-            for (var key : keys) {
-                if (i > 0) {
-                    writer.write(DELIMITER);
-                }
-
-                encode(map.get(key), writer);
-
-                i++;
-            }
-
-            writer.write("\r\n");
         }
     }
 

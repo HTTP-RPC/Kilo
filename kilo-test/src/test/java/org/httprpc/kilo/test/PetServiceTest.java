@@ -33,10 +33,8 @@ public class PetServiceTest {
     public void testPets() throws IOException {
         testPetsJSON();
 
-        testPetsStreamJSON();
-        testPetsStreamCSV();
-        testPetsStreamHTML();
-        testPetsStreamXML();
+        testPetsHTML();
+        testPetsXML();
     }
 
     private void testPetsJSON() throws IOException {
@@ -58,67 +56,15 @@ public class PetServiceTest {
         assertEquals(expected, actual);
     }
 
-    private void testPetsStreamJSON() throws IOException {
-        List<?> expected;
-        try (var inputStream = getClass().getResourceAsStream("pets.json")) {
-            var jsonDecoder = new JSONDecoder();
-
-            expected = (List<?>)jsonDecoder.read(inputStream);
-        }
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen")
-        ));
-
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "application/json")
-        ));
-
-        var actual = webServiceProxy.invoke();
-
-        assertEquals(expected, actual);
+    private void testPetsHTML() throws IOException {
+        testPetsTemplate("pets.html", "text/html");
     }
 
-    private void testPetsStreamCSV() throws IOException {
-        String expected;
-        try (var inputStream = getClass().getResourceAsStream("pets.csv")) {
-            var textDecoder = new TextDecoder();
-
-            expected = textDecoder.read(inputStream);
-        }
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen")
-        ));
-
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "text/csv")
-        ));
-
-        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
-            var textDecoder = new TextDecoder();
-
-            return textDecoder.read(inputStream);
-        });
-
-        var actual = webServiceProxy.invoke();
-
-        assertEquals(expected, actual);
+    private void testPetsXML() throws IOException {
+        testPetsTemplate("pets.xml", "text/xml");
     }
 
-    private void testPetsStreamHTML() throws IOException {
-        testPetsStreamMarkup("pets.html", "text/html");
-    }
-
-    private void testPetsStreamXML() throws IOException {
-        testPetsStreamMarkup("pets.xml", "text/xml");
-    }
-
-    private void testPetsStreamMarkup(String name, String mimeType) throws IOException {
+    private void testPetsTemplate(String name, String mimeType) throws IOException {
         String expected;
         try (var inputStream = getClass().getResourceAsStream(name)) {
             var textDecoder = new TextDecoder();
@@ -126,7 +72,7 @@ public class PetServiceTest {
             expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/template"));
 
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")

@@ -19,8 +19,6 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.CSVEncoder;
-import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
@@ -49,8 +47,8 @@ public class PetService extends AbstractDatabaseService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("stream")
-    public void getPetsStream(@Required String owner) throws SQLException, IOException {
+    @ResourcePath("template")
+    public void getPetsTemplate(@Required String owner) throws SQLException, IOException {
         var response = getResponse();
 
         var accept = getRequest().getHeader("Accept");
@@ -67,13 +65,7 @@ public class PetService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             ))) {
-            if (accept.equalsIgnoreCase(APPLICATION_JSON)) {
-                response.setContentType(APPLICATION_JSON);
-
-                var jsonEncoder = new JSONEncoder();
-
-                jsonEncoder.write(results, response.getOutputStream());
-            } else if (accept.equalsIgnoreCase(TEXT_XML)) {
+            if (accept.equalsIgnoreCase(TEXT_XML)) {
                 response.setContentType(TEXT_XML);
 
                 var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
@@ -87,14 +79,6 @@ public class PetService extends AbstractDatabaseService {
                 templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
                 templateEncoder.write(results, response.getOutputStream());
-            } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
-                response.setContentType(TEXT_CSV);
-
-                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
-
-                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
-
-                csvEncoder.write(results, response.getOutputStream());
             } else {
                 throw new UnsupportedOperationException();
             }

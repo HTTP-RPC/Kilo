@@ -47,8 +47,8 @@ public class Examples {
         execute("Math Service 2", Examples::mathService2);
 
         execute("JSON Encoder", Examples::jsonEncoder);
-        execute("Text Encoder", Examples::textEncoder);
         execute("CSV Encoder", Examples::csvEncoder);
+        execute("Text Encoder", Examples::textEncoder);
 
         execute("Template Encoder", Examples::templateEncoder);
         execute("Variables", Examples::variables);
@@ -126,6 +126,17 @@ public class Examples {
         System.out.println();
     }
 
+    public static void csvEncoder() throws IOException {
+        var rows = listOf(
+            listOf("a", "b", "c"),
+            listOf("d", "e", "f")
+        );
+
+        var csvEncoder = new CSVEncoder();
+
+        csvEncoder.write(rows, System.out);
+    }
+
     public static void textEncoder() throws IOException {
         var text = "Hello, World!";
 
@@ -134,27 +145,6 @@ public class Examples {
         textEncoder.write(text, System.out);
 
         System.out.println();
-    }
-
-    public static void csvEncoder() throws IOException {
-        var keys = listOf("a", "b", "c");
-
-        var rows = listOf(
-            mapOf(
-                entry("a", "hello"),
-                entry("b", 123),
-                entry("c", true)
-            ),
-            mapOf(
-                entry("a", "goodbye"),
-                entry("b", 456),
-                entry("c", false)
-            )
-        );
-
-        var csvEncoder = new CSVEncoder(keys);
-
-        csvEncoder.write(rows, System.out);
     }
 
     public static void templateEncoder() throws Exception {

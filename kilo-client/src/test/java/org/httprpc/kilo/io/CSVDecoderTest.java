@@ -14,6 +14,6 @@
 
 package org.httprpc.kilo.io;
 
-public class CSVEncoderTest {
+public class CSVDecoderTest {
     // TODO
 }
