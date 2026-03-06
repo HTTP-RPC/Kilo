@@ -80,7 +80,7 @@ public abstract class WebService extends HttpServlet {
     /**
      * Describes a service instance.
      */
-    public static class ServiceDescriptor implements Comparable<ServiceDescriptor> {
+    public static class ServiceDescriptor {
         private String path;
         private String description;
 
@@ -143,11 +143,6 @@ public abstract class WebService extends HttpServlet {
          */
         public List<StructureDescriptor> getStructures() {
             return new ArrayList<>(structures.values());
-        }
-
-        @Override
-        public int compareTo(ServiceDescriptor serviceDescriptor) {
-            return path.compareTo(serviceDescriptor.path);
         }
     }
 
@@ -820,7 +815,7 @@ public abstract class WebService extends HttpServlet {
      * A list of active service descriptors.
      */
     public static synchronized List<ServiceDescriptor> getServiceDescriptors() {
-        return sortedListOf(mapAll(instances.values(), WebService::getServiceDescriptor));
+        return sortBy(mapAll(instances.values(), WebService::getServiceDescriptor), ServiceDescriptor::getPath);
     }
 
     @Override

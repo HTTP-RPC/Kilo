@@ -21,9 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
@@ -235,37 +233,58 @@ public class Iterables {
     }
 
     /**
-     * Collects iterable contents.
+     * Sorts iterable contents.
      *
      * @param <T>
      * The element type.
      *
-     * @param <R>
-     * The target type.
+     * @param <V>
+     * The value type.
      *
      * @param iterable
-     * The iterable to collect.
+     * The iterable to sort.
      *
-     * @param transform
-     * The transform function.
+     * @param identifier
+     * The identification function.
      *
      * @return
-     * The collected contents.
+     * The sorted contents.
      */
-    public static <T, R extends Comparable<? super R>> SortedSet<R> collect(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
-        if (iterable == null || transform == null) {
-            throw new IllegalArgumentException();
+    public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier) {
+        return sortBy(iterable, identifier, Comparator.naturalOrder());
+    }
+
+    /**
+     * Sorts iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param iterable
+     * The iterable to sort.
+     *
+     * @param identifier
+     * The identification function.
+     *
+     * @param comparator
+     * The comparator.
+     *
+     * @return
+     * The sorted contents.
+     */
+    public static <T, V> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) {
+        var list = new ArrayList<T>();
+
+        for (var element : iterable) {
+            list.add(element);
         }
 
-        var set = new TreeSet<R>();
+        list.sort((t1, t2) -> comparator.compare(identifier.apply(t1), identifier.apply(t2)));
 
-        for (var elements : mapAll(iterable, transform)) {
-            for (var element : elements) {
-                set.add(element);
-            }
-        }
-
-        return set;
+        return list;
     }
 
     /**

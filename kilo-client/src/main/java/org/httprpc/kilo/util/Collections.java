@@ -159,47 +159,6 @@ public class Collections {
     }
 
     /**
-     * Creates a sorted list.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @param elements
-     * The list elements.
-     *
-     * @return
-     * A sorted list of the provided elements.
-     */
-    @SafeVarargs
-    public static <E extends Comparable<? super E>> List<E> sortedListOf(E... elements) {
-        var list = listOf(elements);
-
-        java.util.Collections.sort(list);
-
-        return list;
-    }
-
-    /**
-     * Creates a sorted list.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @param elements
-     * The list elements.
-     *
-     * @return
-     * A sorted list of the provided elements.
-     */
-    public static <E extends Comparable<? super E>> List<E> sortedListOf(Iterable<? extends E> elements) {
-        List<E> list = listOf(elements);
-
-        java.util.Collections.sort(list);
-
-        return list;
-    }
-
-    /**
      * Creates a map.
      *
      * @param <K>

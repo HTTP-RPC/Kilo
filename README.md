@@ -1006,8 +1006,6 @@ The `Collections` class provides a set of static utility methods for declarative
 public static <E> List<E> listOf(E... elements) { ... }
 public static <E> List<E> immutableListOf(E... elements) { ... }
 public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
-
-public static <E extends Comparable<? super E>> List<E> sortedListOf(E... elements) { ... }
 ```
 
 ```java
@@ -1126,7 +1124,10 @@ public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T
 public static <T> Iterable<T> limit(Iterable<T> iterable, int count) { ... }
 
 public static <T, R> List<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
-public static <T, R extends Comparable<? super R>> SortedSet<R> collect(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
+
+public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier) { ... }
+public static <T, V> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) { ... }
+
 public static <T, K extends Comparable<? super K>> SortedMap<K, List<T>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) { ... }
 
 public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }

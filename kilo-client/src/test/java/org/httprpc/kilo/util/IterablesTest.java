@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -111,19 +110,8 @@ public class IterablesTest {
     }
 
     @Test
-    public void testCollect() {
-        List<Supplier<List<Integer>>> values = listOf(
-            () -> listOf(1),
-            () -> listOf(1, 2),
-            () -> listOf(1, 2, 3)
-        );
-
-        var result = collect(values, Supplier::get); // 1, 2, 3
-
-        assertEquals(sortedSetOf(1, 2, 3), result);
-
-        assertEquals(result, values.stream().flatMap(value -> value.get().stream())
-            .collect(Collectors.toCollection(TreeSet::new)));
+    public void testSortBy() {
+        // TODO
     }
 
     @Test
