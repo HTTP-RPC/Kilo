@@ -180,15 +180,15 @@ public class Iterables {
         return () -> new Iterator<>() {
             Iterator<T> iterator = iterable.iterator();
 
-            Iterator<? extends R> current = null;
+            Iterator<? extends R> current = java.util.Collections.emptyIterator();
 
             @Override
             public boolean hasNext() {
-                while ((current == null || !current.hasNext()) && iterator.hasNext()) {
+                while (!current.hasNext() && iterator.hasNext()) {
                     current = transform.apply(iterator.next()).iterator();
                 }
 
-                return current != null && current.hasNext();
+                return current.hasNext();
             }
 
             @Override
