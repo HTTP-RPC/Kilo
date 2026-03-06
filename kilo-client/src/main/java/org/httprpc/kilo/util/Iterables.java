@@ -17,11 +17,10 @@ package org.httprpc.kilo.util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
@@ -323,15 +322,15 @@ public class Iterables {
      * @return
      * The grouped contents.
      */
-    public static <T, K extends Comparable<? super K>> SortedMap<K, List<T>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
+    public static <T, K> Map<K, List<T>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
         if (iterable == null || classifier == null) {
             throw new IllegalArgumentException();
         }
 
-        var map = new TreeMap<K, List<T>>();
+        var map = new LinkedHashMap<K, List<T>>();
 
         for (var element : iterable) {
-            map.computeIfAbsent(classifier.apply(element), key -> new LinkedList<>()).add(element);
+            map.computeIfAbsent(classifier.apply(element), key -> new ArrayList<>()).add(element);
         }
 
         return map;
