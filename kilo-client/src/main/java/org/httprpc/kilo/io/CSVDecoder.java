@@ -25,7 +25,7 @@ import java.util.List;
  * Decodes CSV content.
  */
 public class CSVDecoder extends Decoder<List<String>> {
-    private static final char DELIMITER = ',';
+    private StringBuilder valueBuilder = new StringBuilder();
 
     @Override
     public List<String> read(Reader reader) throws IOException {
@@ -37,15 +37,13 @@ public class CSVDecoder extends Decoder<List<String>> {
     }
 
     private List<String> decode(Reader reader) throws IOException {
-        var row = new ArrayList<String>();
-
-        var valueBuilder = new StringBuilder();
-
         var c = reader.read();
 
         if (c == EOF) {
             return null;
         }
+
+        var row = new ArrayList<String>();
 
         while (c != '\r' && c != '\n' && c != EOF) {
             valueBuilder.setLength(0);
@@ -58,7 +56,7 @@ public class CSVDecoder extends Decoder<List<String>> {
                 c = reader.read();
             }
 
-            while ((quoted || (c != DELIMITER && c != '\r' && c != '\n')) && c != EOF) {
+            while ((quoted || (c != ',' && c != '\r' && c != '\n')) && c != EOF) {
                 valueBuilder.append((char)c);
 
                 c = reader.read();
@@ -78,7 +76,7 @@ public class CSVDecoder extends Decoder<List<String>> {
 
             row.add(valueBuilder.toString());
 
-            if (c == DELIMITER) {
+            if (c == ',') {
                 c = reader.read();
             }
         }

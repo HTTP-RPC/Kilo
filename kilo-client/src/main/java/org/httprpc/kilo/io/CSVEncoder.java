@@ -30,8 +30,6 @@ import java.util.function.Function;
 public class CSVEncoder extends Encoder<Iterable<?>> {
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
-    private static final char DELIMITER = ',';
-
     /**
      * Associates a formatter with a type.
      *
@@ -71,7 +69,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
         for (var value : row) {
             if (i > 0) {
-                writer.write(DELIMITER);
+                writer.write(',');
             }
 
             encode(value, writer);
