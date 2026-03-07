@@ -14,6 +14,33 @@
 
 package org.httprpc.kilo.io;
 
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.StringReader;
+
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class CSVDecoderTest {
-    // TODO
+    @Test
+    public void testRead() throws IOException {
+        var csvDecoder = new CSVDecoder();
+
+        var row = csvDecoder.read(new StringReader("\"a,b,\"\"c\"\",\r\nd,é\",123,\"Y\",0"));
+
+        assertEquals(listOf("a,b,\"c\",\r\nd,é", "123", "Y", "0"), row);
+    }
+
+    @Test
+    public void testReadAll() throws IOException {
+        var csvDecoder = new CSVDecoder();
+
+        var rows = csvDecoder.readAll(new StringReader("\"abc\",123,true\r\n\"def\",456,false\r\n"));
+
+        assertEquals(listOf(
+            listOf("abc", "123", "true"),
+            listOf("def", "456", "false")
+        ), rows);
+    }
 }
