@@ -1106,19 +1106,19 @@ public static boolean isNotNull(Object value) { ... }
 The `Iterables` class contains methods for processing a sequence of values:
 
 ```java
-public static <T> T firstOf(Iterable<T> iterable) { ... }
+public static <T> T firstOf(Iterable<? extends T> iterable) { ... }
 
-public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
-public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
-public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
-public static <T> Iterable<T> limit(Iterable<T> iterable, int count) { ... }
+public static <T> Iterable<T> filter(Iterable<? extends T> iterable, Predicate<? super T> predicate) { ... }
+public static <T, R> Iterable<R> mapAll(Iterable<? extends T> iterable, Function<? super T, ? extends R> transform) { ... }
+public static <T, R> Iterable<R> flatten(Iterable<? extends T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
+public static <T> Iterable<T> limit(Iterable<? extends T> iterable, int count) { ... }
 
 public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier) { ... }
 public static <T, V> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) { ... }
 
 public static <T, K> Map<K, List<T>> groupBy(Iterable<? extends T> iterable, Function<? super T, ? extends K> classifier) { ... }
 
-public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
+public static <T> boolean exists(Iterable<? extends T> iterable, Predicate<? super T> predicate) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
@@ -1181,20 +1181,20 @@ As with SQL, predicates are not evaluated if an operand is `null`.
 `Iterables` also provides the following statistical reduction methods:
 
 ```java
-public static <T> int sumOf(Iterable<T> iterable, ToIntFunction<T> transform) { ... }
-public static <T> long sumOf(Iterable<T> iterable, ToLongFunction<T> transform) { ... }
-public static <T> double sumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
+public static <T> int sumOf(Iterable<? extends T> iterable, ToIntFunction<? super T> transform) { ... }
+public static <T> long sumOf(Iterable<? extends T> iterable, ToLongFunction<? super T> transform) { ... }
+public static <T> double sumOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) { ... }
 
-public static <T> double averageOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
+public static <T> double averageOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) { ... }
 
-public static <T> double minimumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
-public static <T> double maximumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) { ... }
+public static <T> double minimumOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) { ... }
+public static <T> double maximumOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) { ... }
 
-public static <T extends Comparable<? super T>> T minimumOf(Iterable<T> iterable) { ... }
-public static <T extends Comparable<? super T>> T maximumOf(Iterable<T> iterable) { ... }
+public static <T extends Comparable<? super T>> T minimumOf(Iterable<? extends T> iterable) { ... }
+public static <T extends Comparable<? super T>> T maximumOf(Iterable<? extends T> iterable) { ... }
 
-public static <T> T minimumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }
-public static <T> T maximumOf(Iterable<T> iterable, Comparator<? super T> comparator) { ... }
+public static <T> T minimumOf(Iterable<? extends T> iterable, Comparator<? super T> comparator) { ... }
+public static <T> T maximumOf(Iterable<? extends T> iterable, Comparator<? super T> comparator) { ... }
 
 public static int countOf(Iterable<?> iterable) { ... }
 ```

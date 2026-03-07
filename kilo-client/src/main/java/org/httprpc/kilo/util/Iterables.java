@@ -46,7 +46,7 @@ public class Iterables {
      * @return
      * The iterable's first element, or {@code null} if the iterable is empty.
      */
-    public static <T> T firstOf(Iterable<T> iterable) {
+    public static <T> T firstOf(Iterable<? extends T> iterable) {
         if (iterable == null) {
             throw new IllegalArgumentException();
         }
@@ -71,13 +71,13 @@ public class Iterables {
      * @return
      * The filtered contents.
      */
-    public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) {
+    public static <T> Iterable<T> filter(Iterable<? extends T> iterable, Predicate<? super T> predicate) {
         if (iterable == null || predicate == null) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            Iterator<T> iterator = iterable.iterator();
+            Iterator<? extends T> iterator = iterable.iterator();
 
             Boolean hasNext = null;
             T next = null;
@@ -134,13 +134,13 @@ public class Iterables {
      * @return
      * The transformed contents.
      */
-    public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
+    public static <T, R> Iterable<R> mapAll(Iterable<? extends T> iterable, Function<? super T, ? extends R> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            Iterator<T> iterator = iterable.iterator();
+            Iterator<? extends T> iterator = iterable.iterator();
 
             @Override
             public boolean hasNext() {
@@ -172,13 +172,13 @@ public class Iterables {
      * @return
      * The flattened contents.
      */
-    public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
+    public static <T, R> Iterable<R> flatten(Iterable<? extends T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            Iterator<T> iterator = iterable.iterator();
+            Iterator<? extends T> iterator = iterable.iterator();
 
             Iterator<? extends R> current = java.util.Collections.emptyIterator();
 
@@ -217,13 +217,13 @@ public class Iterables {
      * @return
      * The limited contents.
      */
-    public static <T> Iterable<T> limit(Iterable<T> iterable, int count) {
+    public static <T> Iterable<T> limit(Iterable<? extends T> iterable, int count) {
         if (iterable == null || count < 0) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            Iterator<T> iterator = iterable.iterator();
+            Iterator<? extends T> iterator = iterable.iterator();
 
             int i = 0;
 
@@ -351,7 +351,7 @@ public class Iterables {
      * @return
      * {@code true} if a matching element is found; {@code false}, otherwise.
      */
-    public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) {
+    public static <T> boolean exists(Iterable<? extends T> iterable, Predicate<? super T> predicate) {
         return firstOf(filter(iterable, predicate)) != null;
     }
 
@@ -608,7 +608,7 @@ public class Iterables {
      * @return
      * The sum of the transformed values.
      */
-    public static <T> int sumOf(Iterable<T> iterable, ToIntFunction<T> transform) {
+    public static <T> int sumOf(Iterable<? extends T> iterable, ToIntFunction<? super T> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
@@ -637,7 +637,7 @@ public class Iterables {
      * @return
      * The sum of the transformed values.
      */
-    public static <T> long sumOf(Iterable<T> iterable, ToLongFunction<T> transform) {
+    public static <T> long sumOf(Iterable<? extends T> iterable, ToLongFunction<? super T> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
@@ -666,7 +666,7 @@ public class Iterables {
      * @return
      * The sum of the transformed values.
      */
-    public static <T> double sumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+    public static <T> double sumOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
@@ -695,7 +695,7 @@ public class Iterables {
      * @return
      * The average of the transformed values.
      */
-    public static <T> double averageOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+    public static <T> double averageOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
@@ -727,7 +727,7 @@ public class Iterables {
      * @return
      * The minimum transformed value.
      */
-    public static <T> double minimumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+    public static <T> double minimumOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
@@ -756,7 +756,7 @@ public class Iterables {
      * @return
      * The maximum transformed value.
      */
-    public static <T> double maximumOf(Iterable<T> iterable, ToDoubleFunction<T> transform) {
+    public static <T> double maximumOf(Iterable<? extends T> iterable, ToDoubleFunction<? super T> transform) {
         if (iterable == null || transform == null) {
             throw new IllegalArgumentException();
         }
@@ -782,7 +782,7 @@ public class Iterables {
      * @return
      * The minimum value.
      */
-    public static <T extends Comparable<? super T>> T minimumOf(Iterable<T> iterable) {
+    public static <T extends Comparable<? super T>> T minimumOf(Iterable<? extends T> iterable) {
         return minimumOf(iterable, Comparator.naturalOrder());
     }
 
@@ -798,7 +798,7 @@ public class Iterables {
      * @return
      * The maximum value.
      */
-    public static <T extends Comparable<? super T>> T maximumOf(Iterable<T> iterable) {
+    public static <T extends Comparable<? super T>> T maximumOf(Iterable<? extends T> iterable) {
         return maximumOf(iterable, Comparator.naturalOrder());
     }
 
@@ -817,7 +817,7 @@ public class Iterables {
      * @return
      * The minimum value.
      */
-    public static <T> T minimumOf(Iterable<T> iterable, Comparator<? super T> comparator) {
+    public static <T> T minimumOf(Iterable<? extends T> iterable, Comparator<? super T> comparator) {
         if (iterable == null || comparator == null) {
             throw new IllegalArgumentException();
         }
@@ -848,7 +848,7 @@ public class Iterables {
      * @return
      * The maximum value.
      */
-    public static <T> T maximumOf(Iterable<T> iterable, Comparator<? super T> comparator) {
+    public static <T> T maximumOf(Iterable<? extends T> iterable, Comparator<? super T> comparator) {
         if (iterable == null || comparator == null) {
             throw new IllegalArgumentException();
         }
