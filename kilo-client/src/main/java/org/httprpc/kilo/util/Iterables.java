@@ -263,7 +263,7 @@ public class Iterables {
      * @return
      * The sorted contents.
      */
-    public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier) {
+    public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier) {
         return sortBy(iterable, identifier, Comparator.naturalOrder());
     }
 
@@ -288,7 +288,7 @@ public class Iterables {
      * @return
      * The sorted contents.
      */
-    public static <T, V> List<T> sortBy(Iterable<T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) {
+    public static <T, V> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) {
         if (iterable == null || identifier == null || comparator == null) {
             throw new IllegalArgumentException();
         }
@@ -322,7 +322,7 @@ public class Iterables {
      * @return
      * The grouped contents.
      */
-    public static <T, K> Map<K, List<T>> groupBy(Iterable<T> iterable, Function<? super T, ? extends K> classifier) {
+    public static <T, K> Map<K, List<T>> groupBy(Iterable<? extends T> iterable, Function<? super T, ? extends K> classifier) {
         if (iterable == null || classifier == null) {
             throw new IllegalArgumentException();
         }
