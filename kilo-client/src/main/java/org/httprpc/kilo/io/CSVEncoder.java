@@ -64,6 +64,54 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         encode(row, writer);
     }
 
+    /**
+     * Encodes multiple rows.
+     *
+     * @param rows
+     * The rows to encode.
+     *
+     * @param outputStream
+     * The output stream to write to.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void writeAll(Iterable<? extends Iterable<?>> rows, OutputStream outputStream) throws IOException {
+        if (rows == null || outputStream == null) {
+            throw new IllegalArgumentException();
+        }
+
+        writeAll(rows, new OutputStreamWriter(outputStream, getCharset()));
+    }
+
+    /**
+     * Encodes multiple rows.
+     *
+     * @param rows
+     * The rows to encode.
+     *
+     * @param writer
+     * The character stream to write to.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void writeAll(Iterable<? extends Iterable<?>> rows, Writer writer) throws IOException {
+        if (rows == null || writer == null) {
+            throw new IllegalArgumentException();
+        }
+
+        writer = new BufferedWriter(writer);
+
+        try {
+            for (var row : rows) {
+                encode(row, writer);
+            }
+        } finally {
+            writer.flush();
+        }
+    }
+
     private void encode(Iterable<?> row, Writer writer) throws IOException {
         var i = 0;
 
@@ -125,53 +173,5 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private void encode(Boolean flag, Writer writer) throws IOException {
         writer.write(flag.toString());
-    }
-
-    /**
-     * Encodes multiple rows.
-     *
-     * @param rows
-     * The rows to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void writeAll(Iterable<? extends Iterable<?>> rows, OutputStream outputStream) throws IOException {
-        if (rows == null || outputStream == null) {
-            throw new IllegalArgumentException();
-        }
-
-        writeAll(rows, new OutputStreamWriter(outputStream, getCharset()));
-    }
-
-    /**
-     * Encodes multiple rows.
-     *
-     * @param rows
-     * The rows to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void writeAll(Iterable<? extends Iterable<?>> rows, Writer writer) throws IOException {
-        if (rows == null || writer == null) {
-            throw new IllegalArgumentException();
-        }
-
-        writer = new BufferedWriter(writer);
-
-        try {
-            for (var row : rows) {
-                encode(row, writer);
-            }
-        } finally {
-            writer.flush();
-        }
     }
 }
