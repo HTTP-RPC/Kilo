@@ -15,6 +15,8 @@
 package org.httprpc.kilo.io;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.util.Date;
@@ -25,7 +27,7 @@ import java.util.function.Function;
 /**
  * Encodes CSV content.
  */
-public class CSVEncoder extends Encoder<Iterable<? extends Iterable<?>>> {
+public class CSVEncoder extends Encoder<Iterable<?>> {
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
     private static final char DELIMITER = ',';
@@ -56,32 +58,28 @@ public class CSVEncoder extends Encoder<Iterable<? extends Iterable<?>>> {
     }
 
     @Override
-    public void write(Iterable<? extends Iterable<?>> rows, Writer writer) throws IOException {
-        if (rows == null || writer == null) {
+    public void write(Iterable<?> row, Writer writer) throws IOException {
+        if (row == null || writer == null) {
             throw new IllegalArgumentException();
         }
 
-        writer = new BufferedWriter(writer);
+        encode(row, writer);
+    }
 
-        try {
-            for (var row : rows) {
-                var i = 0;
+    private void encode(Iterable<?> row, Writer writer) throws IOException {
+        var i = 0;
 
-                for (var value : row) {
-                    if (i > 0) {
-                        writer.write(DELIMITER);
-                    }
-
-                    encode(value, writer);
-
-                    i++;
-                }
-
-                writer.write("\r\n");
+        for (var value : row) {
+            if (i > 0) {
+                writer.write(DELIMITER);
             }
-        } finally {
-            writer.flush();
+
+            encode(value, writer);
+
+            i++;
         }
+
+        writer.write("\r\n");
     }
 
     private void encode(Object value, Writer writer) throws IOException {
@@ -129,5 +127,53 @@ public class CSVEncoder extends Encoder<Iterable<? extends Iterable<?>>> {
 
     private void encode(Boolean flag, Writer writer) throws IOException {
         writer.write(flag.toString());
+    }
+
+    /**
+     * Encodes multiple rows.
+     *
+     * @param rows
+     * The rows to encode.
+     *
+     * @param outputStream
+     * The output stream to write to.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void writeAll(Iterable<? extends Iterable<?>> rows, OutputStream outputStream) throws IOException {
+        if (rows == null || outputStream == null) {
+            throw new IllegalArgumentException();
+        }
+
+        writeAll(rows, new OutputStreamWriter(outputStream, getCharset()));
+    }
+
+    /**
+     * Encodes multiple rows.
+     *
+     * @param rows
+     * The rows to encode.
+     *
+     * @param writer
+     * The character stream to write to.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void writeAll(Iterable<? extends Iterable<?>> rows, Writer writer) throws IOException {
+        if (rows == null || writer == null) {
+            throw new IllegalArgumentException();
+        }
+
+        writer = new BufferedWriter(writer);
+
+        try {
+            for (var row : rows) {
+                encode(row, writer);
+            }
+        } finally {
+            writer.flush();
+        }
     }
 }

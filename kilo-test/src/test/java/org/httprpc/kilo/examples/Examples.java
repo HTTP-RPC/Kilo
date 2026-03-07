@@ -134,7 +134,7 @@ public class Examples {
 
         var csvEncoder = new CSVEncoder();
 
-        csvEncoder.write(rows, System.out);
+        csvEncoder.writeAll(rows, System.out);
     }
 
     public static void textEncoder() throws IOException {

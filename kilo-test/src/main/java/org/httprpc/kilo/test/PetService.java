@@ -19,6 +19,7 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
@@ -47,8 +48,8 @@ public class PetService extends AbstractDatabaseService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("template")
-    public void getPetsTemplate(@Required String owner) throws SQLException, IOException {
+    @ResourcePath("stream")
+    public void getPetsStream(@Required String owner) throws SQLException, IOException {
         var response = getResponse();
 
         var accept = getRequest().getHeader("Accept");
@@ -70,7 +71,7 @@ public class PetService extends AbstractDatabaseService {
 
                 var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
 
-                templateEncoder.write(results, response.getOutputStream());
+                templateEncoder.write(results, response.getWriter());
             } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
                 response.setContentType(TEXT_HTML);
 
@@ -78,7 +79,20 @@ public class PetService extends AbstractDatabaseService {
 
                 templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
-                templateEncoder.write(results, response.getOutputStream());
+                templateEncoder.write(results, response.getWriter());
+            } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
+                response.setContentType(TEXT_CSV);
+
+                var columns = listOf("name", "species", "sex", "birth", "death");
+
+                var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
+
+                var csvEncoder = new CSVEncoder();
+
+                var writer = response.getWriter();
+
+                csvEncoder.write(mapAll(columns, resourceBundle::getString), writer);
+                csvEncoder.writeAll(mapAll(results, result -> mapAll(columns, result::get)), writer);
             } else {
                 throw new UnsupportedOperationException();
             }

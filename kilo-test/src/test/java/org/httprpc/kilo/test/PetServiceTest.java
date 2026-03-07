@@ -30,14 +30,7 @@ public class PetServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test
-    public void testPets() throws IOException {
-        testPetsJSON();
-
-        testPetsHTML();
-        testPetsXML();
-    }
-
-    private void testPetsJSON() throws IOException {
+    public void testPetsJSON() throws IOException {
         List<?> expected;
         try (var inputStream = getClass().getResourceAsStream("pets.json")) {
             var jsonDecoder = new JSONDecoder();
@@ -56,15 +49,22 @@ public class PetServiceTest {
         assertEquals(expected, actual);
     }
 
-    private void testPetsHTML() throws IOException {
-        testPetsTemplate("pets.html", "text/html");
+    @Test
+    public void testPetsHTML() throws IOException {
+        testPetsStream("pets.html", "text/html");
     }
 
-    private void testPetsXML() throws IOException {
-        testPetsTemplate("pets.xml", "text/xml");
+    @Test
+    public void testPetsXML() throws IOException {
+        testPetsStream("pets.xml", "text/xml");
     }
 
-    private void testPetsTemplate(String name, String mimeType) throws IOException {
+    @Test
+    public void testPetsCSV() throws IOException {
+        testPetsStream("pets.csv", "text/csv");
+    }
+
+    private void testPetsStream(String name, String mimeType) throws IOException {
         String expected;
         try (var inputStream = getClass().getResourceAsStream(name)) {
             var textDecoder = new TextDecoder();
@@ -72,7 +72,7 @@ public class PetServiceTest {
             expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/template"));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
 
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")

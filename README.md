@@ -509,7 +509,7 @@ var rows = listOf(
 
 var csvEncoder = new CSVEncoder();
 
-csvEncoder.write(rows, System.out);
+csvEncoder.writeAll(rows, System.out);
 ```
 
 ```
