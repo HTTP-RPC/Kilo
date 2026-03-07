@@ -140,7 +140,7 @@ public class Iterables {
         }
 
         return () -> new Iterator<>() {
-            Iterator<? extends T> iterator = iterable.iterator();
+            Iterator<T> iterator = iterable.iterator();
 
             @Override
             public boolean hasNext() {
@@ -178,7 +178,7 @@ public class Iterables {
         }
 
         return () -> new Iterator<>() {
-            Iterator<? extends T> iterator = iterable.iterator();
+            Iterator<T> iterator = iterable.iterator();
 
             Iterator<? extends R> current = java.util.Collections.emptyIterator();
 
