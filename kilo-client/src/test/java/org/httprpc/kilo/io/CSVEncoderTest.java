@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.time.Instant;
 import java.util.Date;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -34,7 +33,6 @@ public class CSVEncoderTest {
         var csvEncoder = new CSVEncoder();
 
         csvEncoder.format(Boolean.class, flag -> flag ? "Y" : "N");
-        csvEncoder.format(Instant.class, instant -> String.valueOf(instant.toEpochMilli()));
 
         var writer = new StringWriter();
 
