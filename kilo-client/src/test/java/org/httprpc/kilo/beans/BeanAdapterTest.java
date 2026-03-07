@@ -223,7 +223,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testTemporalAccessorCoercion() {
-        assertEquals(Instant.ofEpochMilli(1), BeanAdapter.coerce(new Date(1), Instant.class));
+        assertEquals(Instant.ofEpochMilli(0), BeanAdapter.coerce(0, Instant.class));
 
         assertEquals(Instant.parse("1970-01-01T00:00:00.001Z"), BeanAdapter.coerce("1970-01-01T00:00:00.001Z", Instant.class));
         assertEquals(LocalDate.parse("2018-06-28"), BeanAdapter.coerce("2018-06-28", LocalDate.class));
