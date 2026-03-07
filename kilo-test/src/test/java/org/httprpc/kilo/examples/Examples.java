@@ -47,8 +47,8 @@ public class Examples {
         execute("Math Service 2", Examples::mathService2);
 
         execute("JSON Encoder", Examples::jsonEncoder);
-        execute("CSV Encoder", Examples::csvEncoder);
         execute("Text Encoder", Examples::textEncoder);
+        execute("CSV Encoder", Examples::csvEncoder);
 
         execute("Template Encoder", Examples::templateEncoder);
         execute("Variables", Examples::variables);
@@ -126,6 +126,16 @@ public class Examples {
         System.out.println();
     }
 
+    public static void textEncoder() throws IOException {
+        var text = "Hello, World!";
+
+        var textEncoder = new TextEncoder();
+
+        textEncoder.write(text, System.out);
+
+        System.out.println();
+    }
+
     public static void csvEncoder() throws IOException {
         var rows = listOf(
             listOf("a", "b", "c"),
@@ -135,16 +145,6 @@ public class Examples {
         var csvEncoder = new CSVEncoder();
 
         csvEncoder.writeAll(rows, System.out);
-    }
-
-    public static void textEncoder() throws IOException {
-        var text = "Hello, World!";
-
-        var textEncoder = new TextEncoder();
-
-        textEncoder.write(text, System.out);
-
-        System.out.println();
     }
 
     public static void templateEncoder() throws Exception {
