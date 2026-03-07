@@ -88,7 +88,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         }
 
         if (value instanceof Date date) {
-            value = date.toInstant();
+            value = date.getTime();
         }
 
         var formatter = formatters.get(value.getClass());

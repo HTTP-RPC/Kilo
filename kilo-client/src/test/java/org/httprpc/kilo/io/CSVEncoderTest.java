@@ -14,6 +14,48 @@
 
 package org.httprpc.kilo.io;
 
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.Instant;
+import java.util.Date;
+
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class CSVEncoderTest {
-    // TODO
+    @Test
+    public void testWrite() throws IOException {
+        var now = new Date(0);
+
+        var row = listOf("a,b,\"c\",\r\nd,é", 123, true, now);
+
+        var csvEncoder = new CSVEncoder();
+
+        csvEncoder.format(Boolean.class, flag -> flag ? "Y" : "N");
+        csvEncoder.format(Instant.class, instant -> String.valueOf(instant.toEpochMilli()));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(row, writer);
+
+        assertEquals("\"a,b,\"\"c\"\",\r\nd,é\",123,\"Y\",0\r\n", writer.toString());
+    }
+
+    @Test
+    public void testWriteAll() throws IOException {
+        var rows = listOf(
+            listOf("abc", 123, true),
+            listOf("def", 456, false)
+        );
+
+        var csvEncoder = new CSVEncoder();
+
+        var writer = new StringWriter();
+
+        csvEncoder.writeAll(rows, writer);
+
+        assertEquals("\"abc\",123,true\r\n\"def\",456,false\r\n", writer.toString());
+    }
 }

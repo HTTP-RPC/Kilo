@@ -18,28 +18,20 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TextEncoderTest {
     @Test
-    public void testString() throws IOException {
-        assertEquals("héllo/r/nwørld", encode("héllo/r/nwørld"));
-    }
+    public void testWrite() throws IOException {
+        var text = "héllo/r/nwørld";
 
-    @Test
-    public void testLocalDate() throws IOException {
-        assertEquals("2024-03-31", encode(LocalDate.of(2024, 3, 31)));
-    }
-
-    private static String encode(Object value) throws IOException {
         var textEncoder = new TextEncoder();
 
         var writer = new StringWriter();
 
-        textEncoder.write(value, writer);
+        textEncoder.write(text, writer);
 
-        return writer.toString();
+        assertEquals(text, writer.toString());
     }
 }

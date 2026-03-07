@@ -24,12 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TextDecoderTest {
     @Test
     public void testRead() throws IOException {
-        var expected = "héllo/r/nwørld";
+        var text = "héllo/r/nwørld";
 
         var textDecoder = new TextDecoder();
 
-        var actual = textDecoder.read(new StringReader(expected));
-
-        assertEquals(expected, actual);
+        assertEquals(text, textDecoder.read(new StringReader(text)));
     }
 }
