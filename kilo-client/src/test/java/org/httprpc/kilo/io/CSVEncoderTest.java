@@ -26,9 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        var now = new Date(0);
-
-        var row = listOf("a,b,\"c\",\r\nd,é", 123, true, now);
+        var row = listOf("a,b,\"c\",\r\nd,é", 123, true, new Date(0));
 
         var csvEncoder = new CSVEncoder();
 
