@@ -21,8 +21,8 @@ Classes provided by the Kilo framework include:
 * [WebService](#webservice)
 * [WebServiceProxy](#webserviceproxy)
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder)
+* [CSVEncoder](#csvencoder)
 * [TemplateEncoder](#templateencoder)
 * [BeanAdapter](#beanadapter)
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
@@ -498,8 +498,23 @@ jsonEncoder.write(map, System.out);
 }
 ```
 
-## CSVEncoder and CSVDecoder
-The `CSVEncoder` and `CSVDecoder` classes can be used to write and read CSV content, respectively. For example:
+## TextEncoder and TextDecoder
+The `TextEncoder` and `TextDecoder` classes can be used to write and read plain text content, respectively. For example:
+
+```java
+var text = "Hello, World!";
+
+var textEncoder = new TextEncoder();
+
+textEncoder.write(text, System.out);
+```
+
+```
+Hello, World!
+```
+
+## CSVEncoder
+The `CSVEncoder` class serializes a sequence of values to CSV. For example:
 
 ```java
 var rows = listOf(
@@ -515,21 +530,6 @@ csvEncoder.writeAll(rows, System.out);
 ```
 "a","b","c"
 "d","e","f"
-```
-
-## TextEncoder and TextDecoder
-The `TextEncoder` and `TextDecoder` classes can be used to write and read plain text content, respectively. For example:
-
-```java
-var text = "Hello, World!";
-
-var textEncoder = new TextEncoder();
-
-textEncoder.write(text, System.out);
-```
-
-```
-Hello, World!
 ```
 
 ## TemplateEncoder
