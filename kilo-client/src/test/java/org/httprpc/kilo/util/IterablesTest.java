@@ -113,7 +113,7 @@ public class IterablesTest {
     public void testSortBy() {
         var values = listOf("abc", "ab", "a");
 
-        var result = sortBy(values, String::length);
+        var result = sortBy(values, String::length); // a, ab, abc
 
         assertEquals(listOf("a", "ab", "abc"), result);
 
@@ -161,7 +161,7 @@ public class IterablesTest {
     public void testWhere() {
         List<Supplier<String>> values = listOf(() -> "a", () -> "b", () -> "c", () -> null);
 
-        var result = countOf(filter(values, where(Supplier::get, value -> value.equalsIgnoreCase("A"))));
+        var result = countOf(filter(values, where(Supplier::get, value -> value.equalsIgnoreCase("A")))); // 1
 
         assertEquals(1, result);
     }
@@ -242,7 +242,7 @@ public class IterablesTest {
     public void testWhereNull() {
         List<Supplier<String>> values = listOf(() -> "a", () -> "b", () -> "c", () -> null);
 
-        var result = countOf(filter(values, whereNull(Supplier::get)));
+        var result = countOf(filter(values, whereNull(Supplier::get))); // 1
 
         assertEquals(1, result);
     }
@@ -251,7 +251,7 @@ public class IterablesTest {
     public void testWhereNotNull() {
         List<Supplier<String>> values = listOf(() -> "a", () -> "b", () -> "c", () -> null);
 
-        var result = countOf(filter(values, whereNotNull(Supplier::get)));
+        var result = countOf(filter(values, whereNotNull(Supplier::get))); // 3
 
         assertEquals(3, result);
     }
