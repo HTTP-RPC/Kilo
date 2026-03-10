@@ -63,7 +63,7 @@ create table temporal_accessor_test (
     id int not null auto_increment,
     local_date date not null,
     local_time time not null,
-    instant timestamp(6) not null,
+    instant bigint not null,
     primary key (id)
 );
 

@@ -50,7 +50,7 @@ public class ResultSetAdapterTest {
         assertEquals(id, temporalAccessorTest.getID());
         assertEquals(date, temporalAccessorTest.getDate());
         assertEquals(time.truncatedTo(ChronoUnit.SECONDS), temporalAccessorTest.getTime());
-        assertEquals(instant.truncatedTo(ChronoUnit.MICROS), temporalAccessorTest.getInstant());
+        assertEquals(instant.truncatedTo(ChronoUnit.MILLIS), temporalAccessorTest.getInstant());
     }
 
     private int insertTemporalAccessorTest(LocalDate date, LocalTime time, Instant instant) throws SQLException {
