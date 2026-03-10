@@ -18,7 +18,7 @@ import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.Final;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Description("Represents detailed information about a catalog item.")
 public interface ItemDetail extends Item {
@@ -40,6 +40,6 @@ public interface ItemDetail extends Item {
     @Column("created")
     @Final
     @Description("The date the item was created.")
-    Date getCreated();
-    void setCreated(Date created);
+    Instant getCreated();
+    void setCreated(Instant created);
 }

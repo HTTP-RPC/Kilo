@@ -23,7 +23,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -70,7 +70,7 @@ public class CatalogService extends AbstractDatabaseService {
     ) throws SQLException {
         var queryBuilder = QueryBuilder.insert(ItemDetail.class);
 
-        item.setCreated(new Date());
+        item.setCreated(Instant.now());
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
