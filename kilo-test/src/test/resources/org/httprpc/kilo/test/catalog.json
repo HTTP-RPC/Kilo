@@ -301,7 +301,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "Date",
+            "name": "Instant",
             "valueType": null
           }
         },

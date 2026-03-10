@@ -46,7 +46,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -913,8 +912,6 @@ public class WebServiceProxy {
     private static Object getParameterValue(Object argument) {
         if (argument instanceof Date date) {
             return date.getTime();
-        } else if (argument instanceof Instant instant) {
-            return instant.toEpochMilli();
         } else {
             return argument;
         }

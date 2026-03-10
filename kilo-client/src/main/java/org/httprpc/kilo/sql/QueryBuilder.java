@@ -1376,10 +1376,9 @@ public class QueryBuilder {
      * Temporal values are converted as follows:
      * <p>
      * <ul>
-     * <li>{@link Date} - long value representing epoch time in milliseconds</li>
+     * <li>{@link Date} or {@link Instant} - long value representing epoch time in milliseconds</li>
      * <li>{@link LocalDate} - {@link java.sql.Date}</li>
      * <li>{@link LocalTime} - {@link java.sql.Time}</li>
-     * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
      * </ul>
      * <p>
      * All other arguments are applied as is.
@@ -1514,9 +1513,9 @@ public class QueryBuilder {
             } else {
                 switch (argument) {
                     case Date date -> value = date.getTime();
+                    case Instant instant -> value = instant.toEpochMilli();
                     case LocalDate localDate -> value = java.sql.Date.valueOf(localDate);
                     case LocalTime localTime -> value = java.sql.Time.valueOf(localTime);
-                    case Instant instant -> value = java.sql.Timestamp.from(instant);
                     case null, default -> {
                         var transform = transforms.get(parameter);
 
