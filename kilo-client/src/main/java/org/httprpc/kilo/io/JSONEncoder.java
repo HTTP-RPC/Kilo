@@ -18,6 +18,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -63,10 +64,6 @@ public class JSONEncoder extends Encoder<Object> {
     }
 
     private void encode(Object value, Writer writer) throws IOException {
-        if (value instanceof Date date) {
-            value = date.getTime();
-        }
-
         switch (value) {
             case null -> writer.append(null);
             case CharSequence text -> encode(text, writer);
@@ -85,6 +82,8 @@ public class JSONEncoder extends Encoder<Object> {
                 encode(number, writer);
             }
             case Number number -> encode(number, writer);
+            case Date date -> encode(date.getTime(), writer);
+            case Instant instant -> encode(instant.toEpochMilli(), writer);
             case Boolean flag -> encode(flag, writer);
             case Iterable<?> iterable -> encode(iterable, writer);
             case Map<?, ?> map -> encode(map, writer);
@@ -176,10 +175,6 @@ public class JSONEncoder extends Encoder<Object> {
 
             if (key == null) {
                 throw new IllegalArgumentException("Missing key.");
-            }
-
-            if (key instanceof Date date) {
-                key = date.getTime();
             }
 
             if (i > 0) {

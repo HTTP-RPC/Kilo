@@ -106,7 +106,6 @@ Method parameters may be any of the following types:
 * `java.time.LocalDateTime`
 * `java.time.Duration`
 * `java.time.Period`
-* `java.util.Date`
 * `java.util.UUID`
 
 The following multi-value types are also supported:
@@ -119,7 +118,7 @@ Additionally, `java.util.Map`, bean, record, and `org.w3c.dom.Document` types ar
 
 The `FormData` annotation can be used to indicate that a handler method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Arguments of type `jakarta.servlet.http.Part` may be used with requests submitted as [multi-part](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig) form data.
 
-Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
+Argument values are parsed from their string representations. Unspecified values are automatically converted to 0, `false`, or the null character for primitive types.
 
 `List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty instance (not `null`) will be passed to the method.
 
@@ -196,7 +195,7 @@ Return values are converted to JSON as follows:
 * `Number`/numeric primitive: number
 * `Boolean`/`boolean`: boolean
 * `CharSequence`: string
-* `java.util.Date`: number representing epoch time in milliseconds
+* `java.util.Date`/`java.time.Instant`: number representing epoch time in milliseconds
 * `Iterable`: array
 * `java.util.Map`, bean, or record type: object
 
@@ -206,8 +205,11 @@ Additionally, instances of the following types are automatically converted to th
 * `Enum`
 * `java.net.URI`
 * `java.nio.file.Path`
-* `java.time.TemporalAccessor`
-* `java.time.TemporalAmount`
+* `java.time.LocalDate`
+* `java.time.LocalTime`
+* `java.time.LocalDateTime`
+* `java.time.Duration`
+* `java.time.Period`
 * `java.util.UUID`
 
 A method may return an instance of `org.w3c.dom.Document` to produce an XML response.
@@ -353,7 +355,7 @@ The `WebServiceProxy` class is used to submit API requests to a server. It provi
 public WebServiceProxy(String method, URI uri) { ... }
 ```
 
-Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
+Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` and `Instant` instances are first converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
 Body content is specified via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate alternate encodings:
 

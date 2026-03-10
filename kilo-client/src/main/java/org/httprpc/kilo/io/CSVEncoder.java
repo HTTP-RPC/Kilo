@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,10 +134,6 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             return;
         }
 
-        if (value instanceof Date date) {
-            value = date.getTime();
-        }
-
         var formatter = formatters.get(value.getClass());
 
         if (formatter != null) {
@@ -146,6 +143,8 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         switch (value) {
             case CharSequence text -> encode(text, writer);
             case Number number -> encode(number, writer);
+            case Date date -> encode(date.getTime(), writer);
+            case Instant instant -> encode(instant.toEpochMilli(), writer);
             case Boolean flag -> encode(flag, writer);
             default -> encode(value.toString(), writer);
         }

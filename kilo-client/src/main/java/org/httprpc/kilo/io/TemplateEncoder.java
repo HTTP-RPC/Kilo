@@ -163,22 +163,16 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         static String format(Object value, DateTimeType dateTimeType, FormatStyle formatStyle, Locale locale, TimeZone timeZone) {
-            if (value instanceof Number number) {
-                value = new Date(number.longValue());
-            }
-
-            if (value instanceof Date date) {
-                value = date.toInstant();
-            }
-
             var zoneId = timeZone.toZoneId();
 
             var temporalAccessor = switch (value) {
+                case Number number -> ZonedDateTime.ofInstant(Instant.ofEpochMilli(number.longValue()), zoneId);
+                case Date date -> ZonedDateTime.ofInstant(date.toInstant(), zoneId);
                 case Instant instant -> ZonedDateTime.ofInstant(instant, zoneId);
                 case LocalDate localDate -> ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
                 case LocalTime localTime -> ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);
                 case LocalDateTime localDateTime -> ZonedDateTime.of(localDateTime, zoneId);
-                case null, default -> throw new UnsupportedOperationException("Value is not a temporal accessor.");
+                case null, default -> throw new UnsupportedOperationException("Value is not a date/time.");
             };
 
             return switch (dateTimeType) {
