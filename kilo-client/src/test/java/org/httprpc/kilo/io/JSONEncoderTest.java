@@ -80,7 +80,7 @@ public class JSONEncoderTest {
 
     @Test
     public void testInstant() throws IOException {
-        assertEquals("1", encode(Instant.ofEpochMilli(1)));
+        assertEquals("0", encode(Instant.ofEpochMilli(0)));
     }
 
     @Test
