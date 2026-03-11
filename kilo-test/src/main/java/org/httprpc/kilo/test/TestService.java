@@ -40,6 +40,7 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -102,8 +103,8 @@ public class TestService extends AbstractDatabaseService {
         boolean getFlag();
         char getCharacter();
         DayOfWeek getDayOfWeek();
-        Long getDate();
-        List<Long> getDates();
+        Date getDate();
+        List<Date> getDates();
         Instant getInstant();
         LocalDate getLocalDate();
         LocalTime getLocalTime();
@@ -182,7 +183,7 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,
         Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
-        Long date, List<Long> dates,
+        Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
         UUID uuid) {
@@ -317,7 +318,7 @@ public class TestService extends AbstractDatabaseService {
     @ResourcePath("form-data")
     @FormData
     public Map<String, Object> testPostFormData(@Required String string, List<String> strings,
-        Integer number, Long date,
+        Integer number, Date date,
         Part file, List<Part> files) {
         var fileSize = 0L;
 

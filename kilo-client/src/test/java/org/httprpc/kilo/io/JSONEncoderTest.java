@@ -169,23 +169,26 @@ public class JSONEncoderTest {
 
     @Test
     public void testKeys() throws IOException {
-        var instant = Instant.now();
+        var date = new Date();
+        var instant = date.toInstant();
         var localDate = LocalDate.now();
         var localTime = LocalTime.now();
         var localDateTime = LocalDateTime.now();
 
         var expected = "{\n"
-            + "  \"" + instant + "\": 1,\n"
-            + "  \"" + localDate + "\": 2,\n"
-            + "  \"" + localTime + "\": 3,\n"
-            + "  \"" + localDateTime + "\": 4\n"
+            + "  \"" + date.getTime() + "\": 1,\n"
+            + "  \"" + instant + "\": 2,\n"
+            + "  \"" + localDate + "\": 3,\n"
+            + "  \"" + localTime + "\": 4,\n"
+            + "  \"" + localDateTime + "\": 5\n"
             + "}";
 
         var map = mapOf(
-            entry(instant, 1),
-            entry(localDate, 2),
-            entry(localTime, 3),
-            entry(localDateTime, 4)
+            entry(date, 1),
+            entry(instant, 2),
+            entry(localDate, 3),
+            entry(localTime, 4),
+            entry(localDateTime, 5)
         );
 
         var actual = encode(map);

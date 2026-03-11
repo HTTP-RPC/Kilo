@@ -102,8 +102,8 @@ public class WebServiceProxyTest {
         assertTrue(result.getFlag());
         assertEquals('a', result.getCharacter());
         assertEquals(dayOfWeek, result.getDayOfWeek());
-        assertEquals(date.getTime(), result.getDate());
-        assertEquals(listOf(date.getTime()), result.getDates());
+        assertEquals(date, result.getDate());
+        assertEquals(listOf(date), result.getDates());
         assertEquals(instant, result.getInstant());
         assertEquals(localDate, result.getLocalDate());
         assertEquals(localTime, result.getLocalTime());
