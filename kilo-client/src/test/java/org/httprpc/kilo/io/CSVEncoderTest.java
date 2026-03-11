@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Date;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        var row = listOf("a,b,\"c\",\r\nd,é", 123, true, new Date(0));
+        var row = listOf("a,b,\"c\",\r\nd,é", 123, true, new Date(0), Instant.ofEpochMilli(0));
 
         var csvEncoder = new CSVEncoder();
 
@@ -36,7 +37,7 @@ public class CSVEncoderTest {
 
         csvEncoder.write(row, writer);
 
-        assertEquals("\"a,b,\"\"c\"\",\r\nd,é\",123,\"Y\",0\r\n", writer.toString());
+        assertEquals("\"a,b,\"\"c\"\",\r\nd,é\",123,\"Y\",0,0\r\n", writer.toString());
     }
 
     @Test

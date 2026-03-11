@@ -79,6 +79,11 @@ public class JSONEncoderTest {
     }
 
     @Test
+    public void testInstant() throws IOException {
+        assertEquals("1", encode(Instant.ofEpochMilli(1)));
+    }
+
+    @Test
     public void testArray() throws IOException {
         var expected = "[\n"
             + "  \"abc\",\n"
@@ -147,8 +152,6 @@ public class JSONEncoderTest {
 
     @Test
     public void testTemporalAccessors() throws IOException {
-        assertEquals("1", encode(Instant.ofEpochMilli(1)));
-
         assertEquals("\"2018-06-28\"", encode(LocalDate.parse("2018-06-28")));
         assertEquals("\"10:45\"", encode(LocalTime.parse("10:45")));
         assertEquals("\"2018-06-28T10:45\"", encode(LocalDateTime.parse("2018-06-28T10:45")));
