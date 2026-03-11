@@ -178,7 +178,7 @@ public class JSONEncoder extends Encoder<Object> {
             }
 
             if (key instanceof Date date) {
-                key = date.getTime();
+                key = date.toInstant();
             }
 
             if (i > 0) {

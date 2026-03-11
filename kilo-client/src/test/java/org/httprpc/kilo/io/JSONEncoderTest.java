@@ -176,7 +176,7 @@ public class JSONEncoderTest {
         var localDateTime = LocalDateTime.now();
 
         var expected = "{\n"
-            + "  \"" + date.getTime() + "\": 1,\n"
+            + "  \"" + instant + "\": 1,\n"
             + "  \"" + instant + "\": 2,\n"
             + "  \"" + localDate + "\": 3,\n"
             + "  \"" + localTime + "\": 4,\n"
