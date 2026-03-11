@@ -911,7 +911,7 @@ public class WebServiceProxy {
 
     private static Object getParameterValue(Object argument) {
         if (argument instanceof Date date) {
-            return date.getTime();
+            return date.toInstant();
         } else {
             return argument;
         }

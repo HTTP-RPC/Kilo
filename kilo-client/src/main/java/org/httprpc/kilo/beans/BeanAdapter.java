@@ -822,7 +822,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value instanceof Number number) {
                     return new Date(number.longValue());
                 } else {
-                    return new Date(Long.parseLong(value.toString()));
+                    return Date.from(Instant.parse(value.toString()));
                 }
             } else if (type == Instant.class) {
                 if (value instanceof Number number) {
