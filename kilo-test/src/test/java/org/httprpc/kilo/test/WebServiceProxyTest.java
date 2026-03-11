@@ -38,6 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -54,7 +55,7 @@ public class WebServiceProxyTest {
     }
 
     private DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-    private Instant date = Instant.now();
+    private Instant date = Instant.now().truncatedTo(ChronoUnit.MILLIS);
     private LocalDate localDate = LocalDate.now();
     private LocalTime localTime = LocalTime.now();
     private LocalDateTime localDateTime = LocalDateTime.now();
