@@ -64,6 +64,7 @@ create table temporal_accessor_test (
     local_date date not null,
     local_time time not null,
     instant bigint not null,
+    timestamp bigint not null,
     primary key (id)
 );
 
@@ -84,5 +85,10 @@ create table xml_test (
 drop user if exists 'demo'@'%';
 
 create user 'demo'@'%' identified by 'demo123!';
+
 grant select, insert, update, delete on demo.* to 'demo'@'%';
+
+grant select on employees.* to 'demo'@'%';
+grant select on sakila.* to 'demo'@'%';
+
 flush privileges;

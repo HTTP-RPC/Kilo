@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +43,9 @@ public class ResultSetAdapterTest {
         var date = LocalDate.now();
         var time = LocalTime.now();
         var instant = Instant.now();
+        var timestamp = new Date();
 
-        var id = insertTemporalAccessorTest(date, time, instant);
+        var id = insertTemporalAccessorTest(date, time, instant, timestamp);
 
         var temporalAccessorTest = selectTemporalAccessorTest(id);
 
@@ -51,9 +53,10 @@ public class ResultSetAdapterTest {
         assertEquals(date, temporalAccessorTest.getDate());
         assertEquals(time.truncatedTo(ChronoUnit.SECONDS), temporalAccessorTest.getTime());
         assertEquals(instant.truncatedTo(ChronoUnit.MILLIS), temporalAccessorTest.getInstant());
+        assertEquals(timestamp, temporalAccessorTest.getTimestamp());
     }
 
-    private int insertTemporalAccessorTest(LocalDate date, LocalTime time, Instant instant) throws SQLException {
+    private int insertTemporalAccessorTest(LocalDate date, LocalTime time, Instant instant, Date timestamp) throws SQLException {
         var queryBuilder = QueryBuilder.insert(TemporalAccessorTest.class);
 
         try (var connection = getConnection();
@@ -61,7 +64,8 @@ public class ResultSetAdapterTest {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("date", date),
                 entry("time", time),
-                entry("instant", instant)
+                entry("instant", instant),
+                entry("timestamp", timestamp)
             ));
         }
 
