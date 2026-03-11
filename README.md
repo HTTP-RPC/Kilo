@@ -106,7 +106,6 @@ Method parameters may be any of the following types:
 * `java.time.LocalDateTime`
 * `java.time.Duration`
 * `java.time.Period`
-* `java.util.Date`
 * `java.util.UUID`
 
 The following multi-value types are also supported:
@@ -354,7 +353,7 @@ The `WebServiceProxy` class is used to submit API requests to a server. It provi
 public WebServiceProxy(String method, URI uri) { ... }
 ```
 
-Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
+Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will be encoded using its string representation. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
 Body content is specified via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate alternate encodings:
 

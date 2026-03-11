@@ -29,7 +29,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -145,7 +144,6 @@ public class BeanAdapterTest {
         var beanAdapter = new BeanAdapter(new TestBean());
 
         assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("dayOfWeek", "abc"));
-        assertThrows(DateTimeParseException.class, () -> beanAdapter.put("date", "xyz"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("foo", 101));
 

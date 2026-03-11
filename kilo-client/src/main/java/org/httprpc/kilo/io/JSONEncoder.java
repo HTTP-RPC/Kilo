@@ -177,10 +177,6 @@ public class JSONEncoder extends Encoder<Object> {
                 throw new IllegalArgumentException("Missing key.");
             }
 
-            if (key instanceof Date date) {
-                key = date.toInstant();
-            }
-
             if (i > 0) {
                 writer.write(",");
             }

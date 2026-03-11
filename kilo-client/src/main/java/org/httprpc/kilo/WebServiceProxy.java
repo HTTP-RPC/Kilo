@@ -49,7 +49,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -57,7 +56,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 /**
@@ -367,13 +365,13 @@ public class WebServiceProxy {
                         }
 
                         if (component.equals("?")) {
-                            var parameterValue = getParameterValue(argumentList.get(keyCount));
+                            var argument = argumentList.get(keyCount);
 
-                            if (parameterValue == null) {
+                            if (argument == null) {
                                 throw new IllegalArgumentException("Path variable is required.");
                             }
 
-                            component = parameterValue.toString();
+                            component = argument.toString();
 
                             keyCount++;
                         }
@@ -898,22 +896,14 @@ public class WebServiceProxy {
             var list = new ArrayList<>(length);
 
             for (var i = 0; i < length; i++) {
-                list.add(getParameterValue(Array.get(argument, i)));
+                list.add(Array.get(argument, i));
             }
 
             return list;
         } else if (argument instanceof Collection<?> collection) {
-            return listOf(mapAll(collection, WebServiceProxy::getParameterValue));
+            return listOf(collection);
         } else {
-            return listOf(getParameterValue(argument));
-        }
-    }
-
-    private static Object getParameterValue(Object argument) {
-        if (argument instanceof Date date) {
-            return date.toInstant();
-        } else {
-            return argument;
+            return listOf(argument);
         }
     }
 
