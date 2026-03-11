@@ -30,7 +30,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +44,7 @@ public interface TestServiceProxy {
         String getString();
         List<String> getStrings();
         Integer getNumber();
-        Date getDate();
+        Instant getDate();
         Path getFile();
         List<Path> getFiles();
     }

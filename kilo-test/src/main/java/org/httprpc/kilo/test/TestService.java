@@ -40,7 +40,6 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -103,9 +102,8 @@ public class TestService extends AbstractDatabaseService {
         boolean getFlag();
         char getCharacter();
         DayOfWeek getDayOfWeek();
-        Date getDate();
-        List<Date> getDates();
-        Instant getInstant();
+        Instant getDate();
+        List<Instant> getDates();
         LocalDate getLocalDate();
         LocalTime getLocalTime();
         LocalDateTime getLocalDateTime();
@@ -183,8 +181,8 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,
         Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
-        Date date, List<Date> dates,
-        Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        Instant date, List<Instant> dates,
+        LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
         UUID uuid) {
         return BeanAdapter.coerce(mapOf(
@@ -197,7 +195,6 @@ public class TestService extends AbstractDatabaseService {
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", dates),
-            entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
@@ -318,7 +315,7 @@ public class TestService extends AbstractDatabaseService {
     @ResourcePath("form-data")
     @FormData
     public Map<String, Object> testPostFormData(@Required String string, List<String> strings,
-        Integer number, Date date,
+        Integer number, Instant date,
         Part file, List<Part> files) {
         var fileSize = 0L;
 

@@ -38,7 +38,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -55,8 +54,7 @@ public class WebServiceProxyTest {
     }
 
     private DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-    private Date date = new Date();
-    private Instant instant = Instant.ofEpochMilli(1);
+    private Instant date = Instant.now();
     private LocalDate localDate = LocalDate.now();
     private LocalTime localTime = LocalTime.now();
     private LocalDateTime localDateTime = LocalDateTime.now();
@@ -80,7 +78,6 @@ public class WebServiceProxyTest {
             entry("flag", true),
             entry("character", "abc"),
             entry("dayOfWeek", dayOfWeek),
-            entry("instant", instant),
             entry("date", date),
             entry("dates", listOf(date)),
             entry("localDate", localDate),
@@ -104,7 +101,6 @@ public class WebServiceProxyTest {
         assertEquals(dayOfWeek, result.getDayOfWeek());
         assertEquals(date, result.getDate());
         assertEquals(listOf(date), result.getDates());
-        assertEquals(instant, result.getInstant());
         assertEquals(localDate, result.getLocalDate());
         assertEquals(localTime, result.getLocalTime());
         assertEquals(localDateTime, result.getLocalDateTime());
@@ -371,7 +367,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testFormDataPost() throws IOException {
-        var now = new Date();
+        var now = Instant.now();
 
         var body = mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -391,7 +387,7 @@ public class WebServiceProxyTest {
         assertEquals("héllo&gøod+bye?", result.get("string"));
         assertEquals(listOf("a", "b", "c"), result.get("strings"));
         assertEquals(123, result.get("number"));
-        assertEquals(now.getTime(), result.get("date"));
+        assertEquals(now.toEpochMilli(), result.get("date"));
 
         assertEquals(0, result.get("fileSize"));
         assertEquals(0, result.get("totalFileSize"));
@@ -401,7 +397,7 @@ public class WebServiceProxyTest {
     public void testFormDataPostProxy() throws URISyntaxException, IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        var now = new Date();
+        var now = Instant.now();
 
         var textURL = getClass().getResource("test.txt");
         var imageURL = getClass().getResource("test.jpg");
@@ -420,7 +416,7 @@ public class WebServiceProxyTest {
         assertEquals("héllo&gøod+bye?", result.get("string"));
         assertEquals(listOf("a", "b", "c"), result.get("strings"));
         assertEquals(123, result.get("number"));
-        assertEquals(now.getTime(), result.get("date"));
+        assertEquals(now.toEpochMilli(), result.get("date"));
 
         assertEquals(26, result.get("fileSize"));
         assertEquals(10444, result.get("totalFileSize"));

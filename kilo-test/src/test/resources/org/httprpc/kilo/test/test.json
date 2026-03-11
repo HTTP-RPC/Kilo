@@ -146,7 +146,7 @@
                 "iterable": false,
                 "keyType": null,
                 "map": false,
-                "name": "Date",
+                "name": "Instant",
                 "valueType": null
               }
             },
@@ -161,7 +161,7 @@
                   "iterable": false,
                   "keyType": null,
                   "map": false,
-                  "name": "Date",
+                  "name": "Instant",
                   "valueType": null
                 },
                 "intrinsic": true,
@@ -169,20 +169,6 @@
                 "keyType": null,
                 "map": false,
                 "name": "Iterable",
-                "valueType": null
-              }
-            },
-            {
-              "description": null,
-              "name": "instant",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "Instant",
                 "valueType": null
               }
             },
@@ -1099,7 +1085,7 @@
                 "iterable": false,
                 "keyType": null,
                 "map": false,
-                "name": "Date",
+                "name": "Instant",
                 "valueType": null
               }
             },
@@ -2133,7 +2119,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "Date",
+            "name": "Instant",
             "valueType": null
           }
         },
@@ -2149,7 +2135,7 @@
               "iterable": false,
               "keyType": null,
               "map": false,
-              "name": "Date",
+              "name": "Instant",
               "valueType": null
             },
             "intrinsic": true,
@@ -2202,21 +2188,6 @@
             "keyType": null,
             "map": false,
             "name": "boolean",
-            "valueType": null
-          }
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "instant",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Instant",
             "valueType": null
           }
         },
