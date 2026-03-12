@@ -43,6 +43,8 @@ public class JSONDecoder extends Decoder<Object> {
 
         c = bufferedReader.read();
 
+        skipWhitespace(bufferedReader);
+
         return readValue(bufferedReader);
     }
 
@@ -84,9 +86,13 @@ public class JSONDecoder extends Decoder<Object> {
         return (Iterable<Object>)read(reader);
     }
 
-    private Object readValue(Reader reader) throws IOException {
-        skipWhitespace(reader);
+    private void skipWhitespace(Reader reader) throws IOException {
+        while (c != EOF && Character.isWhitespace(c)) {
+            c = reader.read();
+        }
+    }
 
+    private Object readValue(Reader reader) throws IOException {
         if (c == EOF) {
             throw new IOException("Unexpected end of stream.");
         }
@@ -117,6 +123,8 @@ public class JSONDecoder extends Decoder<Object> {
 
                 if (c == ',') {
                     c = reader.read();
+
+                    skipWhitespace(reader);
                 }
             }
 
@@ -135,8 +143,6 @@ public class JSONDecoder extends Decoder<Object> {
             skipWhitespace(reader);
 
             while (c != '}') {
-                skipWhitespace(reader);
-
                 if (c != '"') {
                     throw new IOException("Invalid key.");
                 }
@@ -151,12 +157,16 @@ public class JSONDecoder extends Decoder<Object> {
 
                 c = reader.read();
 
+                skipWhitespace(reader);
+
                 map.put(key, readValue(reader));
 
                 skipWhitespace(reader);
 
                 if (c == ',') {
                     c = reader.read();
+
+                    skipWhitespace(reader);
                 }
             }
 
@@ -173,12 +183,6 @@ public class JSONDecoder extends Decoder<Object> {
             return null;
         } else {
             throw new IOException(String.format("Unexpected character (0x%04X).", c));
-        }
-    }
-
-    private void skipWhitespace(Reader reader) throws IOException {
-        while (c != EOF && Character.isWhitespace(c)) {
-            c = reader.read();
         }
     }
 
