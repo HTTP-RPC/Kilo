@@ -18,21 +18,28 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
+
+import static org.httprpc.kilo.util.Iterables.*;
 
 @WebServlet(urlPatterns = {"/bulk-upload/*"}, loadOnStartup = 1)
 public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 5000;
 
     @RequestMethod("POST")
-    public void upload(List<Row> rows) throws SQLException {
+    public void upload(Void body) throws IOException, SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
         queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
+
+        var jsonDecoder = new JSONDecoder();
+
+        var rows = mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             for (var row : rows) {
@@ -43,11 +50,15 @@ public class BulkUploadService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("batch")
-    public void uploadBatch(List<Row> rows) throws SQLException {
+    public void uploadBatch(Void body) throws IOException, SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
         queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
+
+        var jsonDecoder = new JSONDecoder();
+
+        var rows = mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             var i = 0;

@@ -66,7 +66,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     }
 
     /**
-     * Encodes multiple rows.
+     * Encodes multiple rows to an output stream.
      *
      * @param rows
      * The rows to encode.
@@ -86,7 +86,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     }
 
     /**
-     * Encodes multiple rows.
+     * Encodes multiple rows to a character stream.
      *
      * @param rows
      * The rows to encode.

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.function.Supplier;
+import java.io.StringWriter;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,6 +110,15 @@ public class JSONDecoderTest {
     }
 
     @Test
+    public void testTrailingWhitespace() throws IOException {
+        var expected = listOf(1, 2, 3);
+
+        var actual = decode("[1, 2, 3]\n");
+
+        assertEquals(actual, expected);
+    }
+
+    @Test
     public void testInvalidKey() {
         assertThrows(IOException.class, () -> decode("{a: 1}"));
     }
@@ -125,12 +134,39 @@ public class JSONDecoderTest {
     }
 
     private static Object decode(String text) throws IOException {
-        return decode(text, JSONDecoder::new);
-    }
-
-    private static Object decode(String text, Supplier<JSONDecoder> factory) throws IOException {
-        var jsonDecoder = factory.get();
+        var jsonDecoder = new JSONDecoder();
 
         return jsonDecoder.read(new StringReader(text));
+    }
+
+    @Test
+    public void testReadAll() throws IOException {
+        var expected = listOf(
+            "abc",
+            123,
+            true,
+            listOf(1, 2.0, 3.0),
+            mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
+        );
+
+        var jsonEncoder = new JSONEncoder();
+
+        var writer = new StringWriter();
+
+        jsonEncoder.write(expected, writer);
+
+        var jsonDecoder = new JSONDecoder();
+
+        var actual = listOf(jsonDecoder.readAll(new StringReader(writer.toString())));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testReadAllUnterminated() {
+        var jsonDecoder = new JSONDecoder();
+
+        assertThrows(IOException.class, () -> listOf(jsonDecoder.readAll(new StringReader("[1, 2, 3"))));
+        assertThrows(IOException.class, () -> listOf(jsonDecoder.readAll(new StringReader("[1, 2, 3, "))));
     }
 }

@@ -49,7 +49,7 @@ public class PetService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     @ResourcePath("stream")
-    public void getPetsStream(@Required String owner) throws SQLException, IOException {
+    public void getPetsStream(@Required String owner) throws IOException, SQLException {
         var response = getResponse();
 
         var accept = getRequest().getHeader("Accept");

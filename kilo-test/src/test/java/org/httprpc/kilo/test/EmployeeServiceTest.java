@@ -15,11 +15,14 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
 
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EmployeeServiceTest {
@@ -43,7 +46,21 @@ public class EmployeeServiceTest {
     private static void loadEmployees(String path) throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(path));
 
-        webServiceProxy.invoke();
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
+            var jsonDecoder = new JSONDecoder();
+
+            return jsonDecoder.readAll(inputStream);
+        });
+
+        var n = 0;
+
+        for (var employee : mapAll((Iterable<?>)webServiceProxy.invoke(), BeanAdapter.toType(Employee.class))) {
+            assertNotNull(employee.getEmployeeNumber());
+
+            n++;
+        }
+
+        assertEquals(300024, n);
     }
 
     @Test

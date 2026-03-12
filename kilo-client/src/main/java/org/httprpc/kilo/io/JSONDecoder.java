@@ -15,6 +15,8 @@
 package org.httprpc.kilo.io;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -38,7 +40,6 @@ public class JSONDecoder extends Decoder<Object> {
     private static final String NULL = "null";
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object read(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException();
@@ -60,71 +61,7 @@ public class JSONDecoder extends Decoder<Object> {
             } else if (c == ',') {
                 c = reader.read();
             } else {
-                var container = containers.peek();
-
-                // If the current container is a map, read the key
-                String key;
-                if (container instanceof Map) {
-                    if (c != '"') {
-                        throw new IOException("Invalid key.");
-                    }
-
-                    key = readString(reader);
-
-                    skipWhitespace(reader);
-
-                    if (c != ':') {
-                        throw new IOException("Missing colon.");
-                    }
-
-                    c = reader.read();
-
-                    skipWhitespace(reader);
-                } else {
-                    key = null;
-                }
-
-                // Read the value
-                if (c == '"') {
-                    value = readString(reader);
-                } else if (c == '-' || Character.isDigit(c)) {
-                    value = readNumber(reader);
-                } else if (c == TRUE.charAt(0)) {
-                    readLiteral(reader, TRUE);
-
-                    value = Boolean.TRUE;
-                } else if (c == FALSE.charAt(0)) {
-                    readLiteral(reader, FALSE);
-
-                    value = Boolean.FALSE;
-                } else if (c == NULL.charAt(0)) {
-                    readLiteral(reader, NULL);
-
-                    value = null;
-                } else if (c == '[') {
-                    value = new ArrayList<>();
-
-                    containers.push(value);
-
-                    c = reader.read();
-                } else if (c == '{') {
-                    value = new LinkedHashMap<>();
-
-                    containers.push(value);
-
-                    c = reader.read();
-                } else {
-                    throw new IOException(String.format("Unexpected character (0x%04X).", c));
-                }
-
-                // Add the value to the current container
-                if (container != null) {
-                    if (key != null) {
-                        ((Map<String, Object>)container).put(key, value);
-                    } else {
-                        ((List<Object>)container).add(value);
-                    }
-                }
+                value = readValue(reader);
             }
 
             skipWhitespace(reader);
@@ -137,10 +74,120 @@ public class JSONDecoder extends Decoder<Object> {
         return value;
     }
 
+    /**
+     * Reads multiple values from an input stream.
+     *
+     * @param inputStream
+     * The input stream to read from.
+     *
+     * @return
+     * The decoded values.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public Iterable<Object> readAll(InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return readAll(new InputStreamReader(inputStream, getCharset()));
+    }
+
+    /**
+     * Reads multiple values from a character stream.
+     *
+     * @param reader
+     * The character stream to read from.
+     *
+     * @return
+     * The decoded values.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    @SuppressWarnings("unchecked")
+    public Iterable<Object> readAll(Reader reader) throws IOException {
+        // TODO
+        return (Iterable<Object>)read(reader);
+    }
+
     private void skipWhitespace(Reader reader) throws IOException {
         while (c != EOF && Character.isWhitespace(c)) {
             c = reader.read();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object readValue(Reader reader) throws IOException {
+        var container = containers.peek();
+
+        // If the current container is a map, read the key
+        String key;
+        if (container instanceof Map) {
+            if (c != '"') {
+                throw new IOException("Invalid key.");
+            }
+
+            key = readString(reader);
+
+            skipWhitespace(reader);
+
+            if (c != ':') {
+                throw new IOException("Missing colon.");
+            }
+
+            c = reader.read();
+
+            skipWhitespace(reader);
+        } else {
+            key = null;
+        }
+
+        // Read the value
+        Object value;
+        if (c == '"') {
+            value = readString(reader);
+        } else if (c == '-' || Character.isDigit(c)) {
+            value = readNumber(reader);
+        } else if (c == TRUE.charAt(0)) {
+            readLiteral(reader, TRUE);
+
+            value = Boolean.TRUE;
+        } else if (c == FALSE.charAt(0)) {
+            readLiteral(reader, FALSE);
+
+            value = Boolean.FALSE;
+        } else if (c == NULL.charAt(0)) {
+            readLiteral(reader, NULL);
+
+            value = null;
+        } else if (c == '[') {
+            value = new ArrayList<>();
+
+            containers.push(value);
+
+            c = reader.read();
+        } else if (c == '{') {
+            value = new LinkedHashMap<>();
+
+            containers.push(value);
+
+            c = reader.read();
+        } else {
+            throw new IOException(String.format("Unexpected character (0x%04X).", c));
+        }
+
+        // Add the value to the current container
+        if (container != null) {
+            if (key != null) {
+                ((Map<String, Object>)container).put(key, value);
+            } else {
+                ((List<Object>)container).add(value);
+            }
+        }
+
+        return value;
     }
 
     private String readString(Reader reader) throws IOException {
