@@ -353,9 +353,9 @@ The `WebServiceProxy` class is used to submit API requests to a server. It provi
 public WebServiceProxy(String method, URI uri) { ... }
 ```
 
-Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will be encoded using its string representation. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
+Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will generally be encoded using its string representation. However, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
-Body content is specified via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate alternate encodings:
+Body content is specified via the `setBody()` method. By default, it will be serialized as JSON, but the `setRequestHandler()` method can be used to facilitate alternate encodings:
 
 ```java
 public interface RequestHandler {
@@ -363,8 +363,6 @@ public interface RequestHandler {
     void encodeRequest(Object body, OutputStream outputStream) throws IOException;
 }
 ```
-
-For example, the `WebServiceProxy.FormDataRequestHandler` class submits requests as form data. When using the multi-part encoding (the default), instances of `java.nio.file.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
 
 Service operations are invoked via the following method:
 
@@ -380,9 +378,7 @@ public interface ResponseHandler {
 }
 ```
 
-If an operation does not complete successfully, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the type of the error response is "text/plain", the response content will be provided in the exception message. 
-
-A custom error handler can be provided via `setErrorHandler()`:
+If an operation does not complete successfully, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the type of the error response is "text/plain", the response content will be provided in the exception message. A custom error handler can be provided via `setErrorHandler()`:
 
 ```java
 public interface ErrorHandler {
@@ -414,8 +410,6 @@ webServiceProxy.setArguments(mapOf(
 
 System.out.println(webServiceProxy.invoke()); // 6.0
 ```
-
-`POST`, `PUT`, and `DELETE` operations are also supported. The `listOf()` and `mapOf()` methods are discussed in more detail [later](#collections).
 
 ### Typed Invocation
 `WebServiceProxy` additionally provides the following methods to facilitate convenient, type-safe access to web APIs:
