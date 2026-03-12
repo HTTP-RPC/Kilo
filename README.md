@@ -419,7 +419,7 @@ public static <T> T of(Class<T> type, URI baseURI) { ... }
 public static <T> T of(Class<T> type, URI baseURI, Map<String, Object> headers) { ... }
 ```
 
-Both versions return an implementation of a given interface that submits requests to the provided URI. An optional map accepted by the second version can be used to provide common request headers.
+Both versions return an implementation of a given interface that submits requests to the provided URI. An optional map accepted by the second version can be used to provide custom request headers.
 
 The optional `ServicePath` annotation can be used to associate a base path with a proxy type. The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. Proxy methods must include a throws clause that declares `IOException`, so that callers can handle unexpected failures. For example:
 
