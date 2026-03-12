@@ -70,7 +70,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
                         switch (value) {
                             case java.sql.Date date -> value = date.toLocalDate();
                             case java.sql.Time time -> value = time.toLocalTime();
-                            case java.sql.Timestamp timestamp -> value = timestamp.toInstant();
                             default -> {
                                 var transform = transforms.get(key);
 
@@ -101,7 +100,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      * <ul>
      * <li>{@link java.sql.Date} - {@link java.time.LocalDate}</li>
      * <li>{@link java.sql.Time} - {@link java.time.LocalTime}</li>
-     * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
      * </ul>
      * <p>
      * All other values are either transformed as specified or returned as is.
