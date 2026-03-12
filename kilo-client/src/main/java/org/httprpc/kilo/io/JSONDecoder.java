@@ -19,12 +19,67 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.NoSuchElementException;
 
 /**
  * Decodes JSON content.
  */
 public class JSONDecoder extends Decoder<Object> {
+    private class ArrayIterator implements Iterator<Object> {
+        Reader reader;
+
+        ArrayIterator(Reader reader) {
+            this.reader = new BufferedReader(reader);
+
+            try {
+                c = reader.read();
+
+                skipWhitespace(reader);
+
+                if (c != '[') {
+                    throw new IOException("Invalid array.");
+                }
+
+                c = reader.read();
+
+                skipWhitespace(reader);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return c != ']';
+        }
+
+        @Override
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            Object value;
+            try {
+                value = readValue(reader);
+
+                skipWhitespace(reader);
+
+                if (c == ',') {
+                    c = reader.read();
+
+                    skipWhitespace(reader);
+                }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            return value;
+        }
+    }
+
     private int c = EOF;
 
     private StringBuilder valueBuilder = new StringBuilder();
@@ -56,11 +111,8 @@ public class JSONDecoder extends Decoder<Object> {
      *
      * @return
      * The decoded values.
-     *
-     * @throws IOException
-     * If an exception occurs.
      */
-    public Iterable<Object> readAll(InputStream inputStream) throws IOException {
+    public Iterable<Object> readAll(InputStream inputStream) {
         if (inputStream == null) {
             throw new IllegalArgumentException();
         }
@@ -76,14 +128,13 @@ public class JSONDecoder extends Decoder<Object> {
      *
      * @return
      * The decoded values.
-     *
-     * @throws IOException
-     * If an exception occurs.
      */
-    @SuppressWarnings("unchecked")
-    public Iterable<Object> readAll(Reader reader) throws IOException {
-        // TODO
-        return (Iterable<Object>)read(reader);
+    public Iterable<Object> readAll(Reader reader) {
+        if (reader == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new ArrayIterator(reader);
     }
 
     private void skipWhitespace(Reader reader) throws IOException {
@@ -171,7 +222,7 @@ public class JSONDecoder extends Decoder<Object> {
             }
 
             if (c != '}') {
-                throw new IOException("Unterminated array.");
+                throw new IOException("Unterminated object.");
             }
 
             c = reader.read();

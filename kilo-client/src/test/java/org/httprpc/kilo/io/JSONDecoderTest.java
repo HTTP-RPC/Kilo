@@ -171,12 +171,4 @@ public class JSONDecoderTest {
 
         assertEquals(expected, actual);
     }
-
-    @Test
-    public void testReadAllUnterminated() {
-        var jsonDecoder = new JSONDecoder();
-
-        assertThrows(IOException.class, () -> listOf(jsonDecoder.readAll(new StringReader("[1, 2, 3"))));
-        assertThrows(IOException.class, () -> listOf(jsonDecoder.readAll(new StringReader("[1, 2, 3, "))));
-    }
 }

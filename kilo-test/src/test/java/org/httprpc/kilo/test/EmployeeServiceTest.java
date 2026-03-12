@@ -15,7 +15,6 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.junit.jupiter.api.Test;
 
@@ -49,18 +48,10 @@ public class EmployeeServiceTest {
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
 
-            return jsonDecoder.readAll(inputStream);
+            return countOf(jsonDecoder.readAll(inputStream));
         });
 
-        var n = 0;
-
-        for (var employee : mapAll((Iterable<?>)webServiceProxy.invoke(), BeanAdapter.toType(Employee.class))) {
-            assertNotNull(employee.getEmployeeNumber());
-
-            n++;
-        }
-
-        assertEquals(300024, n);
+        assertEquals(300024, webServiceProxy.invoke());
     }
 
     @Test

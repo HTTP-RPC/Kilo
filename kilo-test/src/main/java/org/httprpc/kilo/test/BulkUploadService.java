@@ -37,12 +37,10 @@ public class BulkUploadService extends AbstractDatabaseService {
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
         queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
 
-        var jsonDecoder = new JSONDecoder();
-
-        var rows = mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class));
-
         try (var statement = queryBuilder.prepare(getConnection())) {
-            for (var row : rows) {
+            var jsonDecoder = new JSONDecoder();
+
+            for (var row : mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class))) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(row));
             }
         }
@@ -56,17 +54,15 @@ public class BulkUploadService extends AbstractDatabaseService {
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
         queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
 
-        var jsonDecoder = new JSONDecoder();
-
-        var rows = mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class));
-
         try (var statement = queryBuilder.prepare(getConnection())) {
-            var i = 0;
+            var n = 0;
 
-            for (var row : rows) {
+            var jsonDecoder = new JSONDecoder();
+
+            for (var row : mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class))) {
                 queryBuilder.addBatch(statement, new BeanAdapter(row));
 
-                if (++i % BATCH_SIZE == 0) {
+                if (++n % BATCH_SIZE == 0) {
                     statement.executeBatch();
                 }
             }
