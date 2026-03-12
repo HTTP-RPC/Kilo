@@ -73,7 +73,7 @@ public class JSONDecoderTest {
             mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
         );
 
-        var text = "[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
+        var text = "[\"abc\",\t123,\ttrue,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
 
         var actual = decode(text);
 
@@ -96,7 +96,7 @@ public class JSONDecoderTest {
             entry("e", mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0)))
         );
 
-        var text = "{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}";
+        var text = "{\"a\": \"abc\", \"b\":\t123, \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}";
 
         var actual = decode(text);
 

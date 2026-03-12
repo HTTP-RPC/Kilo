@@ -19,19 +19,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Decodes JSON content.
  */
 public class JSONDecoder extends Decoder<Object> {
     private int c = EOF;
-
-    private Deque<Object> containers = new LinkedList<>();
 
     private StringBuilder valueBuilder = new StringBuilder();
 
@@ -47,31 +41,9 @@ public class JSONDecoder extends Decoder<Object> {
 
         reader = new BufferedReader(reader);
 
-        Object value = null;
-
         c = reader.read();
 
-        skipWhitespace(reader);
-
-        while (c != EOF) {
-            if (c == ']' || c == '}') {
-                value = containers.pop();
-
-                c = reader.read();
-            } else if (c == ',') {
-                c = reader.read();
-            } else {
-                value = readValue(reader);
-            }
-
-            skipWhitespace(reader);
-        }
-
-        if (!containers.isEmpty()) {
-            throw new IOException("Unterminated container.");
-        }
-
-        return value;
+        return readValue(reader);
     }
 
     /**
@@ -112,88 +84,103 @@ public class JSONDecoder extends Decoder<Object> {
         return (Iterable<Object>)read(reader);
     }
 
+    private Object readValue(Reader reader) throws IOException {
+        skipWhitespace(reader);
+
+        if (c == EOF) {
+            throw new IOException("Unexpected end of stream.");
+        }
+
+        if (c == '"') {
+            return readString(reader);
+        } else if (c == '-' || Character.isDigit(c)) {
+            return readNumber(reader);
+        } else if (c == TRUE.charAt(0)) {
+            readLiteral(reader, TRUE);
+
+            return Boolean.TRUE;
+        } else if (c == FALSE.charAt(0)) {
+            readLiteral(reader, FALSE);
+
+            return Boolean.FALSE;
+        } else if (c == '[') {
+            var list = new ArrayList<>();
+
+            c = reader.read();
+
+            do {
+                list.add(readValue(reader));
+
+                skipWhitespace(reader);
+
+                if (c == ',') {
+                    c = reader.read();
+                }
+            } while (c != ']');
+
+            if (c != ']') {
+                throw new IOException("Unterminated array.");
+            }
+
+            c = reader.read();
+
+            return list;
+        } else if (c == '{') {
+            var map = new LinkedHashMap<String, Object>();
+
+            c = reader.read();
+
+            do {
+                skipWhitespace(reader);
+
+                if (c != '"') {
+                    throw new IOException("Invalid key.");
+                }
+
+                var key = readString(reader);
+
+                skipWhitespace(reader);
+
+                if (c != ':') {
+                    throw new IOException("Missing colon.");
+                }
+
+                c = reader.read();
+
+                map.put(key, readValue(reader));
+
+                skipWhitespace(reader);
+
+                if (c == ',') {
+                    c = reader.read();
+                }
+            } while (c != '}');
+
+            if (c != '}') {
+                throw new IOException("Unterminated array.");
+            }
+
+            c = reader.read();
+
+            return map;
+        } else if (c == NULL.charAt(0)) {
+            readLiteral(reader, NULL);
+
+            return null;
+        } else {
+            throw new IOException(String.format("Unexpected character (0x%04X).", c));
+        }
+    }
+
     private void skipWhitespace(Reader reader) throws IOException {
         while (c != EOF && Character.isWhitespace(c)) {
             c = reader.read();
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private Object readValue(Reader reader) throws IOException {
-        var container = containers.peek();
-
-        // If the current container is a map, read the key
-        String key;
-        if (container instanceof Map) {
-            if (c != '"') {
-                throw new IOException("Invalid key.");
-            }
-
-            key = readString(reader);
-
-            skipWhitespace(reader);
-
-            if (c != ':') {
-                throw new IOException("Missing colon.");
-            }
-
-            c = reader.read();
-
-            skipWhitespace(reader);
-        } else {
-            key = null;
-        }
-
-        // Read the value
-        Object value;
-        if (c == '"') {
-            value = readString(reader);
-        } else if (c == '-' || Character.isDigit(c)) {
-            value = readNumber(reader);
-        } else if (c == TRUE.charAt(0)) {
-            readLiteral(reader, TRUE);
-
-            value = Boolean.TRUE;
-        } else if (c == FALSE.charAt(0)) {
-            readLiteral(reader, FALSE);
-
-            value = Boolean.FALSE;
-        } else if (c == NULL.charAt(0)) {
-            readLiteral(reader, NULL);
-
-            value = null;
-        } else if (c == '[') {
-            value = new ArrayList<>();
-
-            containers.push(value);
-
-            c = reader.read();
-        } else if (c == '{') {
-            value = new LinkedHashMap<>();
-
-            containers.push(value);
-
-            c = reader.read();
-        } else {
-            throw new IOException(String.format("Unexpected character (0x%04X).", c));
-        }
-
-        // Add the value to the current container
-        if (container != null) {
-            if (key != null) {
-                ((Map<String, Object>)container).put(key, value);
-            } else {
-                ((List<Object>)container).add(value);
-            }
-        }
-
-        return value;
-    }
-
     private String readString(Reader reader) throws IOException {
         valueBuilder.setLength(0);
 
-        // Move to the next character after the opening quotes
         c = reader.read();
 
         while (c != EOF && c != '"') {
@@ -248,7 +235,6 @@ public class JSONDecoder extends Decoder<Object> {
             throw new IOException("Unterminated string.");
         }
 
-        // Move to the next character after the closing quotes
         c = reader.read();
 
         return valueBuilder.toString();

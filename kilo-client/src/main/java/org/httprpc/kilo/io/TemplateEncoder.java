@@ -491,7 +491,7 @@ public class TemplateEncoder extends Encoder<Object> {
                     }
 
                     if (c == EOF) {
-                        throw new IOException("Unexpected end of character stream.");
+                        throw new IOException("Unexpected end of stream.");
                     }
 
                     c = reader.read();
