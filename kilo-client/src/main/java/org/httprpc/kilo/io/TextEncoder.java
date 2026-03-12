@@ -27,16 +27,16 @@ public class TextEncoder extends Encoder<Object> {
             throw new IllegalArgumentException();
         }
 
-        writer = new BufferedWriter(writer);
+        var bufferedWriter = new BufferedWriter(writer);
 
         try {
             if (value instanceof CharSequence text) {
-                encode(text, writer);
+                encode(text, bufferedWriter);
             } else {
-                encode(value.toString(), writer);
+                encode(value.toString(), bufferedWriter);
             }
         } finally {
-            writer.flush();
+            bufferedWriter.flush();
         }
     }
 

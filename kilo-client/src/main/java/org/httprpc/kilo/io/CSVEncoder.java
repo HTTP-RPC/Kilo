@@ -102,14 +102,14 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             throw new IllegalArgumentException();
         }
 
-        writer = new BufferedWriter(writer);
+        var bufferedWriter = new BufferedWriter(writer);
 
         try {
             for (var row : rows) {
-                encode(row, writer);
+                encode(row, bufferedWriter);
             }
         } finally {
-            writer.flush();
+            bufferedWriter.flush();
         }
     }
 

@@ -27,12 +27,12 @@ public class TextDecoder extends Decoder<String> {
             throw new IllegalArgumentException();
         }
 
-        reader = new BufferedReader(reader);
+        var bufferedReader = new BufferedReader(reader);
 
         var stringBuilder = new StringBuilder(1024);
 
         int c;
-        while ((c = reader.read()) != EOF) {
+        while ((c = bufferedReader.read()) != EOF) {
             stringBuilder.append((char)c);
         }
 

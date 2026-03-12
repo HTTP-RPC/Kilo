@@ -39,11 +39,11 @@ public class JSONDecoder extends Decoder<Object> {
             throw new IllegalArgumentException();
         }
 
-        reader = new BufferedReader(reader);
+        var bufferedReader = new BufferedReader(reader);
 
-        c = reader.read();
+        c = bufferedReader.read();
 
-        return readValue(reader);
+        return readValue(bufferedReader);
     }
 
     /**

@@ -373,12 +373,12 @@ public class TemplateEncoder extends Encoder<Object> {
             try (var inputStream = type.getResourceAsStream(name)) {
                 Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
 
-                writer = new BufferedWriter(writer);
+                var bufferedWriter = new BufferedWriter(writer);
 
                 try {
-                    encode(BeanAdapter.adapt(value), writer, reader);
+                    encode(BeanAdapter.adapt(value), bufferedWriter, reader);
                 } finally {
-                    writer.flush();
+                    bufferedWriter.flush();
                 }
             }
         }
