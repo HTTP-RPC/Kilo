@@ -108,7 +108,9 @@ public class JSONDecoder extends Decoder<Object> {
 
             c = reader.read();
 
-            do {
+            skipWhitespace(reader);
+
+            while (c != ']') {
                 list.add(readValue(reader));
 
                 skipWhitespace(reader);
@@ -116,7 +118,7 @@ public class JSONDecoder extends Decoder<Object> {
                 if (c == ',') {
                     c = reader.read();
                 }
-            } while (c != ']');
+            }
 
             if (c != ']') {
                 throw new IOException("Unterminated array.");
@@ -130,7 +132,9 @@ public class JSONDecoder extends Decoder<Object> {
 
             c = reader.read();
 
-            do {
+            skipWhitespace(reader);
+
+            while (c != '}') {
                 skipWhitespace(reader);
 
                 if (c != '"') {
@@ -154,7 +158,7 @@ public class JSONDecoder extends Decoder<Object> {
                 if (c == ',') {
                     c = reader.read();
                 }
-            } while (c != '}');
+            }
 
             if (c != '}') {
                 throw new IOException("Unterminated array.");

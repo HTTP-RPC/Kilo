@@ -81,6 +81,11 @@ public class JSONDecoderTest {
     }
 
     @Test
+    public void testEmptyArray() throws IOException {
+        assertEquals(listOf(), decode("[\n]"));
+    }
+
+    @Test
     public void testUnterminatedArray() {
         assertThrows(IOException.class, () -> decode("[1, 2, 3"));
         assertThrows(IOException.class, () -> decode("[1, 2, 3, "));
@@ -101,6 +106,11 @@ public class JSONDecoderTest {
         var actual = decode(text);
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testEmptyObject() throws IOException {
+        assertEquals(mapOf(), decode("{\n}"));
     }
 
     @Test
