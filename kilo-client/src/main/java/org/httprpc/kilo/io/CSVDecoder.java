@@ -52,8 +52,16 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
                     c = reader.read();
                 }
 
-                while (c != EOF && c != '\r' && c != '\n') {
-                    if (c == ',') {
+                var quoted = false;
+
+                while (c != EOF) {
+                    if (c == '"') {
+                        c = reader.read();
+
+                        quoted = !quoted;
+                    }
+
+                    if ((c == ',' || c == '\r' && c == '\n') && !quoted) {
                         break;
                     }
 
