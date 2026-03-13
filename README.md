@@ -22,7 +22,7 @@ Classes provided by the Kilo framework include:
 * [WebServiceProxy](#webserviceproxy)
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder)
-* [CSVEncoder](#csvencoder)
+* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
 * [TemplateEncoder](#templateencoder)
 * [BeanAdapter](#beanadapter)
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
@@ -507,8 +507,8 @@ textEncoder.write(text, System.out);
 Hello, World!
 ```
 
-## CSVEncoder
-The `CSVEncoder` class serializes a sequence of values to CSV. For example:
+## CSVEncoder and CSVDecoder
+The `CSVEncoder` and `CSVDecoder` classes serialize a sequence of values to and from CSV, respectively. For example:
 
 ```java
 var rows = listOf(
