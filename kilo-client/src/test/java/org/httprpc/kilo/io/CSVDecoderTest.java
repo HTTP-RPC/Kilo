@@ -39,7 +39,7 @@ public class CSVDecoderTest {
     public void testReadEmpty() throws IOException {
         var csvDecoder = new CSVDecoder();
 
-        assertEquals(listOf(), listOf(csvDecoder.read(new StringReader(""))));
+        assertEquals(0, countOf(csvDecoder.read(new StringReader(""))));
     }
 
     @Test
@@ -61,6 +61,6 @@ public class CSVDecoderTest {
     public void testReadAllEmpty() {
         var csvDecoder = new CSVDecoder();
 
-        assertEquals(listOf(), listOf(csvDecoder.readAll(new StringReader(""))));
+        assertEquals(0, countOf(csvDecoder.readAll(new StringReader(""))));
     }
 }
