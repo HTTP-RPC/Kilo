@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        var text = "a,\"b,\rc,\nd\r\né\",f";
+        var text = " a , \"\"\"b\"\",\rc,\nd\r\n\"\"é\"\"\" , f ";
 
         var csvDecoder = new CSVDecoder();
 
         var row = listOf(csvDecoder.read(new StringReader(text)));
 
-        assertEquals(listOf("a", "b,\rc,\nd\r\né", "f"), row);
+        assertEquals(listOf(" a ", " \"b\",\rc,\nd\r\n\"é\" ", " f "), row);
     }
 
     @Test

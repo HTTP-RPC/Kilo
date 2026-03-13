@@ -61,7 +61,7 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
                         quoted = !quoted;
                     }
 
-                    if ((c == ',' || c == '\r' && c == '\n') && !quoted) {
+                    if ((c == ',' || c == '\r' || c == '\n') && !quoted) {
                         break;
                     }
 
