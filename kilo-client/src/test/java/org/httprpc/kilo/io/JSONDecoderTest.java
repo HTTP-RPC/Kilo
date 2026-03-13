@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -150,7 +149,7 @@ public class JSONDecoderTest {
     }
 
     @Test
-    public void testReadAll() throws IOException {
+    public void testReadAll() {
         var expected = listOf(
             "abc",
             123,
@@ -159,15 +158,11 @@ public class JSONDecoderTest {
             mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
         );
 
-        var jsonEncoder = new JSONEncoder();
-
-        var writer = new StringWriter();
-
-        jsonEncoder.write(expected, writer);
+        var text = "[\"abc\", 123, true, [1, 2.0, 3.0], {\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
 
         var jsonDecoder = new JSONDecoder();
 
-        var actual = listOf(jsonDecoder.readAll(new StringReader(writer.toString())));
+        var actual = listOf(jsonDecoder.readAll(new StringReader(text)));
 
         assertEquals(expected, actual);
     }
