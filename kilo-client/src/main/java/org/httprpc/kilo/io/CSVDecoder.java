@@ -28,17 +28,15 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
     private class ValueIterator implements Iterator<String> {
         Reader reader;
 
-        boolean endOfLine;
+        boolean endOfLine = false;
 
         ValueIterator(Reader reader) {
             this.reader = reader;
-
-            endOfLine = (c == EOF);
         }
 
         @Override
         public boolean hasNext() {
-            return !endOfLine;
+            return c != EOF && !endOfLine;
         }
 
         @Override
