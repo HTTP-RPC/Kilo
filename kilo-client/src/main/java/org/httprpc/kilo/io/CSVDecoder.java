@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Decodes CSV content.
@@ -27,20 +28,54 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
     private class ValueIterator implements Iterator<String> {
         Reader reader;
 
+        boolean endOfLine;
+
         ValueIterator(Reader reader) {
             this.reader = reader;
+
+            endOfLine = (c == EOF);
         }
 
         @Override
         public boolean hasNext() {
-            // TODO
-            return false;
+            return !endOfLine;
         }
 
         @Override
         public String next() {
-            // TODO
-            return null;
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            valueBuilder.setLength(0);
+
+            try {
+                if (c == ',') {
+                    c = reader.read();
+                }
+
+                while (c != EOF && c != ',' && c != '\r' && c != '\n') {
+                    valueBuilder.append((char)c);
+
+                    c = reader.read();
+                }
+
+                if (c == '\r') {
+                    endOfLine = true;
+
+                    c = reader.read();
+                }
+
+                if (c == '\n') {
+                    endOfLine = true;
+
+                    c = reader.read();
+                }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            return valueBuilder.toString();
         }
     }
 
@@ -49,20 +84,30 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
 
         RowIterator(Reader reader) {
             this.reader = reader;
+
+            try {
+                c = reader.read();
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
         }
 
         @Override
         public boolean hasNext() {
-            // TODO
-            return false;
+            return c != EOF;
         }
 
         @Override
         public Iterable<String> next() {
-            // TODO
-            return null;
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            return () -> new ValueIterator(reader);
         }
     }
+
+    private int c = EOF;
 
     private StringBuilder valueBuilder = new StringBuilder();
 
@@ -71,6 +116,8 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
+
+        c = reader.read();
 
         return () -> new ValueIterator(reader);
     }

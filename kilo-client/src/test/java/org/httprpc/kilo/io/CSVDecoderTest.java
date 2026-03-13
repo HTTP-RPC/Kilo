@@ -28,19 +28,25 @@ public class CSVDecoderTest {
     @Test
     @Disabled
     public void testRead() throws IOException {
-        var text = " a , \"\"\"b\"\",\rc,\nd\" , é ";
+        var text = " a , \"\"\"b\"\",\rc,\nd\" ,, é ";
 
         var csvDecoder = new CSVDecoder();
 
         var row = csvDecoder.read(new StringReader(text));
 
-        assertEquals(listOf(" a ", " \"b\",\rc,\nd ", " é "), row);
+        assertEquals(listOf(" a ", " \"b\",\rc,\nd ", "", " é "), row);
     }
 
     @Test
-    @Disabled
+    public void testReadEmpty() throws IOException {
+        var csvDecoder = new CSVDecoder();
+
+        assertEquals(listOf(), listOf(csvDecoder.read(new StringReader(""))));
+    }
+
+    @Test
     public void testReadAll() {
-        var text = "1,2,3\r\n4,5,6\r\n";
+        var text = "1,2,3\r4,5,6\n7,8,9\r\n";
 
         var csvDecoder = new CSVDecoder();
 
@@ -48,7 +54,15 @@ public class CSVDecoderTest {
 
         assertEquals(listOf(
             listOf(1, 2, 3),
-            listOf(4, 5, 6)
+            listOf(4, 5, 6),
+            listOf(7, 8, 9)
         ), rows);
+    }
+
+    @Test
+    public void testReadAllEmpty() {
+        var csvDecoder = new CSVDecoder();
+
+        assertEquals(listOf(), listOf(csvDecoder.readAll(new StringReader(""))));
     }
 }
