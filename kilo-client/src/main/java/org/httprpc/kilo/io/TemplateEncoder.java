@@ -434,7 +434,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                     var markerBuilder = new StringBuilder();
 
-                    while (c != ':' && c != '}' && c != EOF) {
+                    while (c != EOF && c != ':' && c != '}') {
                         markerBuilder.append((char)c);
 
                         c = reader.read();

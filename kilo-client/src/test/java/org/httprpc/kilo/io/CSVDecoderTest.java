@@ -41,7 +41,7 @@ public class CSVDecoderTest {
 
         var csvDecoder = new CSVDecoder();
 
-        var rows = listOf(mapAll(csvDecoder.readAll(new StringReader(text)), row -> mapAll(row, Integer::valueOf)));
+        var rows = listOf(mapAll(csvDecoder.readAll(new StringReader(text)), row -> listOf(mapAll(row, Integer::valueOf))));
 
         assertEquals(listOf(
             listOf(1, 2, 3),
