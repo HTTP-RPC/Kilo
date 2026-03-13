@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.io;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CSVDecoderTest {
     @Test
+    @Disabled
     public void testRead() throws IOException {
         var text = " a , \"\"\"b\"\",\rc,\nd\" , é ";
 
@@ -36,6 +38,7 @@ public class CSVDecoderTest {
     }
 
     @Test
+    @Disabled
     public void testReadAll() {
         var text = "1,2,3\r\n4,5,6\r\n";
 

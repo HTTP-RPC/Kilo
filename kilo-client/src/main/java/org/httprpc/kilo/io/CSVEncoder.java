@@ -126,7 +126,9 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             i++;
         }
 
-        writer.write("\r\n");
+        if (i > 0) {
+            writer.write("\r\n");
+        }
     }
 
     private void encode(Object value, Writer writer) throws IOException {

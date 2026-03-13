@@ -41,6 +41,17 @@ public class CSVEncoderTest {
     }
 
     @Test
+    public void testWriteEmpty() throws IOException {
+        var csvEncoder = new CSVEncoder();
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(), writer);
+
+        assertEquals("", writer.toString());
+    }
+
+    @Test
     public void testWriteAll() throws IOException {
         var rows = listOf(
             listOf("abc", 123, true),
@@ -54,5 +65,16 @@ public class CSVEncoderTest {
         csvEncoder.writeAll(rows, writer);
 
         assertEquals("\"abc\",123,true\r\n\"def\",456,false\r\n", writer.toString());
+    }
+
+    @Test
+    public void testWriteAllEmpty() throws IOException {
+        var csvEncoder = new CSVEncoder();
+
+        var writer = new StringWriter();
+
+        csvEncoder.writeAll(listOf(), writer);
+
+        assertEquals("", writer.toString());
     }
 }
