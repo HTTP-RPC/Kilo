@@ -32,7 +32,7 @@ public class CSVDecoderTest {
 
         var csvDecoder = new CSVDecoder();
 
-        var row = csvDecoder.read(new StringReader(text));
+        var row = listOf(csvDecoder.read(new StringReader(text)));
 
         assertEquals(listOf(" a ", " \"b\",\rc,\nd ", "", " é "), row);
     }

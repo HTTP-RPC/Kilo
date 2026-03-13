@@ -52,7 +52,11 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
                     c = reader.read();
                 }
 
-                while (c != EOF && c != ',' && c != '\r' && c != '\n') {
+                while (c != EOF && c != '\r' && c != '\n') {
+                    if (c == ',') {
+                        break;
+                    }
+
                     valueBuilder.append((char)c);
 
                     c = reader.read();
