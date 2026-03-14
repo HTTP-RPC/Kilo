@@ -73,15 +73,15 @@ public class Pipe<E> implements Iterable<E> {
     /**
      * Submits elements to the pipe.
      *
-     * @param iterable
+     * @param elements
      * The elements to submit.
      */
-    public void submit(Iterable<? extends E> iterable) {
-        if (iterable == null) {
+    public void submit(Iterable<? extends E> elements) {
+        if (elements == null) {
             throw new IllegalArgumentException();
         }
 
-        for (var element : iterable) {
+        for (var element : elements) {
             submit(element);
         }
 
