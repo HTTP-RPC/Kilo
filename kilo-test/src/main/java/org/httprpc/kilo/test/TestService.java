@@ -158,23 +158,22 @@ public class TestService extends AbstractDatabaseService {
                 throw new NoSuchElementException();
             }
 
-            BigInteger next;
-            if (i == 0) {
-                next = a;
-            } else {
-                if (i > 1) {
-                    var c = a.add(b);
+            try {
+                if (i == 0) {
+                    return a;
+                } else {
+                    if (i > 1) {
+                        var c = a.add(b);
 
-                    a = b;
-                    b = c;
+                        a = b;
+                        b = c;
+                    }
+
+                    return b;
                 }
-
-                next = b;
+            } finally {
+                i++;
             }
-
-            i++;
-
-            return next;
         }
     }
 

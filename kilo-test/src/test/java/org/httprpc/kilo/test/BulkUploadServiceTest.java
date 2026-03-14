@@ -31,20 +31,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BulkUploadServiceTest {
     public static class Rows implements Iterable<Row> {
-        private int count;
-
-        private int i = 0;
-
-        public Rows(int count) {
-            this.count = count;
-        }
-
         @Override
         public Iterator<Row> iterator() {
             return new Iterator<>() {
+                int i = 0;
+
                 @Override
                 public boolean hasNext() {
-                    return i < count;
+                    return i < ROW_COUNT;
                 }
 
                 @Override
@@ -63,20 +57,6 @@ public class BulkUploadServiceTest {
                 }
             };
         }
-
-        private static String getRandomString(int length) {
-            var stringBuilder = new StringBuilder(length);
-
-            for (var i = 0; i < length; i++) {
-                stringBuilder.append((char)(97 + (int)(Math.random() * 26)));
-            }
-
-            return stringBuilder.toString();
-        }
-
-        private static double getRandomNumber() {
-            return Math.random() * 999999;
-        }
     }
 
     private static final int ROW_COUNT = 17500;
@@ -87,7 +67,7 @@ public class BulkUploadServiceTest {
     public void testBulkUpload() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("bulk-upload"));
 
-        webServiceProxy.setBody(new Rows(ROW_COUNT));
+        webServiceProxy.setBody(new Rows());
 
         webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
@@ -116,5 +96,19 @@ public class BulkUploadServiceTest {
         webServiceProxy.setChunkSize(4096);
 
         assertEquals(ROW_COUNT, webServiceProxy.invoke());
+    }
+
+    private static String getRandomString(int length) {
+        var stringBuilder = new StringBuilder(length);
+
+        for (var i = 0; i < length; i++) {
+            stringBuilder.append((char)(97 + (int)(Math.random() * 26)));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private static double getRandomNumber() {
+        return Math.random() * 999999;
     }
 }
