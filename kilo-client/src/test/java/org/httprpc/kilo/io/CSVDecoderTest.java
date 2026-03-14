@@ -46,7 +46,7 @@ public class CSVDecoderTest {
 
     @Test
     public void testReadAll() {
-        var text = "1,2,3\r4,5,6\n7,8,9\r\n";
+        var text = "1,2,3\r\n4,5,6\r\n7,8,9\r\n";
 
         var csvDecoder = new CSVDecoder();
 

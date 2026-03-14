@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,19 +30,30 @@ public class CSVDecoder extends Decoder<List<String>> {
     private class RowIterator implements Iterator<List<String>> {
         Reader reader;
 
+        Boolean hasNext = null;
+        List<String> next = null;
+
         RowIterator(Reader reader) {
             this.reader = reader;
-
-            try {
-                c = reader.read();
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
         }
 
         @Override
         public boolean hasNext() {
-            return c != EOF;
+            if (hasNext == null) {
+                try {
+                    next = readRow(reader);
+                } catch (IOException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                if (next.isEmpty()) {
+                    hasNext = Boolean.FALSE;
+                } else {
+                    hasNext = Boolean.TRUE;
+                }
+            }
+
+            return hasNext;
         }
 
         @Override
@@ -50,11 +62,11 @@ public class CSVDecoder extends Decoder<List<String>> {
                 throw new NoSuchElementException();
             }
 
-            return readRow(reader);
+            hasNext = null;
+
+            return next;
         }
     }
-
-    private int c = EOF;
 
     private StringBuilder valueBuilder = new StringBuilder();
 
@@ -63,8 +75,6 @@ public class CSVDecoder extends Decoder<List<String>> {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
-
-        c = reader.read();
 
         return readRow(reader);
     }
@@ -103,8 +113,59 @@ public class CSVDecoder extends Decoder<List<String>> {
         return () -> new RowIterator(new BufferedReader(reader));
     }
 
-    private List<String> readRow(Reader reader) {
-        // TODO
-        return null;
+    private List<String> readRow(Reader reader) throws IOException {
+        var row = new ArrayList<String>();
+
+        var c = reader.read();
+
+        var quoted = false;
+
+        while (c != EOF) {
+            if (c == '"') {
+                c = reader.read();
+
+                if (!quoted || c != '"') {
+                    quoted = !quoted;
+
+                    continue;
+                }
+            }
+
+            if ((c == ',' || c == '\r' || c == '\n') && !quoted) {
+                row.add(valueBuilder.toString());
+
+                valueBuilder.setLength(0);
+
+                if (c == ',') {
+                    c = reader.read();
+
+                    continue;
+                } else {
+                    break;
+                }
+            }
+
+            valueBuilder.append((char)c);
+
+            c = reader.read();
+        }
+
+        if (!valueBuilder.isEmpty()) {
+            row.add(valueBuilder.toString());
+        }
+
+        if (quoted) {
+            throw new IOException("Unterminated string.");
+        }
+
+        if (c == '\r') {
+            c = reader.read();
+        }
+
+        if (c != '\n' && c != EOF) {
+            throw new IOException("Unterminated row.");
+        }
+
+        return row;
     }
 }
