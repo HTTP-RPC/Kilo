@@ -30,7 +30,9 @@ public class CSVDecoderTest {
 
         var csvDecoder = new CSVDecoder();
 
-        var row = listOf(csvDecoder.read(new StringReader(text)));
+        var reader = new StringReader(text);
+
+        var row = csvDecoder.read(reader);
 
         assertEquals(listOf(" a ", " \"b\",\rc,\nd\r\n\"é\" ", " f "), row);
     }
@@ -39,7 +41,7 @@ public class CSVDecoderTest {
     public void testReadEmpty() throws IOException {
         var csvDecoder = new CSVDecoder();
 
-        assertEquals(0, countOf(csvDecoder.read(new StringReader(""))));
+        assertTrue(csvDecoder.read(new StringReader("")).isEmpty());
     }
 
     @Test
@@ -48,7 +50,9 @@ public class CSVDecoderTest {
 
         var csvDecoder = new CSVDecoder();
 
-        var rows = listOf(mapAll(csvDecoder.readAll(new StringReader(text)), row -> listOf(mapAll(row, Integer::valueOf))));
+        var reader = new StringReader(text);
+
+        var rows = listOf(mapAll(csvDecoder.readAll(reader), row -> listOf(mapAll(row, Integer::valueOf))));
 
         assertEquals(listOf(
             listOf(1, 2, 3),
@@ -62,5 +66,25 @@ public class CSVDecoderTest {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(0, countOf(csvDecoder.readAll(new StringReader(""))));
+    }
+
+    @Test
+    public void testHeadings() throws IOException {
+        var text = "\"a\",\"b\",\"c\"\r\n1,2,3\r\n4,5,6\r\n";
+
+        var csvDecoder = new CSVDecoder();
+
+        var reader = new StringReader(text);
+
+        var headings = csvDecoder.read(reader);
+
+        assertEquals(listOf("a", "b", "c"), headings);
+
+        var rows = listOf(mapAll(csvDecoder.readAll(reader), row -> listOf(mapAll(row, Integer::valueOf))));
+
+        assertEquals(listOf(
+            listOf(1, 2, 3),
+            listOf(4, 5, 6)
+        ), rows);
     }
 }

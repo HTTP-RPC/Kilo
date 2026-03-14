@@ -19,77 +19,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
  * Decodes CSV content.
  */
-public class CSVDecoder extends Decoder<Iterable<String>> {
-    private class ValueIterator implements Iterator<String> {
-        Reader reader;
-
-        boolean endOfLine = false;
-
-        ValueIterator(Reader reader) {
-            this.reader = reader;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return c != EOF && !endOfLine;
-        }
-
-        @Override
-        public String next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-
-            valueBuilder.setLength(0);
-
-            try {
-                if (c == ',') {
-                    c = reader.read();
-                }
-
-                var quoted = false;
-
-                while (c != EOF) {
-                    if (c == '"') {
-                        c = reader.read();
-
-                        quoted = !quoted;
-                    }
-
-                    if ((c == ',' || c == '\r' || c == '\n') && !quoted) {
-                        break;
-                    }
-
-                    valueBuilder.append((char)c);
-
-                    c = reader.read();
-                }
-
-                if (c == '\r') {
-                    endOfLine = true;
-
-                    c = reader.read();
-                }
-
-                if (c == '\n') {
-                    endOfLine = true;
-
-                    c = reader.read();
-                }
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            return valueBuilder.toString();
-        }
-    }
-
-    private class RowIterator implements Iterator<Iterable<String>> {
+public class CSVDecoder extends Decoder<List<String>> {
+    private class RowIterator implements Iterator<List<String>> {
         Reader reader;
 
         RowIterator(Reader reader) {
@@ -108,12 +45,12 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
         }
 
         @Override
-        public Iterable<String> next() {
+        public List<String> next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
 
-            return () -> new ValueIterator(reader);
+            return readRow(reader);
         }
     }
 
@@ -122,26 +59,26 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
     private StringBuilder valueBuilder = new StringBuilder();
 
     @Override
-    public Iterable<String> read(Reader reader) throws IOException {
+    public List<String> read(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
 
         c = reader.read();
 
-        return () -> new ValueIterator(reader);
+        return readRow(reader);
     }
 
     /**
-     * Reads multiple values from an input stream.
+     * Reads multiple rows from an input stream.
      *
      * @param inputStream
      * The input stream to read from.
      *
      * @return
-     * The decoded values.
+     * The decoded rows.
      */
-    public Iterable<Iterable<String>> readAll(InputStream inputStream) {
+    public Iterable<List<String>> readAll(InputStream inputStream) {
         if (inputStream == null) {
             throw new IllegalArgumentException();
         }
@@ -150,19 +87,24 @@ public class CSVDecoder extends Decoder<Iterable<String>> {
     }
 
     /**
-     * Reads multiple values from a character stream.
+     * Reads multiple rows from a character stream.
      *
      * @param reader
      * The character stream to read from.
      *
      * @return
-     * The decoded values.
+     * The decoded rows.
      */
-    public Iterable<Iterable<String>> readAll(Reader reader) {
+    public Iterable<List<String>> readAll(Reader reader) {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
 
         return () -> new RowIterator(new BufferedReader(reader));
+    }
+
+    private List<String> readRow(Reader reader) {
+        // TODO
+        return null;
     }
 }

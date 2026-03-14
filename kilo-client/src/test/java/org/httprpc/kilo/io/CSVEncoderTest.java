@@ -77,4 +77,20 @@ public class CSVEncoderTest {
 
         assertEquals("", writer.toString());
     }
+
+    @Test
+    public void testHeadings() throws IOException {
+        var csvEncoder = new CSVEncoder();
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf("a", "b", "c"), writer);
+
+        csvEncoder.writeAll(listOf(
+            listOf(1, 2, 3),
+            listOf(4, 5, 6)
+        ), writer);
+
+        assertEquals("\"a\",\"b\",\"c\"\r\n1,2,3\r\n4,5,6\r\n", writer.toString());
+    }
 }
