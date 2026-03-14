@@ -22,9 +22,10 @@ import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
 
+import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = {"/bulk-upload/*"}, loadOnStartup = 1)
 public class BulkUploadService extends AbstractDatabaseService {
@@ -46,16 +47,10 @@ public class BulkUploadService extends AbstractDatabaseService {
 
             var keys = csvDecoder.read(reader);
 
-            var n = keys.size();
-
             for (var row : mapAll(csvDecoder.readAll(reader), row -> {
-                var map = new HashMap<String, Object>();
+                var iterator = map(row, Iterable::iterator);
 
-                for (var j = 0; j < n; j++) {
-                    map.put(keys.get(j), row.get(j));
-                }
-
-                return BeanAdapter.coerce(map, Row.class);
+                return BeanAdapter.coerce(mapOf(mapAll(keys, key -> entry(key, iterator.next()))), Row.class);
             })) {
                 queryBuilder.addBatch(statement, new BeanAdapter(row));
 
