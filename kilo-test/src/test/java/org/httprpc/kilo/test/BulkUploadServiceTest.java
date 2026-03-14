@@ -84,10 +84,7 @@ public class BulkUploadServiceTest {
                 var keys = listOf("text1", "text2", "number1", "number2", "number3");
 
                 csvEncoder.write(keys, writer);
-
-                var rows = mapAll((Iterable<?>)body, BeanAdapter::new);
-
-                csvEncoder.writeAll(mapAll(rows, map -> mapAll(keys, map::get)), writer);
+                csvEncoder.writeAll(mapAll(mapAll((Rows)body, BeanAdapter::new), map -> mapAll(keys, map::get)), writer);
             }
         });
 

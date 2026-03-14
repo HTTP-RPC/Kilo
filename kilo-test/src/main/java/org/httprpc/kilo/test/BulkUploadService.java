@@ -46,10 +46,10 @@ public class BulkUploadService extends AbstractDatabaseService {
 
             var keys = csvDecoder.read(reader);
 
-            var rows = mapAll(mapAll(csvDecoder.readAll(reader), Iterable::iterator), iterator -> mapOf(mapAll(keys, key -> entry(key, iterator.next()))));
+            for (var iterator : mapAll(csvDecoder.readAll(reader), Iterable::iterator)) {
+                var row = BeanAdapter.coerce(mapOf(mapAll(keys, key -> entry(key, iterator.next()))), Row.class);
 
-            for (var row : rows) {
-                queryBuilder.addBatch(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
+                queryBuilder.addBatch(statement, new BeanAdapter(row));
 
                 if (++i % BATCH_SIZE == 0) {
                     statement.executeBatch();
