@@ -74,7 +74,7 @@ public class Pipe<E> implements Iterable<E> {
      * Submits elements to the pipe.
      *
      * @param iterable
-     * An iterable containing the elements to submit.
+     * The elements to submit.
      */
     public void submit(Iterable<? extends E> iterable) {
         if (iterable == null) {
