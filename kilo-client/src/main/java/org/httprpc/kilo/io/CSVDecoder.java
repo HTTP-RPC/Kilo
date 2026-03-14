@@ -63,6 +63,8 @@ public class CSVDecoder extends Decoder<List<String>> {
         }
     }
 
+    private int rowSize = 0;
+
     private StringBuilder valueBuilder = new StringBuilder();
 
     @Override
@@ -109,7 +111,7 @@ public class CSVDecoder extends Decoder<List<String>> {
     }
 
     private List<String> readRow(Reader reader) throws IOException {
-        var row = new ArrayList<String>();
+        var row = new ArrayList<String>(rowSize);
 
         var c = reader.read();
 
@@ -164,6 +166,8 @@ public class CSVDecoder extends Decoder<List<String>> {
                 throw new IOException("Unterminated row.");
             }
         }
+
+        rowSize = Math.max(row.size(), rowSize);
 
         return row;
     }
