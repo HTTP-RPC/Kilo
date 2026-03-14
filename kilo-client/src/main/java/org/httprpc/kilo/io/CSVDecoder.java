@@ -33,7 +33,7 @@ public class CSVDecoder extends Decoder<List<String>> {
         List<String> next = null;
 
         RowIterator(Reader reader) {
-            this.reader = new BufferedReader(reader);
+            this.reader = reader;
         }
 
         @Override
@@ -107,7 +107,7 @@ public class CSVDecoder extends Decoder<List<String>> {
             throw new IllegalArgumentException();
         }
 
-        return () -> new RowIterator(reader);
+        return () -> new RowIterator(new BufferedReader(reader));
     }
 
     private List<String> readRow(Reader reader) throws IOException {

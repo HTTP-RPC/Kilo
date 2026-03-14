@@ -31,7 +31,7 @@ public class JSONDecoder extends Decoder<Object> {
         Reader reader;
 
         ArrayIterator(Reader reader) {
-            this.reader = new BufferedReader(reader);
+            this.reader = reader;
 
             try {
                 c = reader.read();
@@ -134,7 +134,7 @@ public class JSONDecoder extends Decoder<Object> {
             throw new IllegalArgumentException();
         }
 
-        return () -> new ArrayIterator(reader);
+        return () -> new ArrayIterator(new BufferedReader(reader));
     }
 
     private void skipWhitespace(Reader reader) throws IOException {
