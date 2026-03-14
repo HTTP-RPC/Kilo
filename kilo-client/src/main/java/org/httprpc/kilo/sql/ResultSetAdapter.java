@@ -33,65 +33,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
 
     private ResultSetMetaData resultSetMetaData;
 
-    private Iterator<Map<String, Object>> iterator = new Iterator<>() {
-        Boolean hasNext = null;
-
-        @Override
-        public boolean hasNext() {
-            if (hasNext == null) {
-                try {
-                    hasNext = resultSet.next() ? Boolean.TRUE : Boolean.FALSE;
-                } catch (SQLException exception) {
-                    throw new RuntimeException(exception);
-                }
-            }
-
-            return hasNext;
-        }
-
-        @Override
-        public Map<String, Object> next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-
-            Map<String, Object> row;
-            try {
-                var n = resultSetMetaData.getColumnCount();
-
-                row = new LinkedHashMap<>(n);
-
-                for (var i = 1; i <= n; i++) {
-                    var key = resultSetMetaData.getColumnLabel(i);
-
-                    var value = resultSet.getObject(i);
-
-                    if (value != null) {
-                        switch (value) {
-                            case java.sql.Date date -> value = date.toLocalDate();
-                            case java.sql.Time time -> value = time.toLocalTime();
-                            default -> {
-                                var transform = transforms.get(key);
-
-                                if (transform != null) {
-                                    value = transform.apply(value);
-                                }
-                            }
-                        }
-                    }
-
-                    row.put(key, value);
-                }
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            hasNext = null;
-
-            return row;
-        }
-    };
-
     /**
      * Constructs a new result set adapter.
      * <p>
@@ -137,7 +78,63 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
 
     @Override
     public Iterator<Map<String, Object>> iterator() {
-        return iterator;
+        return new Iterator<>() {
+            boolean hasNext;
+            {
+                try {
+                    hasNext = resultSet.next();
+                } catch (SQLException exception) {
+                    throw new RuntimeException(exception);
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return hasNext;
+            }
+
+            @Override
+            public Map<String, Object> next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                Map<String, Object> row;
+                try {
+                    var n = resultSetMetaData.getColumnCount();
+
+                    row = new LinkedHashMap<>(n);
+
+                    for (var i = 1; i <= n; i++) {
+                        var key = resultSetMetaData.getColumnLabel(i);
+
+                        var value = resultSet.getObject(i);
+
+                        if (value != null) {
+                            switch (value) {
+                                case java.sql.Date date -> value = date.toLocalDate();
+                                case java.sql.Time time -> value = time.toLocalTime();
+                                default -> {
+                                    var transform = transforms.get(key);
+
+                                    if (transform != null) {
+                                        value = transform.apply(value);
+                                    }
+                                }
+                            }
+                        }
+
+                        row.put(key, value);
+                    }
+
+                    hasNext = resultSet.next();
+                } catch (SQLException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                return row;
+            }
+        };
     }
 
     @Override

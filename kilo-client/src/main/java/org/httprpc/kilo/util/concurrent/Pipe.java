@@ -31,50 +31,6 @@ public class Pipe<E> implements Iterable<E> {
     private BlockingQueue<Object> queue;
     private int timeout;
 
-    private Iterator<E> iterator = new Iterator<>() {
-        E next = null;
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public boolean hasNext() {
-            if (next == null) {
-                Object value;
-                try {
-                    if (timeout == 0) {
-                        value = queue.take();
-                    } else {
-                        value = queue.poll(timeout, TimeUnit.MILLISECONDS);
-
-                        if (value == null) {
-                            throw new TimeoutException("Poll timed out.");
-                        }
-                    }
-                } catch (InterruptedException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                if (value != TERMINATOR) {
-                    next = (E)value;
-                }
-            }
-
-            return next != null;
-        }
-
-        @Override
-        public E next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-
-            try {
-                return next;
-            } finally {
-                next = null;
-            }
-        }
-    };
-
     private static final Object TERMINATOR = new Object();
 
     /**
@@ -150,6 +106,48 @@ public class Pipe<E> implements Iterable<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return iterator;
+        return new Iterator<>() {
+            E next = null;
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public boolean hasNext() {
+                if (next == null) {
+                    Object value;
+                    try {
+                        if (timeout == 0) {
+                            value = queue.take();
+                        } else {
+                            value = queue.poll(timeout, TimeUnit.MILLISECONDS);
+
+                            if (value == null) {
+                                throw new TimeoutException("Poll timed out.");
+                            }
+                        }
+                    } catch (InterruptedException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    if (value != TERMINATOR) {
+                        next = (E)value;
+                    }
+                }
+
+                return next != null;
+            }
+
+            @Override
+            public E next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                try {
+                    return next;
+                } finally {
+                    next = null;
+                }
+            }
+        };
     }
 }
