@@ -30,30 +30,23 @@ public class CSVDecoder extends Decoder<List<String>> {
     private class RowIterator implements Iterator<List<String>> {
         Reader reader;
 
-        Boolean hasNext = null;
         List<String> next = null;
 
         RowIterator(Reader reader) {
-            this.reader = reader;
+            this.reader = new BufferedReader(reader);
         }
 
         @Override
         public boolean hasNext() {
-            if (hasNext == null) {
+            if (next == null) {
                 try {
                     next = readRow(reader);
                 } catch (IOException exception) {
                     throw new RuntimeException(exception);
                 }
-
-                if (next.isEmpty()) {
-                    hasNext = Boolean.FALSE;
-                } else {
-                    hasNext = Boolean.TRUE;
-                }
             }
 
-            return hasNext;
+            return next != null && !next.isEmpty();
         }
 
         @Override
@@ -62,9 +55,11 @@ public class CSVDecoder extends Decoder<List<String>> {
                 throw new NoSuchElementException();
             }
 
-            hasNext = null;
-
-            return next;
+            try {
+                return next;
+            } finally {
+                next = null;
+            }
         }
     }
 
@@ -110,7 +105,7 @@ public class CSVDecoder extends Decoder<List<String>> {
             throw new IllegalArgumentException();
         }
 
-        return () -> new RowIterator(new BufferedReader(reader));
+        return () -> new RowIterator(reader);
     }
 
     private List<String> readRow(Reader reader) throws IOException {

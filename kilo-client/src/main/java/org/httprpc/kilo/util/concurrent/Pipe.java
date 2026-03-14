@@ -32,16 +32,12 @@ public class Pipe<E> implements Iterable<E> {
     private int timeout;
 
     private Iterator<E> iterator = new Iterator<>() {
-        Boolean hasNext = null;
         E next = null;
 
         @Override
         @SuppressWarnings("unchecked")
         public boolean hasNext() {
-            if (hasNext == null) {
-                hasNext = Boolean.FALSE;
-                next = null;
-
+            if (next == null) {
                 Object value;
                 try {
                     if (timeout == 0) {
@@ -58,12 +54,11 @@ public class Pipe<E> implements Iterable<E> {
                 }
 
                 if (value != TERMINATOR) {
-                    hasNext = Boolean.TRUE;
                     next = (E)value;
                 }
             }
 
-            return hasNext;
+            return next != null;
         }
 
         @Override
@@ -72,9 +67,11 @@ public class Pipe<E> implements Iterable<E> {
                 throw new NoSuchElementException();
             }
 
-            hasNext = null;
-
-            return next;
+            try {
+                return next;
+            } finally {
+                next = null;
+            }
         }
     };
 

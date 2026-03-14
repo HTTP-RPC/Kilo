@@ -79,20 +79,15 @@ public class Iterables {
         return () -> new Iterator<>() {
             Iterator<? extends T> iterator = iterable.iterator();
 
-            Boolean hasNext = null;
             T next = null;
 
             @Override
             public boolean hasNext() {
-                if (hasNext == null) {
-                    hasNext = Boolean.FALSE;
-                    next = null;
-
+                if (next == null) {
                     while (iterator.hasNext()) {
                         var element = iterator.next();
 
                         if (predicate.test(element)) {
-                            hasNext = Boolean.TRUE;
                             next = element;
 
                             break;
@@ -100,7 +95,7 @@ public class Iterables {
                     }
                 }
 
-                return hasNext;
+                return next != null;
             }
 
             @Override
@@ -109,9 +104,11 @@ public class Iterables {
                     throw new NoSuchElementException();
                 }
 
-                hasNext = null;
-
-                return next;
+                try {
+                    return next;
+                } finally {
+                    next = null;
+                }
             }
         };
     }
