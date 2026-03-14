@@ -131,16 +131,18 @@ public class CSVDecoder extends Decoder<List<String>> {
                 }
             }
 
-            if ((c == ',' || c == '\r' || c == '\n') && !quoted) {
-                row.add(valueBuilder.toString());
-
-                valueBuilder.setLength(0);
-
+            if (!quoted) {
                 if (c == ',') {
+                    row.add(valueBuilder.toString());
+
+                    valueBuilder.setLength(0);
+
                     c = reader.read();
 
                     continue;
-                } else {
+                }
+
+                if (c == '\r' || c == '\n') {
                     break;
                 }
             }
@@ -152,6 +154,8 @@ public class CSVDecoder extends Decoder<List<String>> {
 
         if (!valueBuilder.isEmpty()) {
             row.add(valueBuilder.toString());
+
+            valueBuilder.setLength(0);
         }
 
         if (quoted) {
@@ -160,10 +164,10 @@ public class CSVDecoder extends Decoder<List<String>> {
 
         if (c == '\r') {
             c = reader.read();
-        }
 
-        if (c != '\n' && c != EOF) {
-            throw new IOException("Unterminated row.");
+            if (c != '\n') {
+                throw new IOException("Unterminated row.");
+            }
         }
 
         return row;
