@@ -14,11 +14,10 @@
 
 package org.httprpc.kilo.test;
 
-public record Row(
-    String text1,
-    String text2,
-    Integer number1,
-    Double number2,
-    Double number3
-) {
+public interface Row {
+    String getText1();
+    String getText2();
+    Double getNumber1();
+    Double getNumber2();
+    Double getNumber3();
 }

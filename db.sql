@@ -48,8 +48,8 @@ create table item (
 create table bulk_upload_test (
     id int not null auto_increment,
     text1 varchar(32) not null,
-    text2 varchar(16) not null,
-    number1 integer not null,
+    text2 varchar(32) not null,
+    number1 double not null,
     number2 double not null,
     number3 double not null,
     primary key (id)

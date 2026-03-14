@@ -15,12 +15,18 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.CSVEncoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.Iterator;
 
+import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BulkUploadServiceTest {
@@ -33,8 +39,6 @@ public class BulkUploadServiceTest {
             this.count = count;
         }
 
-        private Row row = new Row("abcdefghijklmnopqrstuvwxyz", "ABCDEFG", 123456, 101.05, 2002.0125);
-
         @Override
         public Iterator<Row> iterator() {
             return new Iterator<>() {
@@ -45,40 +49,72 @@ public class BulkUploadServiceTest {
 
                 @Override
                 public Row next() {
-                    i++;
-
-                    return row;
+                    try {
+                        return BeanAdapter.coerce(mapOf(
+                            entry("text1", getRandomString(32)),
+                            entry("text2", getRandomString(32)),
+                            entry("number1", getRandomNumber()),
+                            entry("number2", getRandomNumber()),
+                            entry("number3", getRandomNumber())
+                        ), Row.class);
+                    } finally {
+                        i++;
+                    }
                 }
             };
         }
+
+        private static String getRandomString(int length) {
+            var stringBuilder = new StringBuilder(length);
+
+            for (var i = 0; i < length; i++) {
+                stringBuilder.append((char)(97 + (int)(Math.random() * 26)));
+            }
+
+            return stringBuilder.toString();
+        }
+
+        private static double getRandomNumber() {
+            return Math.random() * 999999;
+        }
     }
 
-    private static final int ROW_COUNT = 15000;
+    private static final int ROW_COUNT = 17500;
 
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test
     public void testBulkUpload() throws IOException {
-        var t0 = System.currentTimeMillis();
-
-        uploadRows("bulk-upload");
-
-        var t1 = System.currentTimeMillis();
-
-        uploadRows("bulk-upload/batch");
-
-        var t2 = System.currentTimeMillis();
-
-        assertTrue(t2 - t1 < (t1 - t0) / 5.0);
-    }
-
-    private static void uploadRows(String path) throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve(path));
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("bulk-upload"));
 
         webServiceProxy.setBody(new Rows(ROW_COUNT));
 
+        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
+            @Override
+            public String getContentType() {
+                return "text/csv";
+            }
+
+            @Override
+            public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+                var csvEncoder = new CSVEncoder();
+
+                var writer = new OutputStreamWriter(outputStream);
+
+                var keys = listOf("text1", "text2", "number1", "number2", "number3");
+
+                csvEncoder.write(keys, writer);
+
+                csvEncoder.writeAll(mapAll((Iterable<?>)body, row -> {
+                    var map = new BeanAdapter(row);
+
+                    return mapAll(keys, map::get);
+                }), writer);
+            }
+        });
+
         webServiceProxy.setChunkSize(4096);
 
-        webServiceProxy.invoke();
+        assertEquals(ROW_COUNT, webServiceProxy.invoke());
     }
 }

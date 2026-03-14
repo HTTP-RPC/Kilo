@@ -16,13 +16,13 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.JSONDecoder;
+import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import static org.httprpc.kilo.util.Iterables.*;
 
@@ -31,43 +31,42 @@ public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 5000;
 
     @RequestMethod("POST")
-    public void upload(Void body) throws IOException, SQLException {
+    public int upload(Void body) throws IOException, SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
         queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
 
-        try (var statement = queryBuilder.prepare(getConnection())) {
-            var jsonDecoder = new JSONDecoder();
-
-            for (var row : mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class))) {
-                queryBuilder.executeUpdate(statement, new BeanAdapter(row));
-            }
-        }
-    }
-
-    @RequestMethod("POST")
-    @ResourcePath("batch")
-    public void uploadBatch(Void body) throws IOException, SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
-        queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
+        var i = 0;
 
         try (var statement = queryBuilder.prepare(getConnection())) {
-            var n = 0;
+            var csvDecoder = new CSVDecoder();
 
-            var jsonDecoder = new JSONDecoder();
+            var reader = getRequest().getReader();
 
-            for (var row : mapAll(jsonDecoder.readAll(getRequest().getReader()), BeanAdapter.toType(Row.class))) {
+            var keys = csvDecoder.read(reader);
+
+            var n = keys.size();
+
+            for (var row : mapAll(csvDecoder.readAll(reader), row -> {
+                var map = new HashMap<String, Object>();
+
+                for (var j = 0; j < n; j++) {
+                    map.put(keys.get(j), row.get(j));
+                }
+
+                return BeanAdapter.coerce(map, Row.class);
+            })) {
                 queryBuilder.addBatch(statement, new BeanAdapter(row));
 
-                if (++n % BATCH_SIZE == 0) {
+                if (++i % BATCH_SIZE == 0) {
                     statement.executeBatch();
                 }
             }
 
             statement.executeBatch();
         }
+
+        return i;
     }
 }
