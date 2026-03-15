@@ -15,22 +15,26 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.ForeignKey;
+import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
-@Table("bulk_upload_test")
-public interface Row {
-    @Column("text1")
-    String getText1();
+import java.time.LocalDate;
 
-    @Column("text2")
-    String getText2();
+@Table("salaries")
+public record Salary(
+    @Column("emp_no")
+    @PrimaryKey
+    @ForeignKey(Employee.class)
+    Integer employeeNumber,
 
-    @Column("number1")
-    Double getNumber1();
+    @Column("salary")
+    Integer salary,
 
-    @Column("number2")
-    Double getNumber2();
+    @Column("from_date")
+    LocalDate fromDate,
 
-    @Column("number3")
-    Double getNumber3();
+    @Column("to_date")
+    LocalDate toDate
+) {
 }

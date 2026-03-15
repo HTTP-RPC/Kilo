@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URI;
 
+import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,12 +30,16 @@ public class EmployeeServiceTest {
 
     @Test
     public void testEmployees() throws IOException {
-        loadEmployees("employees");
-        loadEmployees("employees/stream");
+        loadEmployees(false);
+        loadEmployees(true);
     }
 
-    private static void loadEmployees(String path) throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(path));
+    private static void loadEmployees(boolean stream) throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("employees"));
+
+        webServiceProxy.setArguments(mapOf(
+            entry("stream", stream)
+        ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
@@ -43,14 +48,5 @@ public class EmployeeServiceTest {
         });
 
         assertEquals(300024, webServiceProxy.invoke());
-    }
-
-    @Test
-    public void testAverageSalary() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("employees/average-salary"));
-
-        var result = webServiceProxy.invoke();
-
-        assertEquals(63810.74, result);
     }
 }

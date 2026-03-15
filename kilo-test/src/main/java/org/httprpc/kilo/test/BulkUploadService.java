@@ -35,17 +35,16 @@ public class BulkUploadService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("json")
     public int uploadJSON(Void body) throws IOException, SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
-        queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
+        var queryBuilder = QueryBuilder.insert(Row.class);
 
         var i = 0;
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             var jsonDecoder = new JSONDecoder();
 
-            for (var map : jsonDecoder.readAll(getRequest().getReader())) {
+            var reader = getRequest().getReader();
+
+            for (var map : jsonDecoder.readAll(reader)) {
                 var row = BeanAdapter.coerce(map, Row.class);
 
                 queryBuilder.addBatch(statement, new BeanAdapter(row));
@@ -64,10 +63,7 @@ public class BulkUploadService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("csv")
     public int uploadCSV(Void body) throws IOException, SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
-        queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
+        var queryBuilder = QueryBuilder.insert(Row.class);
 
         var i = 0;
 

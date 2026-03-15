@@ -14,27 +14,24 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.ForeignKey;
-import org.httprpc.kilo.sql.PrimaryKey;
-import org.httprpc.kilo.sql.Table;
+import org.httprpc.kilo.WebServiceProxy;
+import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.io.IOException;
+import java.net.URI;
 
-@Table("salaries")
-public record EmployeeSalary(
-    @Column("emp_no")
-    @PrimaryKey
-    @ForeignKey(Employee.class)
-    Integer employeeNumber,
+import static org.junit.jupiter.api.Assertions.*;
 
-    @Column("salary")
-    Integer salary,
+public class SalaryServiceTest {
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
-    @Column("from_date")
-    LocalDate fromDate,
+    @Test
+    public void testAverageSalary() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("salaries/average"));
 
-    @Column("to_date")
-    LocalDate toDate
-) {
+        var result = webServiceProxy.invoke();
+
+        assertEquals(63810.74, result);
+    }
 }
+

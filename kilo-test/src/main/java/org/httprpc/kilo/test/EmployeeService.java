@@ -17,21 +17,17 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
@@ -57,7 +53,11 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    public List<Employee> getEmployees() throws SQLException {
+    public Iterable<Employee> getEmployees(boolean stream) throws SQLException {
+        return stream ? getEmployeesStream() : getEmployeesList();
+    }
+
+    private Iterable<Employee> getEmployeesList() throws SQLException {
         var queryBuilder = QueryBuilder.select(Employee.class);
 
         try (var statement = queryBuilder.prepare(getConnection());
@@ -66,9 +66,7 @@ public class EmployeeService extends WebService {
         }
     }
 
-    @RequestMethod("GET")
-    @ResourcePath("stream")
-    public Iterable<Employee> getEmployeesStream() {
+    private Iterable<Employee> getEmployeesStream() {
         var pipe = new Pipe<Employee>(4096, 15000);
 
         var connection = getConnection();
@@ -85,25 +83,5 @@ public class EmployeeService extends WebService {
         });
 
         return pipe;
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("average-salary")
-    public Double getAverageSalary(LocalDate fromDate, LocalDate toDate) throws SQLException {
-        fromDate = coalesce(fromDate, () -> LocalDate.of(1900, 1, 1));
-        toDate = coalesce(toDate, () -> LocalDate.of(9999, 1, 1));
-
-        var queryBuilder = QueryBuilder.select(EmployeeSalary.class);
-
-        try (var statement = queryBuilder.prepare(getConnection());
-            var results = queryBuilder.executeQuery(statement)) {
-            var employeeSalaries = filter(mapAll(results, BeanAdapter.toType(EmployeeSalary.class)),
-                whereGreaterThanOrEqualTo(EmployeeSalary::fromDate, fromDate)
-                    .and(whereLessThanOrEqualTo(EmployeeSalary::toDate, toDate)));
-
-            var average = averageOf(employeeSalaries, EmployeeSalary::salary);
-
-            return Double.isNaN(average) ? null : Math.round(average * 100) / 100.0;
-        }
     }
 }

@@ -981,6 +981,14 @@ The pipe is configured with a capacity of 4K elements and a timeout of 15s. Limi
 
 This implementation is slightly more verbose than the first one. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
 
+A consumer could process the response just as efficiently using the `readAll()` method of `JSONDecoder`:
+
+```java
+var jsonDecoder = new JSONDecoder();
+
+return countOf(jsonDecoder.readAll(inputStream));
+```
+
 For more information, see the [employee service](kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
 ## Collections
