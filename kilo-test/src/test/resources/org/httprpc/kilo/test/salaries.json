@@ -1,0 +1,50 @@
+{
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Double"
+          },
+          "queryParameters": [
+            {
+              "name": "fromDate",
+              "required": false,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "LocalDate"
+              }
+            },
+            {
+              "name": "toDate",
+              "required": false,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "LocalDate"
+              }
+            }
+          ]
+        }
+      ],
+      "path": "/salaries/average"
+    }
+  ],
+  "enumerations": [
+  ],
+  "path": "/salaries",
+  "structures": [
+  ]
+}

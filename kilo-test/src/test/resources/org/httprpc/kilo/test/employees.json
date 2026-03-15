@@ -1,0 +1,231 @@
+{
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Employee"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
+          },
+          "queryParameters": [
+            {
+              "name": "stream",
+              "required": false,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "boolean"
+              }
+            }
+          ]
+        }
+      ],
+      "path": "/employees"
+    },
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+            {
+              "name": "employeeNumber",
+              "required": true,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "Integer"
+              }
+            }
+          ],
+          "produces": {
+            "intrinsic": false,
+            "iterable": false,
+            "map": false,
+            "name": "EmployeeDetail"
+          },
+          "queryParameters": [
+          ]
+        }
+      ],
+      "path": "/employees/?"
+    }
+  ],
+  "enumerations": [
+  ],
+  "path": "/employees",
+  "structures": [
+    {
+      "name": "Employee",
+      "properties": [
+        {
+          "deprecated": false,
+          "name": "birthDate",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "LocalDate"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "employeeNumber",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Integer"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "firstName",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "gender",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "hireDate",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "LocalDate"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "lastName",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    },
+    {
+      "name": "EmployeeDetail",
+      "properties": [
+        {
+          "deprecated": false,
+          "name": "salaries",
+          "required": false,
+          "type": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Salary"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
+          }
+        }
+      ],
+      "supertypes": [
+        {
+          "intrinsic": false,
+          "iterable": false,
+          "map": false,
+          "name": "Employee"
+        }
+      ]
+    },
+    {
+      "name": "Salary",
+      "properties": [
+        {
+          "deprecated": false,
+          "name": "employeeNumber",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Integer"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "salary",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Integer"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "fromDate",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "LocalDate"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "toDate",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "LocalDate"
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Person"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
+          },
+          "queryParameters": [
+            {
+              "name": "first_name",
+              "required": false,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "String"
+              }
+            },
+            {
+              "name": "last_name",
+              "required": false,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "String"
+              }
+            }
+          ]
+        }
+      ],
+      "path": "/members"
+    }
+  ],
+  "enumerations": [
+  ],
+  "path": "/members",
+  "structures": [
+    {
+      "name": "Person",
+      "properties": [
+        {
+          "deprecated": false,
+          "name": "first_name",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "last_name",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    }
+  ]
+}

@@ -177,6 +177,12 @@ public class JSONEncoder extends Encoder<Object> {
                 throw new IllegalArgumentException("Missing key.");
             }
 
+            var value = entry.getValue();
+
+            if (value == null) {
+                continue;
+            }
+
             if (i > 0) {
                 writer.write(",");
             }
@@ -195,7 +201,7 @@ public class JSONEncoder extends Encoder<Object> {
                 writer.write(" ");
             }
 
-            encode(entry.getValue(), writer);
+            encode(value, writer);
 
             i++;
         }

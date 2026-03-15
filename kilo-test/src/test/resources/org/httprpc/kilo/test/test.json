@@ -1,398 +1,291 @@
 {
-  "description": null,
   "endpoints": [
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "TestService.Response",
-            "valueType": null
+            "name": "TestService.Response"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "string",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               }
             },
             {
-              "description": null,
               "name": "strings",
               "required": false,
               "type": {
                 "elementType": {
-                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
-                  "keyType": null,
                   "map": false,
-                  "name": "String",
-                  "valueType": null
+                  "name": "String"
                 },
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
                 "map": false,
-                "name": "Iterable",
-                "valueType": null
+                "name": "Iterable"
               }
             },
             {
-              "description": null,
               "name": "number",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Integer",
-                "valueType": null
+                "name": "Integer"
               }
             },
             {
-              "description": null,
               "name": "numbers",
               "required": false,
               "type": {
                 "elementType": {
-                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
-                  "keyType": null,
                   "map": false,
-                  "name": "Integer",
-                  "valueType": null
+                  "name": "Integer"
                 },
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
                 "map": false,
-                "name": "Iterable",
-                "valueType": null
+                "name": "Iterable"
               }
             },
             {
-              "description": null,
               "name": "flag",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "boolean",
-                "valueType": null
+                "name": "boolean"
               }
             },
             {
-              "description": null,
               "name": "character",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "char",
-                "valueType": null
+                "name": "char"
               }
             },
             {
-              "description": null,
               "name": "dayOfWeek",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": false,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "DayOfWeek",
-                "valueType": null
+                "name": "DayOfWeek"
               }
             },
             {
-              "description": null,
               "name": "date",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Instant",
-                "valueType": null
+                "name": "Instant"
               }
             },
             {
-              "description": null,
               "name": "dates",
               "required": false,
               "type": {
                 "elementType": {
-                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
-                  "keyType": null,
                   "map": false,
-                  "name": "Instant",
-                  "valueType": null
+                  "name": "Instant"
                 },
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
                 "map": false,
-                "name": "Iterable",
-                "valueType": null
+                "name": "Iterable"
               }
             },
             {
-              "description": null,
               "name": "localDate",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "LocalDate",
-                "valueType": null
+                "name": "LocalDate"
               }
             },
             {
-              "description": null,
               "name": "localTime",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "LocalTime",
-                "valueType": null
+                "name": "LocalTime"
               }
             },
             {
-              "description": null,
               "name": "localDateTime",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "LocalDateTime",
-                "valueType": null
+                "name": "LocalDateTime"
               }
             },
             {
-              "description": null,
               "name": "duration",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Duration",
-                "valueType": null
+                "name": "Duration"
               }
             },
             {
-              "description": null,
               "name": "period",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Period",
-                "valueType": null
+                "name": "Period"
               }
             },
             {
-              "description": null,
               "name": "uuid",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "UUID",
-                "valueType": null
+                "name": "UUID"
               }
             }
           ]
         },
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "value",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             },
             {
-              "description": null,
               "name": "delay",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             }
           ]
         },
         {
           "bodyParameter": {
-            "description": null,
             "name": "strings",
             "required": true,
             "type": {
               "elementType": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               },
               "intrinsic": true,
               "iterable": true,
-              "keyType": null,
               "map": false,
-              "name": "Iterable",
-              "valueType": null
+              "name": "Iterable"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "void",
-            "valueType": null
+            "name": "void"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "number",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Integer",
-                "valueType": null
+                "name": "Integer"
               }
             }
           ]
         },
         {
           "bodyParameter": {
-            "description": null,
             "name": "body",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Void",
-              "valueType": null
+              "name": "Void"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "PUT",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "void",
-            "valueType": null
+            "name": "void"
           },
           "queryParameters": [
           ]
@@ -404,83 +297,62 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "value",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "PUT",
           "parameters": true,
           "pathParameters": [
             {
-              "description": null,
               "name": "id",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             }
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           },
           "queryParameters": [
           ]
         },
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "DELETE",
           "parameters": true,
           "pathParameters": [
             {
-              "description": null,
               "name": "id",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Integer",
-                "valueType": null
+                "name": "Integer"
               }
             }
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Integer",
-            "valueType": null
+            "name": "Integer"
           },
           "queryParameters": [
           ]
@@ -491,9 +363,7 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
@@ -503,13 +373,10 @@
               "name": "a",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             },
             {
@@ -517,13 +384,10 @@
               "name": "b",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               }
             },
             {
@@ -531,13 +395,10 @@
               "name": "c",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             },
             {
@@ -545,39 +406,29 @@
               "name": "d",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               }
             }
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
             "keyType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "map": true,
             "name": "Map",
             "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             }
           },
           "queryParameters": [
@@ -590,34 +441,26 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "body",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": false,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "TestService.Body",
-              "valueType": null
+              "name": "TestService.Body"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "TestService.Body",
-            "valueType": null
+            "name": "TestService.Body"
           },
           "queryParameters": [
           ]
@@ -628,22 +471,17 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "TestService.C",
-            "valueType": null
+            "name": "TestService.C"
           },
           "queryParameters": [
           ]
@@ -655,34 +493,26 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "coordinates",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": false,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Coordinates",
-              "valueType": null
+              "name": "Coordinates"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Coordinates",
-            "valueType": null
+            "name": "Coordinates"
           },
           "queryParameters": [
           ]
@@ -694,34 +524,26 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "body",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Void",
-              "valueType": null
+              "name": "Void"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           },
           "queryParameters": [
           ]
@@ -732,22 +554,17 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": true,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "TestService.TestRecord",
-            "valueType": null
+            "name": "TestService.TestRecord"
           },
           "queryParameters": [
           ]
@@ -758,22 +575,17 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "TestService.E",
-            "valueType": null
+            "name": "TestService.E"
           },
           "queryParameters": [
           ]
@@ -784,36 +596,27 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "void",
-            "valueType": null
+            "name": "void"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "committed",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "boolean",
-                "valueType": null
+                "name": "boolean"
               }
             }
           ]
@@ -824,9 +627,7 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
@@ -834,34 +635,25 @@
           ],
           "produces": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Number",
-              "valueType": null
+              "name": "Number"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "count",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             }
           ]
@@ -873,114 +665,84 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "values",
             "required": true,
             "type": {
               "elementType": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Double",
-                "valueType": null
+                "name": "Double"
               },
               "intrinsic": true,
               "iterable": true,
-              "keyType": null,
               "map": false,
-              "name": "Iterable",
-              "valueType": null
+              "name": "Iterable"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
             {
-              "description": null,
               "name": "x",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             },
             {
-              "description": null,
               "name": "y",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             }
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
             "keyType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "map": true,
             "name": "Map",
             "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             }
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "a",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             },
             {
-              "description": null,
               "name": "b",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             }
           ]
@@ -991,138 +753,101 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": true,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
             "keyType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "map": true,
             "name": "Map",
             "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             }
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "string",
               "required": true,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               }
             },
             {
-              "description": null,
               "name": "strings",
               "required": false,
               "type": {
                 "elementType": {
-                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
-                  "keyType": null,
                   "map": false,
-                  "name": "String",
-                  "valueType": null
+                  "name": "String"
                 },
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
                 "map": false,
-                "name": "Iterable",
-                "valueType": null
+                "name": "Iterable"
               }
             },
             {
-              "description": null,
               "name": "number",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Integer",
-                "valueType": null
+                "name": "Integer"
               }
             },
             {
-              "description": null,
               "name": "date",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Instant",
-                "valueType": null
+                "name": "Instant"
               }
             },
             {
-              "description": null,
               "name": "file",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Part",
-                "valueType": null
+                "name": "Part"
               }
             },
             {
-              "description": null,
               "name": "files",
               "required": false,
               "type": {
                 "elementType": {
-                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
-                  "keyType": null,
                   "map": false,
-                  "name": "Part",
-                  "valueType": null
+                  "name": "Part"
                 },
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
                 "map": false,
-                "name": "Iterable",
-                "valueType": null
+                "name": "Iterable"
               }
             }
           ]
@@ -1133,37 +858,28 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
             "keyType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "map": true,
             "name": "Map",
             "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             }
           },
           "queryParameters": [
@@ -1176,34 +892,26 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "body",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Void",
-              "valueType": null
+              "name": "Void"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "void",
-            "valueType": null
+            "name": "void"
           },
           "queryParameters": [
           ]
@@ -1214,9 +922,7 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
@@ -1224,20 +930,15 @@
           ],
           "produces": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Double",
-              "valueType": null
+              "name": "Double"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           },
           "queryParameters": [
           ]
@@ -1248,9 +949,7 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
@@ -1258,49 +957,37 @@
           ],
           "produces": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           },
           "queryParameters": [
           ]
         },
         {
           "bodyParameter": {
-            "description": null,
             "name": "list",
             "required": true,
             "type": {
               "elementType": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               },
               "intrinsic": true,
               "iterable": true,
-              "keyType": null,
               "map": false,
-              "name": "Iterable",
-              "valueType": null
+              "name": "Iterable"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
@@ -1308,20 +995,15 @@
           ],
           "produces": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           },
           "queryParameters": [
           ]
@@ -1332,37 +1014,28 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
             "keyType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             },
             "map": true,
             "name": "Map",
             "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             }
           },
           "queryParameters": [
@@ -1370,65 +1043,49 @@
         },
         {
           "bodyParameter": {
-            "description": null,
             "name": "map",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
               "keyType": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               },
               "map": true,
               "name": "Map",
               "valueType": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "Double",
-                "valueType": null
+                "name": "Double"
               }
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
             "keyType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "map": true,
             "name": "Map",
             "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Double",
-              "valueType": null
+              "name": "Double"
             }
           },
           "queryParameters": [
@@ -1440,93 +1097,69 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "double",
-            "valueType": null
+            "name": "double"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "a",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "double",
-                "valueType": null
+                "name": "double"
               }
             },
             {
-              "description": null,
               "name": "b",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "double",
-                "valueType": null
+                "name": "double"
               }
             }
           ]
         },
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "double",
-            "valueType": null
+            "name": "double"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "values",
               "required": false,
               "type": {
                 "elementType": {
-                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
-                  "keyType": null,
                   "map": false,
-                  "name": "Double",
-                  "valueType": null
+                  "name": "Double"
                 },
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
                 "map": false,
-                "name": "Iterable",
-                "valueType": null
+                "name": "Iterable"
               }
             }
           ]
@@ -1537,9 +1170,7 @@
     {
       "operations": [
         {
-          "bodyParameter": null,
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": false,
@@ -1547,20 +1178,15 @@
           ],
           "produces": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           },
           "queryParameters": [
           ]
@@ -1572,80 +1198,60 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "strings",
             "required": true,
             "type": {
               "elementType": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "String",
-                "valueType": null
+                "name": "String"
               },
               "intrinsic": true,
               "iterable": true,
-              "keyType": null,
               "map": false,
-              "name": "Iterable",
-              "valueType": null
+              "name": "Iterable"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
             "keyType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "map": true,
             "name": "Map",
             "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Object",
-              "valueType": null
+              "name": "Object"
             }
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "numbers",
               "required": false,
               "type": {
                 "elementType": {
-                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
-                  "keyType": null,
                   "map": false,
-                  "name": "int",
-                  "valueType": null
+                  "name": "int"
                 },
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
                 "map": false,
-                "name": "Iterable",
-                "valueType": null
+                "name": "Iterable"
               }
             }
           ]
@@ -1657,62 +1263,46 @@
       "operations": [
         {
           "bodyParameter": {
-            "description": null,
             "name": "document",
             "required": true,
             "type": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Document",
-              "valueType": null
+              "name": "Document"
             }
           },
           "deprecated": false,
-          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Document",
-            "valueType": null
+            "name": "Document"
           },
           "queryParameters": [
             {
-              "description": null,
               "name": "a",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             },
             {
-              "description": null,
               "name": "b",
               "required": false,
               "type": {
-                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
                 "map": false,
-                "name": "int",
-                "valueType": null
+                "name": "int"
               }
             }
           ]
@@ -1723,63 +1313,51 @@
   ],
   "enumerations": [
     {
-      "description": null,
       "name": "DayOfWeek",
       "values": [
         {
           "deprecated": false,
-          "description": null,
           "name": "MONDAY"
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "TUESDAY"
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "WEDNESDAY"
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "THURSDAY"
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "FRIDAY"
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "SATURDAY"
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "SUNDAY"
         }
       ]
     },
     {
-      "description": null,
       "name": "TestService.TestEnum",
       "values": [
         {
           "deprecated": false,
-          "description": null,
           "name": "ONE"
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "TWO"
         },
         {
           "deprecated": true,
-          "description": null,
           "name": "THREE"
         }
       ]
@@ -1797,13 +1375,10 @@
           "name": "x",
           "required": true,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           }
         },
         {
@@ -1812,13 +1387,10 @@
           "name": "y",
           "required": true,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           }
         }
       ],
@@ -1826,22 +1398,17 @@
       ]
     },
     {
-      "description": null,
       "name": "TestService.A",
       "properties": [
         {
           "deprecated": false,
-          "description": null,
           "name": "a",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           }
         }
       ],
@@ -1849,7 +1416,6 @@
       ]
     },
     {
-      "description": null,
       "name": "TestService.B",
       "properties": [
         {
@@ -1858,13 +1424,10 @@
           "name": "b",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "double",
-            "valueType": null
+            "name": "double"
           }
         }
       ],
@@ -1872,98 +1435,73 @@
       ]
     },
     {
-      "description": null,
       "name": "TestService.Body",
       "properties": [
         {
           "deprecated": false,
-          "description": null,
           "name": "flag",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "boolean",
-            "valueType": null
+            "name": "boolean"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "number",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Integer",
-            "valueType": null
+            "name": "Integer"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "numbers",
           "required": false,
           "type": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Integer",
-              "valueType": null
+              "name": "Integer"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "string",
           "required": true,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "String",
-            "valueType": null
+            "name": "String"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "strings",
           "required": false,
           "type": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           }
         }
       ],
@@ -1971,7 +1509,6 @@
       ]
     },
     {
-      "description": null,
       "name": "TestService.C",
       "properties": [
         {
@@ -1980,13 +1517,10 @@
           "name": "b",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "double",
-            "valueType": null
+            "name": "double"
           }
         },
         {
@@ -1996,61 +1530,45 @@
           "required": false,
           "type": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           }
         }
       ],
       "supertypes": [
         {
-          "elementType": null,
           "intrinsic": false,
           "iterable": false,
-          "keyType": null,
           "map": false,
-          "name": "TestService.A",
-          "valueType": null
+          "name": "TestService.A"
         },
         {
-          "elementType": null,
           "intrinsic": false,
           "iterable": false,
-          "keyType": null,
           "map": false,
-          "name": "TestService.B",
-          "valueType": null
+          "name": "TestService.B"
         }
       ]
     },
     {
-      "description": null,
       "name": "TestService.D",
       "properties": [
         {
           "deprecated": false,
-          "description": null,
           "name": "d",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           }
         }
       ],
@@ -2058,288 +1576,213 @@
       ]
     },
     {
-      "description": null,
       "name": "TestService.E",
       "properties": [
         {
           "deprecated": false,
-          "description": null,
           "name": "e",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "double",
-            "valueType": null
+            "name": "double"
           }
         }
       ],
       "supertypes": [
         {
-          "elementType": null,
           "intrinsic": false,
           "iterable": false,
-          "keyType": null,
           "map": false,
-          "name": "TestService.D",
-          "valueType": null
+          "name": "TestService.D"
         }
       ]
     },
     {
-      "description": null,
       "name": "TestService.Response",
       "properties": [
         {
           "deprecated": false,
-          "description": null,
           "name": "character",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "char",
-            "valueType": null
+            "name": "char"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "date",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Instant",
-            "valueType": null
+            "name": "Instant"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "dates",
           "required": false,
           "type": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Instant",
-              "valueType": null
+              "name": "Instant"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "dayOfWeek",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "DayOfWeek",
-            "valueType": null
+            "name": "DayOfWeek"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "duration",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Duration",
-            "valueType": null
+            "name": "Duration"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "flag",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "boolean",
-            "valueType": null
+            "name": "boolean"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "localDate",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "LocalDate",
-            "valueType": null
+            "name": "LocalDate"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "localDateTime",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "LocalDateTime",
-            "valueType": null
+            "name": "LocalDateTime"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "localTime",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "LocalTime",
-            "valueType": null
+            "name": "LocalTime"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "number",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Integer",
-            "valueType": null
+            "name": "Integer"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "numbers",
           "required": false,
           "type": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "Integer",
-              "valueType": null
+              "name": "Integer"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "period",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "Period",
-            "valueType": null
+            "name": "Period"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "string",
           "required": true,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "String",
-            "valueType": null
+            "name": "String"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "strings",
           "required": false,
           "type": {
             "elementType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
               "map": false,
-              "name": "String",
-              "valueType": null
+              "name": "String"
             },
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
+            "name": "Iterable"
           }
         },
         {
           "deprecated": false,
-          "description": null,
           "name": "uuid",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "UUID",
-            "valueType": null
+            "name": "UUID"
           }
         }
       ],
@@ -2347,37 +1790,28 @@
       ]
     },
     {
-      "description": null,
       "name": "TestService.TestRecord",
       "properties": [
         {
           "deprecated": false,
-          "description": null,
           "name": "number",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "int",
-            "valueType": null
+            "name": "int"
           }
         },
         {
           "deprecated": true,
-          "description": null,
           "name": "testEnum",
           "required": false,
           "type": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "TestService.TestEnum",
-            "valueType": null
+            "name": "TestService.TestEnum"
           }
         }
       ],

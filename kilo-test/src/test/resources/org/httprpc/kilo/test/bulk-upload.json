@@ -1,0 +1,71 @@
+{
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "bodyParameter": {
+            "name": "body",
+            "required": true,
+            "type": {
+              "intrinsic": true,
+              "iterable": false,
+              "map": false,
+              "name": "Void"
+            }
+          },
+          "deprecated": false,
+          "formData": false,
+          "method": "POST",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "int"
+          },
+          "queryParameters": [
+          ]
+        }
+      ],
+      "path": "/bulk-upload/csv"
+    },
+    {
+      "operations": [
+        {
+          "bodyParameter": {
+            "name": "body",
+            "required": true,
+            "type": {
+              "intrinsic": true,
+              "iterable": false,
+              "map": false,
+              "name": "Void"
+            }
+          },
+          "deprecated": false,
+          "formData": false,
+          "method": "POST",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "int"
+          },
+          "queryParameters": [
+          ]
+        }
+      ],
+      "path": "/bulk-upload/json"
+    }
+  ],
+  "enumerations": [
+  ],
+  "path": "/bulk-upload",
+  "structures": [
+  ]
+}

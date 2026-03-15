@@ -30,8 +30,12 @@ public class DocumentationTest {
 
     @Test
     public void testDocumentation() throws IOException {
-        testDocumentation("math");
+        testDocumentation("bulk-upload");
         testDocumentation("catalog");
+        testDocumentation("employees");
+        testDocumentation("math");
+        testDocumentation("members");
+        testDocumentation("salaries");
         testDocumentation("test");
     }
 
