@@ -15,11 +15,13 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -38,7 +40,7 @@ public class EmployeeServiceTest {
         loadEmployees(true);
     }
 
-    private static void loadEmployees(boolean stream) throws IOException {
+    private void loadEmployees(boolean stream) throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("employees"));
 
         webServiceProxy.setArguments(mapOf(
@@ -52,5 +54,33 @@ public class EmployeeServiceTest {
         });
 
         assertEquals(300024, webServiceProxy.invoke());
+    }
+
+    @Test
+    public void testEmployeeDetail() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("employees/%d", 10001)));
+
+        var employeeDetail = BeanAdapter.coerce(webServiceProxy.invoke(), EmployeeDetail.class);
+
+        assertEquals(10001, employeeDetail.getEmployeeNumber());
+
+        assertEquals("Georgi", employeeDetail.getFirstName());
+        assertEquals("Facello", employeeDetail.getLastName());
+
+        var salaries = employeeDetail.getSalaries();
+
+        assertEquals(17, salaries.size());
+
+        var first = salaries.getFirst();
+
+        assertEquals(60117, first.salary());
+        assertEquals(LocalDate.of(1986, 6, 26), first.fromDate());
+        assertEquals(LocalDate.of(1987, 6, 26), first.toDate());
+
+        var last = salaries.getLast();
+
+        assertEquals(88958, last.salary());
+        assertEquals(LocalDate.of(2002, 6, 22), last.fromDate());
+        assertEquals(LocalDate.of(9999, 1, 1), last.toDate());
     }
 }

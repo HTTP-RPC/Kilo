@@ -17,6 +17,7 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
@@ -28,6 +29,7 @@ import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
@@ -83,5 +85,18 @@ public class EmployeeService extends WebService {
         });
 
         return pipe;
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("?")
+    public EmployeeDetail getEmployee(Integer employeeNumber) throws SQLException {
+        var queryBuilder = QueryBuilder.select(EmployeeDetail.class).filterByPrimaryKey("employeeNumber");
+
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("employeeNumber", employeeNumber)
+            ))) {
+            return map(firstOf(results), BeanAdapter.toType(EmployeeDetail.class));
+        }
     }
 }
