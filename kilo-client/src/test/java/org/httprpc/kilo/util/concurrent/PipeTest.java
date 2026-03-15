@@ -14,8 +14,6 @@
 
 package org.httprpc.kilo.util.concurrent;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -25,17 +23,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PipeTest {
-    private static ExecutorService executorService = null;
-
-    @BeforeAll
-    public static void setUpClass() {
-        executorService = Executors.newSingleThreadExecutor();
-    }
-
-    @AfterAll
-    public static void tearDownClass() {
-        executorService.shutdown();
-    }
+    private static ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Test
     public void testBoundedPipe() {

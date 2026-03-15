@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
@@ -33,25 +32,11 @@ import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
-    private static ExecutorService executorService = null;
+    private static ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
     protected String getDataSourceName() {
         return "java:comp/env/jdbc/EmployeeDB";
-    }
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-
-        executorService = Executors.newCachedThreadPool();
-    }
-
-    @Override
-    public void destroy() {
-        executorService.shutdown();
-
-        super.destroy();
     }
 
     @RequestMethod("GET")
