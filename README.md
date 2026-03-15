@@ -451,7 +451,7 @@ var sum2 = mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0)); // 6.0
 var average = mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0)); // 3.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. The `WebServiceProxy.Configuration` annotation can be used to further customize request processing.
+The [`Required`](#required-parameters) and [`Name`](#custom-parameter-names) annotations may also be applied to proxy method parameters. The `WebServiceProxy.Configuration` annotation can be used to further customize request processing.
 
 Path variables and body content are handled as described for [`WebService`](#webservice). Body parameters are required for `POST` and `PUT` methods. A body parameter of type `Void` may be used to indicate that a method does not accept a body.
 
@@ -577,14 +577,14 @@ course.setName("CS 101");
 course.setBuilding("Technology Lab");
 course.setRoomNumber(210);
 
-var courseAdapter = new BeanAdapter(course);
+var map = new BeanAdapter(course);
 
-System.out.println(courseAdapter.get("name")); // CS 101
-System.out.println(courseAdapter.get("building")); // Technology Lab
-System.out.println(courseAdapter.get("roomNumber")); // 210
+System.out.println(map.get("name")); // CS 101
+System.out.println(map.get("building")); // Technology Lab
+System.out.println(map.get("roomNumber")); // 210
 ```
 
-`BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
+It can also be used to facilitate type-safe access to loosely typed data structures:
 
 ```java
 var map = mapOf(
@@ -629,83 +629,7 @@ System.out.println(weather.getLow()); // 43.5
 
 Note that concrete types are coerced "eagerly" (before the `coerce()` method returns), while interfaces are coerced "lazily" (when a property is accessed).
 
-### Required Properties
-The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a property must contain a value. For example:
-
-```java
-public class Vehicle {
-    private String manufacturer;
-    private Integer year;
-
-    @Required
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    @Required
-    public Integer getYear() {
-        return year;
-    }
-
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-}
-```
-
-Because both "manufacturer" and "year" are required, an attempt to coerce an empty map to a `Vehicle` instance would produce an `IllegalArgumentException`:
-
-```java
-var vehicle = BeanAdapter.coerce(mapOf(), Vehicle.class); // throws
-```
-
-Additionally, although the annotation will not prevent a caller from programmatically assigning a `null` value to either property, attempting to dynamically set an invalid value will generate an `IllegalArgumentException`:
-
-```java
-var vehicle = new Vehicle();
-
-var vehicleAdapter = new BeanAdapter(vehicle);
-
-vehicleAdapter.put("manufacturer", null); // throws
-```
-
-Similarly, attempting to dynamically access an invalid value will result in an `UnsupportedOperationException`:
-
-```java
-vehicleAdapter.get("manufacturer"); // throws
-```
-
-### Custom Property Names
-The `Name` annotation introduced [previously](#custom-parameter-names) can also be used with bean properties. For example:
-
-```java
-public class Person {
-    private String firstName = null;
-    private String lastName = null;
-
-    @Name("first_name")
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    @Name("last_name")
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-}
-```
+The `Required` and `Name` annotations introduced previously can also be used with bean properties.
 
 ## QueryBuilder and ResultSetAdapter
 The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following tables (adapted from the MySQL tutorial):

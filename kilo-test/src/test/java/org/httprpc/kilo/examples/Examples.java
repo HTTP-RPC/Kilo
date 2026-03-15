@@ -62,8 +62,6 @@ public class Examples {
         execute("Adapt Bean", Examples::adaptBean);
         execute("Coerce Bean", Examples::coerceBean);
         execute("Interface Proxy", Examples::interfaceProxy);
-        execute("Required Property 1", Examples::requiredProperty1);
-        execute("Required Property 2", Examples::requiredProperty2);
 
         execute("Element Adapter", Examples::elementAdapter);
 
@@ -215,11 +213,11 @@ public class Examples {
         course.setBuilding("Technology Lab");
         course.setRoomNumber(210);
 
-        var courseAdapter = new BeanAdapter(course);
+        var map = new BeanAdapter(course);
 
-        System.out.println(courseAdapter.get("name")); // CS 101
-        System.out.println(courseAdapter.get("building")); // Technology Lab
-        System.out.println(courseAdapter.get("roomNumber")); // 210
+        System.out.println(map.get("name")); // CS 101
+        System.out.println(map.get("building")); // Technology Lab
+        System.out.println(map.get("roomNumber")); // 210
     }
 
     public static void coerceBean() {
@@ -250,32 +248,6 @@ public class Examples {
         System.out.println(weather.getConditions()); // cloudy
         System.out.println(weather.getHigh()); // 52.1
         System.out.println(weather.getLow()); // 43.5
-    }
-
-    public static void requiredProperty1() {
-        try {
-            BeanAdapter.coerce(mapOf(), Vehicle.class);
-        } catch (IllegalArgumentException exception) {
-            System.out.println(exception.getMessage());
-        }
-    }
-
-    public static void requiredProperty2() {
-        var vehicle = new Vehicle();
-
-        var vehicleAdapter = new BeanAdapter(vehicle);
-
-        try {
-            vehicleAdapter.put("manufacturer", null);
-        } catch (IllegalArgumentException exception) {
-            System.out.println(exception.getMessage());
-        }
-
-        try {
-            vehicleAdapter.get("manufacturer");
-        } catch (UnsupportedOperationException exception) {
-            System.out.println(exception.getMessage());
-        }
     }
 
     @SuppressWarnings("unchecked")
