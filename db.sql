@@ -92,3 +92,15 @@ grant select on employees.* to 'demo'@'%';
 grant select on sakila.* to 'demo'@'%';
 
 flush privileges;
+
+use employees;
+
+drop view if exists employee_details;
+
+create view employee_details as
+select employees.*, (select json_arrayagg(json_object(
+  'salary', salary,
+  'fromDate', from_date,
+  'toDate', to_date
+)) from salaries where salaries.emp_no = employees.emp_no) as salaries
+from employees;
