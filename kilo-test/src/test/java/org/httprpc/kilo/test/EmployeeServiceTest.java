@@ -29,8 +29,12 @@ public class EmployeeServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test
-    public void testEmployees() throws IOException {
+    public void testEmployeesList() throws IOException {
         loadEmployees(false);
+    }
+
+    @Test
+    public void testEmployeesStream() throws IOException {
         loadEmployees(true);
     }
 
