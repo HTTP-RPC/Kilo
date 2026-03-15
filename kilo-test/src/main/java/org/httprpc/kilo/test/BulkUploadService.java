@@ -16,8 +16,10 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVDecoder;
+import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.io.IOException;
@@ -31,7 +33,37 @@ public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 5000;
 
     @RequestMethod("POST")
-    public int upload(Void body) throws IOException, SQLException {
+    @ResourcePath("json")
+    public int uploadJSON(Void body) throws IOException, SQLException {
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
+        queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
+
+        var i = 0;
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            var jsonDecoder = new JSONDecoder();
+
+            for (var map : jsonDecoder.readAll(getRequest().getReader())) {
+                var row = BeanAdapter.coerce(map, Row.class);
+
+                queryBuilder.addBatch(statement, new BeanAdapter(row));
+
+                if (++i % BATCH_SIZE == 0) {
+                    statement.executeBatch();
+                }
+            }
+
+            statement.executeBatch();
+        }
+
+        return i;
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("csv")
+    public int uploadCSV(Void body) throws IOException, SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");

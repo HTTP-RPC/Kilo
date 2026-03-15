@@ -17,6 +17,7 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
+import org.httprpc.kilo.io.JSONEncoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -59,13 +60,42 @@ public class BulkUploadServiceTest {
         }
     }
 
-    private static final int ROW_COUNT = 17500;
+    private static final int ROW_COUNT = 32500;
+
+    private static final int CHUNK_SIZE = 4096;
 
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test
-    public void testBulkUpload() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("bulk-upload"));
+    public void testBulkUploadJSON() throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("bulk-upload/json"));
+
+        webServiceProxy.setBody(new Rows());
+
+        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
+            @Override
+            public String getContentType() {
+                return "application/json";
+            }
+
+            @Override
+            public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+                var jsonEncoder = new JSONEncoder(true);
+
+                var writer = new OutputStreamWriter(outputStream);
+
+                jsonEncoder.write(body, writer);
+            }
+        });
+
+        webServiceProxy.setChunkSize(CHUNK_SIZE);
+
+        assertEquals(ROW_COUNT, webServiceProxy.invoke());
+    }
+
+    @Test
+    public void testBulkUploadCSV() throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("bulk-upload/csv"));
 
         webServiceProxy.setBody(new Rows());
 
@@ -89,7 +119,7 @@ public class BulkUploadServiceTest {
             }
         });
 
-        webServiceProxy.setChunkSize(4096);
+        webServiceProxy.setChunkSize(CHUNK_SIZE);
 
         assertEquals(ROW_COUNT, webServiceProxy.invoke());
     }

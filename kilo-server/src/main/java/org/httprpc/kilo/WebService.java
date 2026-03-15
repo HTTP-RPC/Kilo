@@ -742,21 +742,6 @@ public abstract class WebService extends HttpServlet {
 
     private ServiceDescriptor serviceDescriptor = null;
 
-    private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
-
-    private static final Comparator<Method> handlerComparator;
-    static {
-        var nameComparator = Comparator.comparing(Method::getName);
-        var parameterCountComparator = Comparator.comparing(Method::getParameterCount);
-
-        handlerComparator = nameComparator.thenComparing(parameterCountComparator.reversed());
-    }
-
-    private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
-
-    private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
-    private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
-
     /**
      * JSON MIME type.
      */
@@ -789,6 +774,21 @@ public abstract class WebService extends HttpServlet {
 
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
+
+    private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
+
+    private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
+    private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
+
+    private static final Comparator<Method> handlerComparator;
+    static {
+        var nameComparator = Comparator.comparing(Method::getName);
+        var parameterCountComparator = Comparator.comparing(Method::getParameterCount);
+
+        handlerComparator = nameComparator.thenComparing(parameterCountComparator.reversed());
+    }
+
+    private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
     /**
      * Returns a service instance.

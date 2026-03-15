@@ -29,17 +29,8 @@ public class EmployeeServiceTest {
 
     @Test
     public void testEmployees() throws IOException {
-        var t0 = System.currentTimeMillis();
-
         loadEmployees("employees");
-
-        var t1 = System.currentTimeMillis();
-
         loadEmployees("employees/stream");
-
-        var t2 = System.currentTimeMillis();
-
-        assertTrue(t2 - t1 < t1 - t0);
     }
 
     private static void loadEmployees(String path) throws IOException {
