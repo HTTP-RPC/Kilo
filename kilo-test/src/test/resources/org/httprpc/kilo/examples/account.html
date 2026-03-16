@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>Account ID: {{@id}}</p>
+<p>Account Holder: {{lastName}}, {{firstName}}</p>
+<p>Credits:</p>
+<ul>
+    {{#transactions/credit*}}
+    <li>{{date}} - {{amount}}</li>
+    {{/transactions/credit*}}
+</ul>
+<p>Debits:</p>
+<ul>
+    {{#transactions/debit*}}
+    <li>{{date}} - {{amount}}</li>
+    {{/transactions/debit*}}
+</ul>
+</body>
+</html>

@@ -835,6 +835,35 @@ for (var credit : credits) {
 }
 ```
 
+Alternatively, the adapter could be used as the data dictionary for a template document:
+
+```java
+var templateEncoder = new TemplateEncoder(Examples.class, "account.html");
+
+templateEncoder.write(account, System.out);
+```
+
+```html
+<html>
+<body>
+<p>Account ID: {{@id}}</p>
+<p>Account Holder: {{lastName}}, {{firstName}}</p>
+<p>Credits:</p>
+<ul>
+    {{#transactions/credit*}}
+    <li>{{date}} - {{amount}}</li>
+    {{/transactions/credit*}}
+</ul>
+<p>Debits:</p>
+<ul>
+    {{#transactions/debit*}}
+    <li>{{date}} - {{amount}}</li>
+    {{/transactions/debit*}}
+</ul>
+</body>
+</html>
+```
+
 `ElementAdapter` also supports `put()` and `remove()` for modifying an element's contents.
 
 ## Pipe

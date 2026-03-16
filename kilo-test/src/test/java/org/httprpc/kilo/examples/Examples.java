@@ -279,6 +279,12 @@ public class Examples {
             System.out.println(credit.get("amount"));
             System.out.println(credit.get("date"));
         }
+
+        System.out.println();
+
+        var templateEncoder = new TemplateEncoder(Examples.class, "account.html");
+
+        templateEncoder.write(account, System.out);
     }
 
     public static void collections() {
