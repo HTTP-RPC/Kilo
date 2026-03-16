@@ -799,13 +799,13 @@ try (var inputStream = Examples.class.getResourceAsStream("account.xml")) {
     document = documentBuilder.parse(inputStream);
 }
 
-var accountAdapter = new ElementAdapter(document.getDocumentElement());
+var account = new ElementAdapter(document.getDocumentElement());
 ```
 
 Attribute values can be obtained by prepending an "@" symbol to the attribute name:
 
 ```java
-var id = accountAdapter.get("@id");
+var id = account.get("@id");
 
 System.out.println(id); // 101
 ```
@@ -813,7 +813,7 @@ System.out.println(id); // 101
 Individual sub-elements can be accessed by name. The text content of an element can be obtained by calling `toString()` on the returned value; for example:
 
 ```java
-var holder = (Map<String, Object>)accountAdapter.get("holder");
+var holder = (Map<String, Object>)account.get("holder");
 
 var firstName = holder.get("firstName");
 var lastName = holder.get("lastName");
@@ -826,7 +826,7 @@ An element's text content can also be accessed via the reserved "." key.
 Multiple sub-elements can be obtained by appending an asterisk to the element name:
 
 ```java
-var transactions = (Map<String, Object>)accountAdapter.get("transactions");
+var transactions = (Map<String, Object>)account.get("transactions");
 var credits = (List<Map<String, Object>>)transactions.get("credit*");
 
 for (var credit : credits) {
