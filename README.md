@@ -654,7 +654,7 @@ create table pet (
 );
 ```
 
-this code could be used to create a query that returns all rows associated with a particular owner:
+this code could be used to create a query that returns all pets associated with a particular owner:
 
 ```java
 var queryBuilder = new QueryBuilder();
