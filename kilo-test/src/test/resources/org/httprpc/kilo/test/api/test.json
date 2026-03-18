@@ -49,7 +49,7 @@
                 "intrinsic": true,
                 "iterable": false,
                 "map": false,
-                "name": "Integer"
+                "name": "int"
               }
             },
             {
@@ -69,16 +69,6 @@
               }
             },
             {
-              "name": "flag",
-              "required": false,
-              "type": {
-                "intrinsic": true,
-                "iterable": false,
-                "map": false,
-                "name": "boolean"
-              }
-            },
-            {
               "name": "character",
               "required": false,
               "type": {
@@ -86,6 +76,32 @@
                 "iterable": false,
                 "map": false,
                 "name": "char"
+              }
+            },
+            {
+              "name": "characters",
+              "required": false,
+              "type": {
+                "elementType": {
+                  "intrinsic": false,
+                  "iterable": false,
+                  "map": false,
+                  "name": "Character"
+                },
+                "intrinsic": true,
+                "iterable": true,
+                "map": false,
+                "name": "Iterable"
+              }
+            },
+            {
+              "name": "flag",
+              "required": false,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "boolean"
               }
             },
             {
@@ -1366,6 +1382,13 @@
   "path": "/test",
   "structures": [
     {
+      "name": "Character",
+      "properties": [
+      ],
+      "supertypes": [
+      ]
+    },
+    {
       "description": "Represents an x/y coordinate pair.",
       "name": "Coordinates",
       "properties": [
@@ -1611,6 +1634,23 @@
             "iterable": false,
             "map": false,
             "name": "char"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "characters",
+          "required": false,
+          "type": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Character"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
           }
         },
         {

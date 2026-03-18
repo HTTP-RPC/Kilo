@@ -29,19 +29,53 @@ public class DocumentationTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     @Test
-    public void testDocumentation() throws IOException {
+    public void testBulkUploadService() throws IOException {
         testDocumentation("bulk-upload");
+    }
+
+    @Test
+    public void testCatalogService() throws IOException {
         testDocumentation("catalog");
+    }
+
+    @Test
+    public void testEmployeeService() throws IOException {
         testDocumentation("employees");
+    }
+
+    @Test
+    public void testFilmService() throws IOException {
+        testDocumentation("films");
+    }
+
+    @Test
+    public void testMathService() throws IOException {
         testDocumentation("math");
+    }
+
+    @Test
+    public void testMemberService() throws IOException {
         testDocumentation("members");
+    }
+
+    @Test
+    public void testPetService() throws IOException {
+        testDocumentation("pets");
+    }
+
+    @Test
+    public void testSalaryService() throws IOException {
         testDocumentation("salaries");
+    }
+
+    @Test
+    public void testTestService() throws IOException {
         testDocumentation("test");
     }
 
     private void testDocumentation(String name) throws IOException {
         Map<?, ?> expected;
-        try (var inputStream = getClass().getResourceAsStream(String.format("%s.json", name))) {
+        try (var inputStream = getClass().getResourceAsStream(String.format("api/%s.json", name))) {
             var jsonDecoder = new JSONDecoder();
 
             expected = (Map<?, ?>)jsonDecoder.read(inputStream);

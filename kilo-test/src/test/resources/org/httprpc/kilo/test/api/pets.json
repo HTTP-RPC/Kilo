@@ -1,0 +1,150 @@
+{
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Pet"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
+          },
+          "queryParameters": [
+            {
+              "name": "owner",
+              "required": true,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "String"
+              }
+            }
+          ]
+        }
+      ],
+      "path": "/pets"
+    },
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "void"
+          },
+          "queryParameters": [
+            {
+              "name": "owner",
+              "required": true,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "String"
+              }
+            }
+          ]
+        }
+      ],
+      "path": "/pets/stream"
+    }
+  ],
+  "enumerations": [
+  ],
+  "path": "/pets",
+  "structures": [
+    {
+      "name": "Pet",
+      "properties": [
+        {
+          "deprecated": false,
+          "name": "birth",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "LocalDate"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "death",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "LocalDate"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "name",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "owner",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "sex",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "name": "species",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    }
+  ]
+}

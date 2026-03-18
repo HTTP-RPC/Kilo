@@ -1,0 +1,319 @@
+{
+  "description": "Film service.",
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "description": "Returns a list of all films.",
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Film"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
+          },
+          "queryParameters": [
+            {
+              "description": "An optional name pattern to match. An asterisk may be used as a wildcard.",
+              "name": "match",
+              "required": false,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "String"
+              }
+            }
+          ]
+        }
+      ],
+      "path": "/films"
+    },
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "description": "Returns detailed information about a specific film.",
+          "formData": false,
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
+            {
+              "description": "The film ID.",
+              "name": "filmID",
+              "required": true,
+              "type": {
+                "intrinsic": true,
+                "iterable": false,
+                "map": false,
+                "name": "Integer"
+              }
+            }
+          ],
+          "produces": {
+            "intrinsic": false,
+            "iterable": false,
+            "map": false,
+            "name": "FilmDetail"
+          },
+          "queryParameters": [
+          ]
+        }
+      ],
+      "path": "/films/?"
+    }
+  ],
+  "enumerations": [
+    {
+      "description": "Represents a film rating.",
+      "name": "Rating",
+      "values": [
+        {
+          "deprecated": false,
+          "description": "A \"G\" rating.",
+          "name": "G"
+        },
+        {
+          "deprecated": false,
+          "description": "A \"PG\" rating.",
+          "name": "PG"
+        },
+        {
+          "deprecated": false,
+          "description": "A \"PG-13\" rating.",
+          "name": "PG-13"
+        },
+        {
+          "deprecated": false,
+          "description": "An \"R\" rating.",
+          "name": "R"
+        },
+        {
+          "deprecated": false,
+          "description": "An \"NC-17\" rating.",
+          "name": "NC-17"
+        }
+      ]
+    }
+  ],
+  "path": "/films",
+  "structures": [
+    {
+      "description": "Represents a film actor.",
+      "name": "Actor",
+      "properties": [
+        {
+          "deprecated": false,
+          "description": "The actor's first name.",
+          "name": "firstName",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The actor's ID.",
+          "name": "id",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Integer"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The actor's last name.",
+          "name": "lastName",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    },
+    {
+      "description": "Represents a film category.",
+      "name": "Category",
+      "properties": [
+        {
+          "deprecated": false,
+          "description": "The category's ID.",
+          "name": "id",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Integer"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The name of the category.",
+          "name": "name",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    },
+    {
+      "description": "Represents a film.",
+      "name": "Film",
+      "properties": [
+        {
+          "deprecated": false,
+          "description": "The film's ID.",
+          "name": "id",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Integer"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The film's rating.",
+          "name": "rating",
+          "required": false,
+          "type": {
+            "intrinsic": false,
+            "iterable": false,
+            "map": false,
+            "name": "Rating"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The date the film was released.",
+          "name": "releaseDate",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "LocalDate"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The title of the film.",
+          "name": "title",
+          "required": true,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    },
+    {
+      "description": "Represents detailed information about a film.",
+      "name": "FilmDetail",
+      "properties": [
+        {
+          "deprecated": false,
+          "description": "The actors that appeared in the film.",
+          "name": "actors",
+          "required": false,
+          "type": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Actor"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The categories associated with the film.",
+          "name": "categories",
+          "required": false,
+          "type": {
+            "elementType": {
+              "intrinsic": false,
+              "iterable": false,
+              "map": false,
+              "name": "Category"
+            },
+            "intrinsic": true,
+            "iterable": true,
+            "map": false,
+            "name": "Iterable"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "A description of the film.",
+          "name": "description",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "String"
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "The length of the film, in minutes.",
+          "name": "length",
+          "required": false,
+          "type": {
+            "intrinsic": true,
+            "iterable": false,
+            "map": false,
+            "name": "Integer"
+          }
+        }
+      ],
+      "supertypes": [
+        {
+          "intrinsic": false,
+          "iterable": false,
+          "map": false,
+          "name": "Film"
+        }
+      ]
+    }
+  ]
+}
