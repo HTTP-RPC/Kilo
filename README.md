@@ -116,7 +116,7 @@ Additionally, these types are supported for multi-value parameters:
 * `java.util.Set`/`SequencedSet`/`SortedSet`
 * array/varargs
 
-The following types are supported for [body content](#body-content):
+The following types are also supported for [body content](#body-content):
 
 * `java.util.Map`/`SequencedMap`/`SortedMap`
 * `org.w3c.dom.Document`
