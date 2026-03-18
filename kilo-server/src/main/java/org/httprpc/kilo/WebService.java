@@ -60,6 +60,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -1276,11 +1277,13 @@ public abstract class WebService extends HttpServlet {
                     var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
                     var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
 
+                    var size = coalesce(map(values, List::size), () -> 0);
+
                     Collection<Object> collection;
                     if (type == List.class) {
-                        collection = listOf();
+                        collection = new ArrayList<>(size);
                     } else if (type == Set.class) {
-                        collection = setOf();
+                        collection = new LinkedHashSet<>(size);
                     } else {
                         throw new UnsupportedOperationException("Unsupported collection type.");
                     }
