@@ -110,13 +110,17 @@ Method parameters may be any of the following types:
 * `java.time.Period`
 * `java.util.UUID`
 
-The following multi-value types are also supported:
+Additionally, these types are supported for multi-value parameters:
 
 * `java.util.List`
-* `java.util.Set`
+* `java.util.Set`/`SequencedSet`/`SortedSet`
 * array/varargs
 
-Additionally, `java.util.Map`, bean, record, and `org.w3c.dom.Document` types are supported for [body content](#body-content).
+The following types are supported for [body content](#body-content):
+
+* `java.util.Map`/`SequencedMap`/`SortedMap`
+* `org.w3c.dom.Document`
+* bean/record
 
 The `FormData` annotation can be used to indicate that a handler method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Arguments of type `jakarta.servlet.http.Part` may be used with requests submitted as [multi-part](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig) form data.
 

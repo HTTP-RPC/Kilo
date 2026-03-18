@@ -675,16 +675,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Converts a value to a generic type.
+     * Coerces a value to a generic type.
      *
      * @param value
-     * The value to convert.
+     * The value to coerce.
      *
      * @param type
      * The target type.
      *
      * @return
-     * The converted value.
+     * The coerced value.
      */
     public static Object coerceGeneric(Object value, Type type) {
         return switch (type) {
