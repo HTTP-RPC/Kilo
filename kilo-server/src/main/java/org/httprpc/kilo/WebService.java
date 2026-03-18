@@ -67,7 +67,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -1256,52 +1258,39 @@ public abstract class WebService extends HttpServlet {
                 var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
                 var type = parameter.getType();
 
-                var values = argumentMap.get(name);
+                var values = coalesce(argumentMap.get(name), () -> emptyListOf(Object.class));
 
                 Object argument;
                 if (type.isArray()) {
                     var componentType = type.getComponentType();
 
-                    if (values != null) {
-                        argument = Array.newInstance(componentType, values.size());
+                    argument = Array.newInstance(componentType, values.size());
 
-                        var j = 0;
+                    var j = 0;
 
-                        for (var value : values) {
-                            Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
-                        }
-                    } else {
-                        argument = Array.newInstance(componentType, 0);
+                    for (var value : values) {
+                        Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
                     }
                 } else if (Collection.class.isAssignableFrom(type)) {
                     var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
                     var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
 
-                    var size = coalesce(map(values, List::size), () -> 0);
-
                     Collection<Object> collection;
                     if (type == List.class) {
-                        collection = new ArrayList<>(size);
-                    } else if (type == Set.class) {
-                        collection = new LinkedHashSet<>(size);
+                        collection = new ArrayList<>(values.size());
+                    } else if (Set.class.isAssignableFrom(type)) {
+                        collection = (type == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(values.size());
                     } else {
                         throw new UnsupportedOperationException("Unsupported collection type.");
                     }
 
-                    if (values != null) {
-                        for (var element : values) {
-                            collection.add(BeanAdapter.coerce(element, elementType));
-                        }
+                    for (var value : values) {
+                        collection.add(BeanAdapter.coerce(value, elementType));
                     }
 
                     argument = collection;
                 } else {
-                    Object value;
-                    if (values != null) {
-                        value = values.getLast();
-                    } else {
-                        value = null;
-                    }
+                    var value = values.isEmpty() ? null : values.getLast();
 
                     if (parameter.getAnnotation(Required.class) != null && value == null) {
                         throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
