@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.SequencedMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -291,7 +292,7 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("map")
-    public Map<String, Double> testPostMap(Map<String, Double> map) {
+    public Map<String, Double> testPostMap(SequencedMap<String, Double> map) {
         return map;
     }
 
