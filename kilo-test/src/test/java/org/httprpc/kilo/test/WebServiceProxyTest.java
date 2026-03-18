@@ -76,8 +76,9 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
-            entry("flag", true),
             entry("character", "abc"),
+            entry("characters", listOf('c', 'b', 'b', 'a', 'a', 'a')),
+            entry("flag", true),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", listOf(date)),
@@ -97,8 +98,9 @@ public class WebServiceProxyTest {
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
         assertEquals(setOf(1, 2, 3), result.getNumbers());
-        assertTrue(result.getFlag());
         assertEquals('a', result.getCharacter());
+        assertEquals(sortedSetOf('a', 'b', 'c'), result.getCharacters());
+        assertTrue(result.getFlag());
         assertEquals(dayOfWeek, result.getDayOfWeek());
         assertEquals(date, result.getDate());
         assertEquals(listOf(date), result.getDates());
@@ -114,13 +116,17 @@ public class WebServiceProxyTest {
     public void testGetProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), 'a');
+        var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"),
+            123, setOf(1, 2, 3), 'a', sortedSetOf('a', 'b', 'c'),
+            true);
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
         assertEquals(setOf(1, 2, 3), result.getNumbers());
         assertEquals('a', result.getCharacter());
+        assertEquals(sortedSetOf('a', 'b', 'c'), result.getCharacters());
+        assertTrue(result.getFlag());
     }
 
     @Test
@@ -617,7 +623,7 @@ public class WebServiceProxyTest {
     public void testMissingRequiredParameterProxy() {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, null, null, '\0'));
+        assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, 0, null, '\0', null, false));
     }
 
     @Test

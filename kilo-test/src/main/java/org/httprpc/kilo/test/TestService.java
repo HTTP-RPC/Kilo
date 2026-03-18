@@ -47,7 +47,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -100,8 +102,9 @@ public class TestService extends AbstractDatabaseService {
         List<String> getStrings();
         Integer getNumber();
         Set<Integer> getNumbers();
-        boolean getFlag();
         char getCharacter();
+        Set<Character> getCharacters();
+        boolean getFlag();
         DayOfWeek getDayOfWeek();
         Instant getDate();
         List<Instant> getDates();
@@ -180,7 +183,8 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,
-        Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
+        int number, SequencedSet<Integer> numbers, char character, SortedSet<Character> characters,
+        boolean flag, DayOfWeek dayOfWeek,
         Instant date, List<Instant> dates,
         LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
@@ -190,8 +194,9 @@ public class TestService extends AbstractDatabaseService {
             entry("strings", strings),
             entry("number", number),
             entry("numbers", numbers),
-            entry("flag", flag),
             entry("character", character),
+            entry("characters", characters),
+            entry("flag", flag),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", dates),
@@ -292,7 +297,7 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("map")
-    public Map<String, Double> testPostMap(SequencedMap<String, Double> map) {
+    public SequencedMap<String, Double> testPostMap(SequencedMap<String, Double> map) {
         return map;
     }
 
