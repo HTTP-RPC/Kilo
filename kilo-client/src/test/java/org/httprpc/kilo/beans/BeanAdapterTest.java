@@ -18,6 +18,7 @@ import org.httprpc.kilo.Name;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URI;
 import java.nio.file.Path;
@@ -29,11 +30,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -265,19 +271,32 @@ public class BeanAdapterTest {
     @Test
     public void testListCoercion() {
         assertInstanceOf(List.class, BeanAdapter.coerce(listOf(), List.class));
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, List.class));
+
+        assertInstanceOf(List.class, BeanAdapter.coerceGeneric(listOf(), parameterizedTypeOf(List.class)));
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(0, List.class));
     }
 
     @Test
     public void testMapCoercion() {
         assertInstanceOf(Map.class, BeanAdapter.coerce(mapOf(), Map.class));
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Map.class));
+
+        assertInstanceOf(Map.class, BeanAdapter.coerceGeneric(mapOf(), parameterizedTypeOf(Map.class)));
+        assertInstanceOf(SequencedMap.class, BeanAdapter.coerceGeneric(mapOf(), parameterizedTypeOf(SequencedMap.class)));
+        assertInstanceOf(SortedMap.class, BeanAdapter.coerceGeneric(mapOf(), parameterizedTypeOf(SortedMap.class)));
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(0, Map.class));
     }
 
     @Test
     public void testSetCoercion() {
         assertInstanceOf(Set.class, BeanAdapter.coerce(setOf(), Set.class));
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Set.class));
+
+        assertInstanceOf(Set.class, BeanAdapter.coerceGeneric(setOf(), parameterizedTypeOf(Set.class)));
+        assertInstanceOf(SequencedSet.class, BeanAdapter.coerceGeneric(setOf(), parameterizedTypeOf(SequencedSet.class)));
+        assertInstanceOf(SortedSet.class, BeanAdapter.coerceGeneric(setOf(), parameterizedTypeOf(SortedSet.class)));
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(0, Set.class));
     }
 
     @Test
@@ -485,5 +504,28 @@ public class BeanAdapterTest {
         var integers = listOf(mapAll(strings, BeanAdapter.toType(Integer.class))); // 1, 2, 3
 
         assertEquals(listOf(1, 2, 3), integers);
+    }
+
+    private static Type parameterizedTypeOf(Class<?> rawType) {
+        return new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                var actualTypeArguments = new Type[rawType.getTypeParameters().length];
+
+                Arrays.fill(actualTypeArguments, Object.class);
+
+                return actualTypeArguments;
+            }
+
+            @Override
+            public Type getRawType() {
+                return rawType;
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return null;
+            }
+        };
     }
 }

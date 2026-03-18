@@ -52,6 +52,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -687,6 +691,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             case Class<?> rawType -> toRawType(value, rawType);
             case ParameterizedType parameterizedType -> {
                 var rawType = (Class<?>)parameterizedType.getRawType();
+
+                if (!rawType.isInterface()) {
+                    throw new IllegalArgumentException("Invalid parameterized type.");
+                }
+
                 var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
                 if (rawType == List.class) {
@@ -705,14 +714,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     } else {
                         throw new IllegalArgumentException("Value is not a collection.");
                     }
-                } else if (rawType == Map.class) {
+                } else if (Map.class.isAssignableFrom(rawType)) {
                     if (value == null) {
                         yield null;
                     } else if (value instanceof Map<?, ?> map) {
                         var keyType = actualTypeArguments[0];
                         var valueType = actualTypeArguments[1];
 
-                        var genericMap = new LinkedHashMap<>(map.size());
+                        var genericMap = (rawType == SortedMap.class) ? new TreeMap<>() : new LinkedHashMap<>(map.size());
 
                         for (var entry : map.entrySet()) {
                             genericMap.put(coerceGeneric(entry.getKey(), keyType), coerceGeneric(entry.getValue(), valueType));
@@ -722,13 +731,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     } else {
                         throw new IllegalArgumentException("Value is not a map.");
                     }
-                } else if (rawType == Set.class) {
+                } else if (Set.class.isAssignableFrom(rawType)) {
                     if (value == null) {
                         yield null;
                     } else if (value instanceof Collection<?> collection) {
                         var elementType = actualTypeArguments[0];
 
-                        var genericSet = new LinkedHashSet<>(collection.size());
+                        var genericSet = (rawType == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(collection.size());
 
                         for (var element : collection) {
                             genericSet.add(coerceGeneric(element, elementType));
