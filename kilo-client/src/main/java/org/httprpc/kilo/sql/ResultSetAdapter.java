@@ -21,13 +21,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.SequencedMap;
 import java.util.function.Function;
 
 /**
  * Provides access to the contents of a JDBC result set via the
  * {@link Iterable} interface.
  */
-public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
+public class ResultSetAdapter implements Iterable<SequencedMap<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
     private Map<String, Function<Object, Object>> transforms;
 
@@ -77,7 +78,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     @Override
-    public Iterator<Map<String, Object>> iterator() {
+    public Iterator<SequencedMap<String, Object>> iterator() {
         return new Iterator<>() {
             boolean hasNext;
             {
@@ -94,12 +95,12 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
             }
 
             @Override
-            public Map<String, Object> next() {
+            public SequencedMap<String, Object> next() {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
 
-                Map<String, Object> row;
+                SequencedMap<String, Object> row;
                 try {
                     var n = resultSetMetaData.getColumnCount();
 
