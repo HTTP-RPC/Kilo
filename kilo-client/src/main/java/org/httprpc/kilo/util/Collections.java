@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -174,7 +176,7 @@ public class Collections {
      * A map containing the provided entries in the order given.
      */
     @SafeVarargs
-    public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
+    public static <K, V> SequencedMap<K, V> mapOf(Map.Entry<K, V>... entries) {
         var map = new LinkedHashMap<K, V>(entries.length);
 
         for (var entry : entries) {
@@ -201,7 +203,7 @@ public class Collections {
      * @return
      * A map containing the provided entries in the order given.
      */
-    public static <K, V> Map<K, V> mapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) {
+    public static <K, V> SequencedMap<K, V> mapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) {
         if (entries == null) {
             throw new IllegalArgumentException();
         }
@@ -399,7 +401,7 @@ public class Collections {
      * A set containing the provided elements in the order given.
      */
     @SafeVarargs
-    public static <E> Set<E> setOf(E... elements) {
+    public static <E> SequencedSet<E> setOf(E... elements) {
         var set = new LinkedHashSet<E>(elements.length);
 
         java.util.Collections.addAll(set, elements);
@@ -419,7 +421,7 @@ public class Collections {
      * @return
      * A set containing the provided elements in the order given.
      */
-    public static <E> Set<E> setOf(Iterable<? extends E> elements) {
+    public static <E> SequencedSet<E> setOf(Iterable<? extends E> elements) {
         if (elements == null) {
             throw new IllegalArgumentException();
         }

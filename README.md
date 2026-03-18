@@ -954,7 +954,8 @@ public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
 ```
 
 ```java
-public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
+public static <K, V> SequencedMap<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
+
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
 public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
 
@@ -962,7 +963,8 @@ public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(M
 ```
 
 ```java
-public static <E> Set<E> setOf(E... elements) { ... }
+public static <E> SequencedSet<E> setOf(E... elements) { ... }
+
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
 public static <E> Set<E> emptySetOf(Class<E> elementType) { ... }
 
