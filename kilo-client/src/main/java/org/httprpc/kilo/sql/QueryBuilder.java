@@ -1017,7 +1017,7 @@ public class QueryBuilder {
         }
 
         if (columnName == null) {
-            throw new UnsupportedOperationException("Category is not defined.");
+            throw new UnsupportedOperationException("Category property is not defined.");
         }
 
         sqlBuilder.append(" ");
