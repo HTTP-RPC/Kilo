@@ -228,6 +228,21 @@ public class QueryBuilderTest {
         }
     }
 
+    @Table("N")
+    public interface N {
+        enum Type {
+            A,
+            B,
+            C
+        }
+
+        @Column("type")
+        Type getType();
+
+        @Column("value")
+        String getValue();
+    }
+
     public interface P {
         String getR();
     }
@@ -412,11 +427,19 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testIdentifier() {
+    public void testIdentifierFilter() {
         var queryBuilder = QueryBuilder.select(A.class).filterByIdentifier("b", "c");
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where A.b = ? and A.c = ?", queryBuilder.toString());
         assertEquals(listOf("b", "c"), getParameters(queryBuilder));
+    }
+
+    @Test
+    public void testTypeFilter() {
+        var queryBuilder = QueryBuilder.select(N.class).filterByType(N.Type.class, "type");
+
+        assertEquals("select N.type, N.value from N where N.type = ?", queryBuilder.toString());
+        assertEquals(listOf("type"), getParameters(queryBuilder));
     }
 
     @Test

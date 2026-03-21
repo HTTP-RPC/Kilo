@@ -981,6 +981,61 @@ public class QueryBuilder {
     }
 
     /**
+     * Filters by type.
+     *
+     * @param <E>
+     * The type to filter by.
+     *
+     * @param type
+     * The type to filter by.
+     *
+     * @param key
+     * The key of the argument value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public <E extends Enum<E>> QueryBuilder filterByType(Class<E> type, String key) {
+        if (type == null || key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var first = types.getFirst();
+
+        String columnName = null;
+
+        for (var property : BeanAdapter.getProperties(first).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null && accessor.getReturnType() == type) {
+                columnName = column.value();
+
+                break;
+            }
+        }
+
+        if (columnName == null) {
+            throw new UnsupportedOperationException("Type column is not defined.");
+        }
+
+        sqlBuilder.append(" ");
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+        sqlBuilder.append(getTableName(first));
+        sqlBuilder.append(".");
+        sqlBuilder.append(columnName);
+        sqlBuilder.append(" = ?");
+
+        parameters.add(key);
+
+        filterCount++;
+
+        return this;
+    }
+
+    /**
      * Appends a "greater than" filter.
      *
      * @param key
