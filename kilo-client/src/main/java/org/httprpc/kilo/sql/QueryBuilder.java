@@ -981,13 +981,13 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by type.
+     * Filters by category.
      *
      * @param <E>
-     * The type to filter by.
+     * The category type.
      *
      * @param type
-     * The type to filter by.
+     * The category type.
      *
      * @param key
      * The key of the argument value.
@@ -995,7 +995,7 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public <E extends Enum<E>> QueryBuilder filterByType(Class<E> type, String key) {
+    public <E extends Enum<E>> QueryBuilder filterByCategory(Class<E> type, String key) {
         if (type == null || key == null) {
             throw new IllegalArgumentException();
         }
@@ -1017,7 +1017,7 @@ public class QueryBuilder {
         }
 
         if (columnName == null) {
-            throw new UnsupportedOperationException("Type column is not defined.");
+            throw new UnsupportedOperationException("Category is not defined.");
         }
 
         sqlBuilder.append(" ");

@@ -435,8 +435,8 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testTypeFilter() {
-        var queryBuilder = QueryBuilder.select(N.class).filterByType(N.Type.class, "type");
+    public void testCategoryFilter() {
+        var queryBuilder = QueryBuilder.select(N.class).filterByCategory(N.Type.class, "type");
 
         assertEquals("select N.type, N.value from N where N.type = ?", queryBuilder.toString());
         assertEquals(listOf("type"), getParameters(queryBuilder));
