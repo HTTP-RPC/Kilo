@@ -616,13 +616,13 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder onDuplicateKeyUpdate() {
-        var type = types.getFirst();
+        var first = types.getFirst();
 
         sqlBuilder.append(" on duplicate key update ");
 
         var i = 0;
 
-        for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+        for (var entry : BeanAdapter.getProperties(first).entrySet()) {
             var accessor = entry.getValue().getAccessor();
 
             var column = accessor.getAnnotation(Column.class);
