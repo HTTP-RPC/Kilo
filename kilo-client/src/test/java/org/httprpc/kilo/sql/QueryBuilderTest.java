@@ -495,7 +495,7 @@ public class QueryBuilderTest {
             .filterByPrimaryKey("a")
             .filterBy("x = :x");
 
-        assertEquals("select A.* from A where A.a = ? and x = ?", queryBuilder.toString());
+        assertEquals("select A.* from A where A.a = ? and (x = ?)", queryBuilder.toString());
         assertEquals(listOf("a", "x"), getParameters(queryBuilder));
     }
 

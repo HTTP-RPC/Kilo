@@ -1163,9 +1163,11 @@ public class QueryBuilder {
 
         sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" ");
+        sqlBuilder.append(" (");
 
         append(predicate);
+
+        sqlBuilder.append(")");
 
         filterCount++;
 
