@@ -981,61 +981,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by category.
-     *
-     * @param <E>
-     * The category type.
-     *
-     * @param type
-     * The category type.
-     *
-     * @param key
-     * The key of the argument value.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public <E extends Enum<E>> QueryBuilder filterByCategory(Class<E> type, String key) {
-        if (type == null || key == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var first = types.getFirst();
-
-        String columnName = null;
-
-        for (var property : BeanAdapter.getProperties(first).values()) {
-            var accessor = property.getAccessor();
-
-            var column = accessor.getAnnotation(Column.class);
-
-            if (column != null && accessor.getReturnType() == type) {
-                columnName = column.value();
-
-                break;
-            }
-        }
-
-        if (columnName == null) {
-            throw new UnsupportedOperationException("Category property is not defined.");
-        }
-
-        sqlBuilder.append(" ");
-        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" ");
-        sqlBuilder.append(getTableName(first));
-        sqlBuilder.append(".");
-        sqlBuilder.append(columnName);
-        sqlBuilder.append(" = ?");
-
-        parameters.add(key);
-
-        filterCount++;
-
-        return this;
-    }
-
-    /**
      * Appends a "greater than" filter.
      *
      * @param key
@@ -1198,6 +1143,31 @@ public class QueryBuilder {
         filterCount++;
 
         parameters.addAll(queryBuilder.parameters);
+
+        return this;
+    }
+
+    /**
+     * Filters by SQL predicate.
+     *
+     * @param predicate
+     * The SQL predicate.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterBy(String predicate) {
+        if (predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" ");
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+
+        append(predicate);
+
+        filterCount++;
 
         return this;
     }

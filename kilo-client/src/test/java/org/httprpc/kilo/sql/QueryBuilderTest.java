@@ -228,21 +228,6 @@ public class QueryBuilderTest {
         }
     }
 
-    @Table("N")
-    public interface N {
-        enum Type {
-            A,
-            B,
-            C
-        }
-
-        @Column("type")
-        Type getType();
-
-        @Column("value")
-        String getValue();
-    }
-
     public interface P {
         String getR();
     }
@@ -427,19 +412,11 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testIdentifierFilter() {
+    public void testIdentifier() {
         var queryBuilder = QueryBuilder.select(A.class).filterByIdentifier("b", "c");
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where A.b = ? and A.c = ?", queryBuilder.toString());
         assertEquals(listOf("b", "c"), getParameters(queryBuilder));
-    }
-
-    @Test
-    public void testCategoryFilter() {
-        var queryBuilder = QueryBuilder.select(N.class).filterByCategory(N.Type.class, "type");
-
-        assertEquals("select N.type, N.value from N where N.type = ?", queryBuilder.toString());
-        assertEquals(listOf("type"), getParameters(queryBuilder));
     }
 
     @Test
@@ -510,6 +487,16 @@ public class QueryBuilderTest {
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where not exists (select C.* from C where C.a = A.a and C.b > ?)", queryBuilder.toString());
         assertEquals(listOf("b"), getParameters(queryBuilder));
+    }
+
+    @Test
+    public void testSQLPredicate() {
+        var queryBuilder = QueryBuilder.selectAll(A.class)
+            .filterByPrimaryKey("a")
+            .filterBy("x = :x");
+
+        assertEquals("select A.* from A where A.a = ? and x = ?", queryBuilder.toString());
+        assertEquals(listOf("a", "x"), getParameters(queryBuilder));
     }
 
     @Test
