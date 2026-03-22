@@ -490,16 +490,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testSQLPredicate() {
-        var queryBuilder = QueryBuilder.selectAll(A.class)
-            .filterByPrimaryKey("a")
-            .filterBy("x = :x");
-
-        assertEquals("select A.* from A where A.a = ? and (x = ?)", queryBuilder.toString());
-        assertEquals(listOf("a", "x"), getParameters(queryBuilder));
-    }
-
-    @Test
     public void testUnion() {
         var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a1").union(QueryBuilder.select(A.class).filterByPrimaryKey("a2"));
 

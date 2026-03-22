@@ -1148,33 +1148,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by SQL predicate.
-     *
-     * @param predicate
-     * The SQL predicate.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder filterBy(String predicate) {
-        if (predicate == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" ");
-        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" (");
-
-        append(predicate);
-
-        sqlBuilder.append(")");
-
-        filterCount++;
-
-        return this;
-    }
-
-    /**
      * Appends an "order by" clause.
      *
      * @param ascending
