@@ -4,6 +4,7 @@
     {
       "operations": [
         {
+          "bodyParameter": null,
           "deprecated": false,
           "description": "Calculates the sum of two numbers.",
           "formData": false,
@@ -12,10 +13,13 @@
           "pathParameters": [
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "double"
+            "name": "double",
+            "valueType": null
           },
           "queryParameters": [
             {
@@ -23,10 +27,13 @@
               "name": "a",
               "required": false,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "double"
+                "name": "double",
+                "valueType": null
               }
             },
             {
@@ -34,15 +41,19 @@
               "name": "b",
               "required": false,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "double"
+                "name": "double",
+                "valueType": null
               }
             }
           ]
         },
         {
+          "bodyParameter": null,
           "deprecated": false,
           "description": "Calculates the sum of a list of numbers.",
           "formData": false,
@@ -51,10 +62,13 @@
           "pathParameters": [
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "double"
+            "name": "double",
+            "valueType": null
           },
           "queryParameters": [
             {
@@ -63,15 +77,20 @@
               "required": false,
               "type": {
                 "elementType": {
+                  "elementType": null,
                   "intrinsic": true,
                   "iterable": false,
+                  "keyType": null,
                   "map": false,
-                  "name": "Double"
+                  "name": "Double",
+                  "valueType": null
                 },
                 "intrinsic": true,
                 "iterable": true,
+                "keyType": null,
                 "map": false,
-                "name": "Iterable"
+                "name": "Iterable",
+                "valueType": null
               }
             }
           ]

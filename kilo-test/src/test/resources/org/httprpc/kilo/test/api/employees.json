@@ -1,9 +1,12 @@
 {
+  "description": null,
   "endpoints": [
     {
       "operations": [
         {
+          "bodyParameter": null,
           "deprecated": false,
+          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
@@ -11,25 +14,34 @@
           ],
           "produces": {
             "elementType": {
+              "elementType": null,
               "intrinsic": false,
               "iterable": false,
+              "keyType": null,
               "map": false,
-              "name": "Employee"
+              "name": "Employee",
+              "valueType": null
             },
             "intrinsic": true,
             "iterable": true,
+            "keyType": null,
             "map": false,
-            "name": "Iterable"
+            "name": "Iterable",
+            "valueType": null
           },
           "queryParameters": [
             {
+              "description": null,
               "name": "stream",
               "required": false,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "boolean"
+                "name": "boolean",
+                "valueType": null
               }
             }
           ]
@@ -40,27 +52,36 @@
     {
       "operations": [
         {
+          "bodyParameter": null,
           "deprecated": false,
+          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
             {
+              "description": null,
               "name": "employeeNumber",
               "required": true,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "Integer"
+                "name": "Integer",
+                "valueType": null
               }
             }
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": false,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "EmployeeDetail"
+            "name": "EmployeeDetail",
+            "valueType": null
           },
           "queryParameters": [
           ]
@@ -74,72 +95,97 @@
   "path": "/employees",
   "structures": [
     {
+      "description": null,
       "name": "Employee",
       "properties": [
         {
           "deprecated": false,
+          "description": null,
           "name": "birthDate",
           "required": true,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "LocalDate"
+            "name": "LocalDate",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "employeeNumber",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Integer"
+            "name": "Integer",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "firstName",
           "required": true,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "String"
+            "name": "String",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "gender",
           "required": true,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "String"
+            "name": "String",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "hireDate",
           "required": true,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "LocalDate"
+            "name": "LocalDate",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "lastName",
           "required": true,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "String"
+            "name": "String",
+            "valueType": null
           }
         }
       ],
@@ -147,80 +193,107 @@
       ]
     },
     {
+      "description": null,
       "name": "EmployeeDetail",
       "properties": [
         {
           "deprecated": false,
+          "description": null,
           "name": "salaries",
           "required": false,
           "type": {
             "elementType": {
+              "elementType": null,
               "intrinsic": false,
               "iterable": false,
+              "keyType": null,
               "map": false,
-              "name": "Salary"
+              "name": "Salary",
+              "valueType": null
             },
             "intrinsic": true,
             "iterable": true,
+            "keyType": null,
             "map": false,
-            "name": "Iterable"
+            "name": "Iterable",
+            "valueType": null
           }
         }
       ],
       "supertypes": [
         {
+          "elementType": null,
           "intrinsic": false,
           "iterable": false,
+          "keyType": null,
           "map": false,
-          "name": "Employee"
+          "name": "Employee",
+          "valueType": null
         }
       ]
     },
     {
+      "description": null,
       "name": "Salary",
       "properties": [
         {
           "deprecated": false,
+          "description": null,
           "name": "employeeNumber",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Integer"
+            "name": "Integer",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "salary",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Integer"
+            "name": "Integer",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "fromDate",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "LocalDate"
+            "name": "LocalDate",
+            "valueType": null
           }
         },
         {
           "deprecated": false,
+          "description": null,
           "name": "toDate",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "LocalDate"
+            "name": "LocalDate",
+            "valueType": null
           }
         }
       ],

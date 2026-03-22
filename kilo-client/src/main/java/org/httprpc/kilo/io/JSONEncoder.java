@@ -179,7 +179,7 @@ public class JSONEncoder extends Encoder<Object> {
 
             var value = entry.getValue();
 
-            if (value == null) {
+            if (value == null && compact) {
                 continue;
             }
 

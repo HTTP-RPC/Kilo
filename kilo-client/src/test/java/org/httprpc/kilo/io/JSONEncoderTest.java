@@ -203,7 +203,8 @@ public class JSONEncoderTest {
         var map = mapOf(
             entry("a", 1),
             entry("b", 2),
-            entry("c", 3)
+            entry("c", 3),
+            entry("d", null)
         );
 
         var actual = encode(map, () -> new JSONEncoder(true));

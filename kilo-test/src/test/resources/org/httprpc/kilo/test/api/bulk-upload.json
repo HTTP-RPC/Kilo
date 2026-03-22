@@ -1,29 +1,38 @@
 {
+  "description": null,
   "endpoints": [
     {
       "operations": [
         {
           "bodyParameter": {
+            "description": null,
             "name": "body",
             "required": true,
             "type": {
+              "elementType": null,
               "intrinsic": true,
               "iterable": false,
+              "keyType": null,
               "map": false,
-              "name": "Void"
+              "name": "Void",
+              "valueType": null
             }
           },
           "deprecated": false,
+          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "int"
+            "name": "int",
+            "valueType": null
           },
           "queryParameters": [
           ]
@@ -35,26 +44,34 @@
       "operations": [
         {
           "bodyParameter": {
+            "description": null,
             "name": "body",
             "required": true,
             "type": {
+              "elementType": null,
               "intrinsic": true,
               "iterable": false,
+              "keyType": null,
               "map": false,
-              "name": "Void"
+              "name": "Void",
+              "valueType": null
             }
           },
           "deprecated": false,
+          "description": null,
           "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "int"
+            "name": "int",
+            "valueType": null
           },
           "queryParameters": [
           ]

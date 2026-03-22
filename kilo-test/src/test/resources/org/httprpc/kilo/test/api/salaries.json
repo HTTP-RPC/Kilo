@@ -1,39 +1,53 @@
 {
+  "description": null,
   "endpoints": [
     {
       "operations": [
         {
+          "bodyParameter": null,
           "deprecated": false,
+          "description": null,
           "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Double"
+            "name": "Double",
+            "valueType": null
           },
           "queryParameters": [
             {
+              "description": null,
               "name": "fromDate",
               "required": false,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "LocalDate"
+                "name": "LocalDate",
+                "valueType": null
               }
             },
             {
+              "description": null,
               "name": "toDate",
               "required": false,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "LocalDate"
+                "name": "LocalDate",
+                "valueType": null
               }
             }
           ]

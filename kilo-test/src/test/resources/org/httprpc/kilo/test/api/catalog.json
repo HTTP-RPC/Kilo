@@ -4,6 +4,7 @@
     {
       "operations": [
         {
+          "bodyParameter": null,
           "deprecated": false,
           "description": "Returns a list of all items in the catalog.",
           "formData": false,
@@ -13,15 +14,20 @@
           ],
           "produces": {
             "elementType": {
+              "elementType": null,
               "intrinsic": false,
               "iterable": false,
+              "keyType": null,
               "map": false,
-              "name": "Item"
+              "name": "Item",
+              "valueType": null
             },
             "intrinsic": true,
             "iterable": true,
+            "keyType": null,
             "map": false,
-            "name": "Iterable"
+            "name": "Iterable",
+            "valueType": null
           },
           "queryParameters": [
           ]
@@ -32,10 +38,13 @@
             "name": "item",
             "required": true,
             "type": {
+              "elementType": null,
               "intrinsic": false,
               "iterable": false,
+              "keyType": null,
               "map": false,
-              "name": "ItemDetail"
+              "name": "ItemDetail",
+              "valueType": null
             }
           },
           "deprecated": false,
@@ -46,10 +55,13 @@
           "pathParameters": [
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": false,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "ItemDetail"
+            "name": "ItemDetail",
+            "valueType": null
           },
           "queryParameters": [
           ]
@@ -60,6 +72,7 @@
     {
       "operations": [
         {
+          "bodyParameter": null,
           "deprecated": false,
           "description": "Returns detailed information about a specific item.",
           "formData": false,
@@ -71,18 +84,24 @@
               "name": "itemID",
               "required": true,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "Integer"
+                "name": "Integer",
+                "valueType": null
               }
             }
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": false,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "ItemDetail"
+            "name": "ItemDetail",
+            "valueType": null
           },
           "queryParameters": [
           ]
@@ -93,10 +112,13 @@
             "name": "item",
             "required": true,
             "type": {
+              "elementType": null,
               "intrinsic": false,
               "iterable": false,
+              "keyType": null,
               "map": false,
-              "name": "ItemDetail"
+              "name": "ItemDetail",
+              "valueType": null
             }
           },
           "deprecated": false,
@@ -110,23 +132,30 @@
               "name": "itemID",
               "required": true,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "Integer"
+                "name": "Integer",
+                "valueType": null
               }
             }
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": false,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "ItemDetail"
+            "name": "ItemDetail",
+            "valueType": null
           },
           "queryParameters": [
           ]
         },
         {
+          "bodyParameter": null,
           "deprecated": false,
           "description": "Deletes an item.",
           "formData": false,
@@ -138,18 +167,24 @@
               "name": "itemID",
               "required": true,
               "type": {
+                "elementType": null,
                 "intrinsic": true,
                 "iterable": false,
+                "keyType": null,
                 "map": false,
-                "name": "Integer"
+                "name": "Integer",
+                "valueType": null
               }
             }
           ],
           "produces": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "void"
+            "name": "void",
+            "valueType": null
           },
           "queryParameters": [
           ]
@@ -193,10 +228,13 @@
           "name": "description",
           "required": true,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "String"
+            "name": "String",
+            "valueType": null
           }
         },
         {
@@ -205,10 +243,13 @@
           "name": "id",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Integer"
+            "name": "Integer",
+            "valueType": null
           }
         },
         {
@@ -217,10 +258,13 @@
           "name": "price",
           "required": true,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Double"
+            "name": "Double",
+            "valueType": null
           }
         }
       ],
@@ -237,10 +281,13 @@
           "name": "color",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "String"
+            "name": "String",
+            "valueType": null
           }
         },
         {
@@ -249,10 +296,13 @@
           "name": "created",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Instant"
+            "name": "Instant",
+            "valueType": null
           }
         },
         {
@@ -261,10 +311,13 @@
           "name": "size",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": false,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Size"
+            "name": "Size",
+            "valueType": null
           }
         },
         {
@@ -273,19 +326,25 @@
           "name": "weight",
           "required": false,
           "type": {
+            "elementType": null,
             "intrinsic": true,
             "iterable": false,
+            "keyType": null,
             "map": false,
-            "name": "Double"
+            "name": "Double",
+            "valueType": null
           }
         }
       ],
       "supertypes": [
         {
+          "elementType": null,
           "intrinsic": false,
           "iterable": false,
+          "keyType": null,
           "map": false,
-          "name": "Item"
+          "name": "Item",
+          "valueType": null
         }
       ]
     }
