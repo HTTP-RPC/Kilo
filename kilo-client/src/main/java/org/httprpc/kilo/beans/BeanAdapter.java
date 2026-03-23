@@ -1009,6 +1009,46 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
+     * Generates a generic type.
+     *
+     * @param rawType
+     * The raw type.
+     *
+     * @param actualTypeArguments
+     * The actual type arguments.
+     *
+     * @return
+     * A generic type representing the given raw type and actual type
+     * arguments.
+     */
+    public static Type genericTypeOf(Class<?> rawType, Type... actualTypeArguments) {
+        if (rawType == null || rawType.getTypeParameters().length != actualTypeArguments.length) {
+            throw new IllegalArgumentException();
+        }
+
+        if (actualTypeArguments.length == 0) {
+            return rawType;
+        } else {
+            return new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return actualTypeArguments;
+                }
+
+                @Override
+                public Type getRawType() {
+                    return rawType;
+                }
+
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            };
+        }
+    }
+
+    /**
      * Returns the properties for a given type.
      *
      * @param type
