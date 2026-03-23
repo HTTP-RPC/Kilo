@@ -1009,7 +1009,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Generates a generic type.
+     * Produces a generic type.
      *
      * @param rawType
      * The raw type.
