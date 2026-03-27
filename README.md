@@ -9,34 +9,27 @@ The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wi
 
 ![](kilo.png)
 
-This guide introduces the Kilo framework and provides an overview of its key features.
-
-# Getting Kilo
-Kilo is distributed via Maven Central: 
-
-* [org.httprpc:kilo-client](https://central.sonatype.com/artifact/org.httprpc/kilo-client/versions) - includes support for consuming web services, interacting with relational databases, and working with common file formats (Java 21 or later required)
-* [org.httprpc:kilo-server](https://central.sonatype.com/artifact/org.httprpc/kilo-server/versions) - depends on client; includes support for creating web services (Jakarta Servlet 6.1 or later required)
-
-# Kilo Classes
 Classes provided by the Kilo framework include:
 
-* [WebService](#webservice)
-* [WebServiceProxy](#webserviceproxy)
-* [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
-* [TextEncoder and TextDecoder](#textencoder-and-textdecoder)
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
-* [TemplateEncoder](#templateencoder)
-* [BeanAdapter](#beanadapter)
-* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
-* [ElementAdapter](#elementadapter)
-* [Pipe](#pipe)
-* [Collections](#collections)
-* [Optionals](#optionals)
-* [Iterables](#iterables)
+* [kilo-server](https://central.sonatype.com/artifact/org.httprpc/kilo-server/versions)
+  * [WebService](#webservice)
+* [kilo-client](https://central.sonatype.com/artifact/org.httprpc/kilo-client/versions)
+  * [WebServiceProxy](#webserviceproxy)
+  * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
+  * [TextEncoder and TextDecoder](#textencoder-and-textdecoder)
+  * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
+  * [TemplateEncoder](#templateencoder)
+  * [BeanAdapter](#beanadapter)
+  * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
+  * [ElementAdapter](#elementadapter)
+  * [Pipe](#pipe)
+  * [Collections](#collections)
+  * [Optionals](#optionals)
+  * [Iterables](#iterables)
 
-Each is discussed in more detail below.
+Each is discussed in more detail below. Java 21 or later is required.
 
-## WebService
+# WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/6.1/).
 
 For example, the following service implements some simple mathematical operations:
@@ -88,7 +81,7 @@ In either case, the service would return the value 6 in response.
 
 The optional `Description` annotation is used to document a service implementation and is discussed in more detail [later](#api-documentation).
 
-### Method Parameters
+## Method Parameters
 Method parameters may be any of the following types:
 
 * `Byte`/`byte`
@@ -130,7 +123,7 @@ If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidd
 
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
 
-#### Required Parameters
+### Required Parameters
 Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `owner` argument:
 
 ```java
@@ -142,7 +135,7 @@ public List<Pet> getPets(@Required String owner) throws SQLException {
 
 `List`, `Set`, and array parameters are implicitly required, since these values will never be `null` (though they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
 
-#### Custom Parameter Names
+### Custom Parameter Names
 The `Name` annotation can be used to associate a custom name with a method parameter. For example:
 
 ```java
@@ -164,7 +157,7 @@ This method could be invoked as follows:
 GET /members?first_name=foo*&last_name=bar*
 ```
 
-### Path Variables
+## Path Variables
 Path variables (or "keys") are specified by a "?" character in a handler's resource path. For example, the `itemID` argument in the method below is provided by a path variable:
 
 ```java
@@ -178,7 +171,7 @@ public ItemDetail getItem(
 
 Path parameters must precede query parameters in the method signature and are implicitly required. Values are mapped to method arguments in declaration order.
 
-### Body Content
+## Body Content
 Body content may be declared as the final parameter in a `POST` or `PUT` handler. For example, this method accepts an item ID as a path variable and an instance of `ItemDetail` as a body argument:
 
 ```java
@@ -193,7 +186,7 @@ public void updateItem(
 
 Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. A body parameter of type `Void` may be used to indicate that the handler will process the input stream [directly](#request-and-repsonse-properties).
 
-### Return Values
+## Return Values
 Return values are converted to JSON as follows:
 
 * `Number`/numeric primitive: number
@@ -222,7 +215,7 @@ By default, HTTP 200 (OK) is returned when a service method completes successful
 
 If a service method returns `null`, an HTTP 404 (not found) response will be returned.
 
-### Exceptions
+## Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is determined as follows:
 
 * `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
@@ -230,7 +223,7 @@ If an exception is thrown by a service method and the response has not yet been 
 * `IllegalStateException` - HTTP 409 (conflict)
 * Any other exception - HTTP 500 (internal server error)
 
-### Database Connectivity
+## Database Connectivity
 For services that require database connectivity, the following method can be used to obtain a JDBC connection object associated with the current invocation:
 
 ```java
@@ -241,7 +234,7 @@ The connection is opened via a data source identified by `getDataSourceName()`, 
 
 Auto-commit is disabled so an entire request will be processed within a single transaction. If the request completes successfully, the transaction is committed. Otherwise, it is rolled back.
 
-### Request and Repsonse Properties
+## Request and Repsonse Properties
 The following methods provide access to the request and response objects associated with the current invocation:
 
 ```java
@@ -253,10 +246,10 @@ For example, a service might use the request to read directly from the input str
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
 
-### Inter-Service Communication
+## Inter-Service Communication
 A reference to any active service can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
-### API Documentation
+## API Documentation
 An index of all active services can be found at the application's context root:
 
 ```
@@ -352,7 +345,7 @@ Deprecated elements will be identified as such in the output.
 
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
-## WebServiceProxy
+# WebServiceProxy
 The `WebServiceProxy` class is used to submit API requests to a server. It provides the following constructor, which accepts a string representing the HTTP method to execute and the URI of the requested resource:
 
 ```java
@@ -417,7 +410,7 @@ webServiceProxy.setArguments(mapOf(
 System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
-### Typed Invocation
+## Typed Invocation
 `WebServiceProxy` additionally provides the following methods to facilitate convenient, type-safe access to web APIs:
 
 ```java
@@ -461,7 +454,7 @@ Path variables and body content are handled as described for [`WebService`](#web
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
-## JSONEncoder and JSONDecoder
+# JSONEncoder and JSONDecoder
 The `JSONEncoder` and `JSONDecoder` classes are used internally by `WebService` and `WebServiceProxy` to process request and response data. However, they can also be used directly by application logic. For example:
 
 ```java
@@ -498,7 +491,7 @@ jsonEncoder.write(map, System.out);
 }
 ```
 
-## TextEncoder and TextDecoder
+# TextEncoder and TextDecoder
 The `TextEncoder` and `TextDecoder` classes can be used to write and read plain text content, respectively. For example:
 
 ```java
@@ -513,7 +506,7 @@ textEncoder.write(text, System.out);
 Hello, World!
 ```
 
-## CSVEncoder and CSVDecoder
+# CSVEncoder and CSVDecoder
 The `CSVEncoder` and `CSVDecoder` classes serialize a sequence of values to and from CSV, respectively. For example:
 
 ```java
@@ -532,7 +525,7 @@ csvEncoder.writeAll(rows, System.out);
 "d","e","f"
 ```
 
-## TemplateEncoder
+# TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy (known as a "data dictionary") into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. For example:
 
 ```java
@@ -571,7 +564,7 @@ the code would produce this output:
 </html>
 ```
 
-## BeanAdapter
+# BeanAdapter
 The `BeanAdapter` class provides access to Java bean properties and record components via the `Map` interface. For example:
 
 ```java
@@ -635,7 +628,7 @@ Note that concrete types are coerced "eagerly" (before the `coerce()` method ret
 
 The `Required` and `Name` annotations introduced previously can also be used with bean properties.
 
-## QueryBuilder and ResultSetAdapter
+# QueryBuilder and ResultSetAdapter
 The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following tables (adapted from the MySQL tutorial):
 
 ```sql
@@ -694,7 +687,7 @@ Temporal values (such as "birth" and "death" above) are automatically converted 
 * `java.sql.Date`/`LocalDate`
 * `java.sql.Time`/`LocalTime`
 
-### Schema Annotations
+## Schema Annotations
 `QueryBuilder` also offers a simplified approach to query construction using "schema annotations". For example, given these type definitions:
 
 ```java
@@ -763,7 +756,7 @@ order by last_name asc, first_name asc
 
 Insert, update, and delete operations are also supported. See the [pet](kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.
 
-## ElementAdapter
+# ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
 
 ```xml
@@ -870,7 +863,7 @@ templateEncoder.write(account, System.out);
 
 `ElementAdapter` also supports `put()` and `remove()` for modifying an element's contents.
 
-## Pipe
+# Pipe
 The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of values for retrieval by a consumer thread. It implements the `Iterable` interface and returns elements as they become available, blocking if necessary.
 
 For example, the following code executes a SQL query that retrieves all rows from an `employees` table:
@@ -948,7 +941,7 @@ return countOf(jsonDecoder.readAll(inputStream));
 
 For more information, see the [employee service](kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
-## Collections
+# Collections
 The `Collections` class provides a set of static utility methods for declaratively instantiating list, map, and set values:
 
 ```java
@@ -1018,7 +1011,7 @@ var strings = listOf("a", "bc", "def");
 var i = indexOf(strings, value -> value.length() == 3); // 2
 ```
 
-## Optionals
+# Optionals
 The `Optionals` class contains methods for working with optional (or "nullable") values:
 
 ```java
@@ -1064,7 +1057,7 @@ public static boolean isNull(Object value) { ... }
 public static boolean isNotNull(Object value) { ... }
 ```
 
-## Iterables
+# Iterables
 The `Iterables` class contains methods for processing a sequence of values:
 
 ```java
