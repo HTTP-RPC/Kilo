@@ -17,10 +17,7 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Part;
-import org.httprpc.kilo.Accepts;
-import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
-import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -54,7 +51,7 @@ import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 
-@WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
+@WebServlet("/test/*")
 @MultipartConfig
 public class TestService extends AbstractDatabaseService {
     public interface A {

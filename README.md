@@ -35,7 +35,7 @@ Each is discussed in more detail below. Java 21 or later is required.
 For example, the following service implements some simple mathematical operations:
 
 ```java
-@WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
+@WebServlet("/math/*")
 @Description("Math service.")
 public class MathService extends WebService {
     @RequestMethod("GET")
@@ -139,7 +139,7 @@ public List<Pet> getPets(@Required String owner) throws SQLException {
 The `Name` annotation can be used to associate a custom name with a method parameter. For example:
 
 ```java
-@WebServlet(urlPatterns = {"/members/*"}, loadOnStartup = 1)
+@WebServlet("/members/*")
 public class MemberService extends WebService {
     @RequestMethod("GET")
     public List<Person> getMembers(
@@ -265,7 +265,7 @@ GET http://localhost:8080/kilo-test/catalog?api
 Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
-@WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
+@WebServlet("/catalog/*")
 @Description("Catalog service.")
 public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")

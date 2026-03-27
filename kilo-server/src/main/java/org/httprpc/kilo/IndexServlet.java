@@ -28,9 +28,9 @@ import java.util.ResourceBundle;
 import static org.httprpc.kilo.util.Collections.*;
 
 /**
- * Generates an index of all active services.
+ * Generates an index of all services.
  */
-@WebServlet(urlPatterns = {""}, loadOnStartup = Integer.MAX_VALUE)
+@WebServlet("")
 public class IndexServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
