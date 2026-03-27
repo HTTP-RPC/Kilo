@@ -734,6 +734,14 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
+     * Indicates that a field represents a service instance.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Instance {
+    }
+
+    /**
      * Indicates that a service method may not immediately fulfill submitted
      * requests.
      */

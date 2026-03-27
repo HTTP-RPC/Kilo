@@ -178,6 +178,9 @@ public class TestService extends AbstractDatabaseService {
         }
     }
 
+    @Instance
+    private MathService mathService = null;
+
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,
         int number, SequencedSet<Integer> numbers, char character, SortedSet<Character> characters,
@@ -437,12 +440,12 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("math/sum")
     public double getSum(double a, double b) {
-        return getInstance(MathService.class).getSum(a, b);
+        return mathService.getSum(a, b);
     }
 
     @RequestMethod("GET")
     @ResourcePath("math/sum")
     public double getSum(List<Double> values) {
-        return getInstance(MathService.class).getSum(values);
+        return mathService.getSum(values);
     }
 }
