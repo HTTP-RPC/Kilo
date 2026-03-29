@@ -250,10 +250,10 @@ The response object can also be used to produce a custom result. If a service me
 A reference to any active service can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
 ## API Documentation
-An index of all active services can be found at the application's context root:
+An index of all services can be found at the application's context root:
 
 ```
-GET http://localhost:8080/kilo-test/
+GET http://localhost:8080/kilo-test.html
 ```
 
 Documentation for a specific service can be viewed by appending ".html" to the service's base URL:
