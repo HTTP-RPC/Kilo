@@ -828,22 +828,20 @@ public abstract class WebService extends HttpServlet {
         var webServlet = type.getAnnotation(WebServlet.class);
 
         if (webServlet == null) {
-            throw new ServletException("Web servlet annotation is required.");
+            throw new ServletException("Missing web servlet annotation.");
         }
 
-        var urlPatterns = webServlet.urlPatterns();
+        var urlPattern = coalesce(firstOf(iterableOf(webServlet.value())), () -> firstOf(iterableOf(webServlet.urlPatterns())));
 
-        if (urlPatterns.length == 0) {
-            throw new ServletException("At least one URL pattern is required.");
+        if (urlPattern == null) {
+            throw new ServletException("Missing URL pattern.");
         }
 
-        var path = urlPatterns[0];
-
-        if (!(path.startsWith("/") && path.endsWith("/*"))) {
+        if (!(urlPattern.startsWith("/") && urlPattern.endsWith("/*"))) {
             throw new ServletException("Invalid URL pattern.");
         }
 
-        path = path.substring(0, path.length() - 2);
+        var path = urlPattern.substring(0, urlPattern.length() - 2);
 
         root = new Resource();
 

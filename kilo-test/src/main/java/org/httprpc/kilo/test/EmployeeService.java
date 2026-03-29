@@ -30,7 +30,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-@WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
+@WebServlet("/employees/*")
 public class EmployeeService extends WebService {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
 
