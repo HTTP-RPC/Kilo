@@ -816,9 +816,22 @@ public abstract class WebService extends HttpServlet {
      * Constructs a new web service instance.
      */
     public WebService() {
-        root = new Resource();
-
         var type = getClass();
+
+        root = index(type);
+
+        // TODO
+        /*
+        serviceDescriptor = new ServiceDescriptor(type);
+
+        describeResource("", root);
+        */
+
+        instances.put(type, this);
+    }
+
+    private static Resource index(Class<? extends WebService> type) {
+        var root = new Resource();
 
         var methods = type.getMethods();
 
@@ -861,13 +874,7 @@ public abstract class WebService extends HttpServlet {
 
         sort(root);
 
-        serviceDescriptor = new ServiceDescriptor(type);
-
-        describeResource("", root);
-
-        synchronized (WebService.class) {
-            instances.put(type, this);
-        }
+        return root;
     }
 
     private static void sort(Resource root) {
@@ -894,7 +901,7 @@ public abstract class WebService extends HttpServlet {
      * exists.
      */
     @SuppressWarnings("unchecked")
-    public static synchronized <T extends WebService> T getInstance(Class<T> type) {
+    public static <T extends WebService> T getInstance(Class<T> type) {
         return (T)instances.get(type);
     }
 

@@ -14,8 +14,10 @@
 
 package org.httprpc.kilo;
 
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -38,6 +40,7 @@ import static org.httprpc.kilo.util.Optionals.*;
 @WebListener
 public class IndexServlet extends HttpServlet implements ServletContextListener {
     @Override
+    @SuppressWarnings("unchecked")
     public void contextInitialized(ServletContextEvent event) {
         var servletContext = event.getServletContext();
 
@@ -49,6 +52,10 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
                 type = Class.forName(entry.getValue().getClassName());
             } catch (ClassNotFoundException exception) {
                 throw new RuntimeException(exception);
+            }
+
+            if (!WebService.class.isAssignableFrom(type)) {
+                continue;
             }
 
             var webServlet = type.getAnnotation(WebServlet.class);
@@ -67,9 +74,17 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
                 throw new IllegalStateException("Invalid URL pattern.");
             }
 
+            // TODO
             var path = urlPattern.substring(0, urlPattern.length() - 2);
 
-            // TODO
+            Servlet servlet;
+            try {
+                servlet = servletContext.createServlet((Class<? extends Servlet>)type);
+            } catch (ServletException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            servletContext.addServlet(name, servlet);
         }
     }
 
