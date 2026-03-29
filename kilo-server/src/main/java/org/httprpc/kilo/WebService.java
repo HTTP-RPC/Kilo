@@ -86,7 +86,6 @@ public abstract class WebService extends HttpServlet {
      * Describes a service instance.
      */
     public static class ServiceDescriptor {
-        private String path;
         private String description;
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
@@ -94,20 +93,8 @@ public abstract class WebService extends HttpServlet {
         private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
         private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
 
-        private ServiceDescriptor(String path, Class<? extends WebService> type) {
-            this.path = path;
-
+        private ServiceDescriptor(Class<? extends WebService> type) {
             description = map(type.getAnnotation(Description.class), Description::value);
-        }
-
-        /**
-         * Returns the path to the service.
-         *
-         * @return
-         * The service's path.
-         */
-        public String getPath() {
-            return path;
         }
 
         /**
@@ -846,16 +833,6 @@ public abstract class WebService extends HttpServlet {
         return (T)instances.get(type);
     }
 
-    /**
-     * Returns a list of descriptors for all active services.
-     *
-     * @return
-     * A list of active service descriptors.
-     */
-    public static synchronized List<ServiceDescriptor> getServiceDescriptors() {
-        return sortBy(mapAll(instances.values(), WebService::getServiceDescriptor), ServiceDescriptor::getPath);
-    }
-
     @Override
     public void init() throws ServletException {
         var type = getClass();
@@ -921,7 +898,7 @@ public abstract class WebService extends HttpServlet {
 
         sort(root);
 
-        serviceDescriptor = new ServiceDescriptor(path, type);
+        serviceDescriptor = new ServiceDescriptor(type);
 
         describeResource(path, root);
 

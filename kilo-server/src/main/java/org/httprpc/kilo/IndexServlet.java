@@ -42,8 +42,6 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var serviceDescriptors = WebService.getServiceDescriptors();
-
         response.setContentType(String.format(WebService.CONTENT_TYPE_FORMAT, WebService.TEXT_HTML, StandardCharsets.UTF_8));
 
         var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
@@ -56,7 +54,7 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
         templateEncoder.write(mapOf(
             entry("language", locale.getLanguage()),
             entry("contextPath", request.getContextPath()),
-            entry("services", serviceDescriptors)
+            entry("services", null) // TODO
         ), response.getOutputStream());
     }
 }
