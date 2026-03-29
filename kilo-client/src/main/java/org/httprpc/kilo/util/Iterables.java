@@ -235,9 +235,11 @@ public class Iterables {
                     throw new NoSuchElementException();
                 }
 
-                i++;
-
-                return iterator.next();
+                try {
+                    return iterator.next();
+                } finally {
+                    i++;
+                }
             }
         };
     }
