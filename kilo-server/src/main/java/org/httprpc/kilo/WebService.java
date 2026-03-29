@@ -1578,10 +1578,8 @@ public abstract class WebService extends HttpServlet {
             return new MapTypeDescriptor(describeRawType(Object.class), describeRawType(Object.class));
         } else {
             if (type.isEnum()) {
-                var enumeration = serviceDescriptor.enumerations.get(type);
-
-                if (enumeration == null) {
-                    enumeration = new EnumerationDescriptor(type);
+                serviceDescriptor.enumerations.computeIfAbsent(type, key -> {
+                    var enumeration = new EnumerationDescriptor(type);
 
                     serviceDescriptor.enumerations.put(type, enumeration);
 
@@ -1596,12 +1594,12 @@ public abstract class WebService extends HttpServlet {
 
                         enumeration.values.add(new ConstantDescriptor(field));
                     }
-                }
-            } else {
-                var structure = serviceDescriptor.structures.get(type);
 
-                if (structure == null) {
-                    structure = new StructureDescriptor(type);
+                    return enumeration;
+                });
+            } else {
+                serviceDescriptor.structures.computeIfAbsent(type, key -> {
+                    var structure = new StructureDescriptor(type);
 
                     serviceDescriptor.structures.put(type, structure);
 
@@ -1632,7 +1630,9 @@ public abstract class WebService extends HttpServlet {
 
                         structure.properties.add(propertyDescriptor);
                     }
-                }
+
+                    return structure;
+                });
             }
 
             return new TypeDescriptor(type, false);
