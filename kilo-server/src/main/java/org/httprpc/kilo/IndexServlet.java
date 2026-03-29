@@ -14,11 +14,13 @@
 
 package org.httprpc.kilo;
 
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
@@ -28,37 +30,33 @@ import java.util.ResourceBundle;
 import static org.httprpc.kilo.util.Collections.*;
 
 /**
- * Generates an index of all active services.
+ * Generates API documentation.
  */
-@WebServlet(urlPatterns = {""}, loadOnStartup = Integer.MAX_VALUE)
-public class IndexServlet extends HttpServlet {
+@WebServlet("*.html")
+@WebListener
+public class IndexServlet extends HttpServlet implements ServletContextListener {
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+        // TODO
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var serviceDescriptors = WebService.getServiceDescriptors();
 
-        var accept = request.getHeader("Accept");
+        response.setContentType(String.format(WebService.CONTENT_TYPE_FORMAT, WebService.TEXT_HTML, StandardCharsets.UTF_8));
 
-        if (accept != null && accept.equalsIgnoreCase(WebService.APPLICATION_JSON)) {
-            response.setContentType(String.format(WebService.CONTENT_TYPE_FORMAT, WebService.APPLICATION_JSON, StandardCharsets.UTF_8));
+        var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
-            var jsonEncoder = new JSONEncoder();
+        var locale = request.getLocale();
 
-            jsonEncoder.write(serviceDescriptors, response.getOutputStream());
-        } else {
-            response.setContentType(String.format(WebService.CONTENT_TYPE_FORMAT, WebService.TEXT_HTML, StandardCharsets.UTF_8));
+        templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), locale));
+        templateEncoder.setLocale(locale);
 
-            var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
-
-            var locale = request.getLocale();
-
-            templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), locale));
-            templateEncoder.setLocale(locale);
-
-            templateEncoder.write(mapOf(
-                entry("language", locale.getLanguage()),
-                entry("contextPath", request.getContextPath()),
-                entry("services", serviceDescriptors)
-            ), response.getOutputStream());
-        }
+        templateEncoder.write(mapOf(
+            entry("language", locale.getLanguage()),
+            entry("contextPath", request.getContextPath()),
+            entry("services", serviceDescriptors)
+        ), response.getOutputStream());
     }
 }

@@ -256,10 +256,10 @@ An index of all active services can be found at the application's context root:
 GET http://localhost:8080/kilo-test/
 ```
 
-Documentation for a specific service can be viewed by appending "?api" to the service's base URL:
+Documentation for a specific service can be viewed by appending ".html" to the service's base URL:
 
 ```
-GET http://localhost:8080/kilo-test/catalog?api
+GET http://localhost:8080/kilo-test/catalog.html
 ```
 
 Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
@@ -342,8 +342,6 @@ public enum Size implements Numeric {
 ```  
 
 Deprecated elements will be identified as such in the output.
-
-A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
 # WebServiceProxy
 The `WebServiceProxy` class is used to submit API requests to a server. It provides the following constructor, which accepts a string representing the HTTP method to execute and the URI of the requested resource:

@@ -23,7 +23,6 @@ import jakarta.servlet.http.Part;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
-import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextEncoder;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
@@ -69,7 +68,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -1025,39 +1023,8 @@ public abstract class WebService extends HttpServlet {
      * @throws IOException
      * If an error occurs while decoding the request or encoding the response.
      */
-    protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getMethod().equalsIgnoreCase("GET") && request.getPathInfo() == null && request.getParameter("api") != null) {
-            var accept = request.getHeader("Accept");
-
-            if (accept != null && accept.equalsIgnoreCase(APPLICATION_JSON)) {
-                response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
-
-                var jsonEncoder = new JSONEncoder();
-
-                jsonEncoder.write(serviceDescriptor, response.getOutputStream());
-            } else {
-                response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_HTML, StandardCharsets.UTF_8));
-
-                var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
-
-                var locale = request.getLocale();
-
-                templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), locale));
-                templateEncoder.setLocale(locale);
-
-                templateEncoder.write(mapOf(
-                    entry("language", locale.getLanguage()),
-                    entry("contextPath", request.getContextPath()),
-                    entry("service", serviceDescriptor)
-                ), response.getOutputStream());
-            }
-        } else {
-            invoke(request, response);
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    private void invoke(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         var resource = root;
 
         List<String> keys = new ArrayList<>();
