@@ -249,6 +249,13 @@ The response object can also be used to produce a custom result. If a service me
 ## Inter-Service Communication
 A reference to any active service can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
+Alternatively, the `Instance` annotation can be used to automatically inject a service instance into a member variable:
+
+```java
+@Instance
+private MathService mathService = null;
+```
+
 ## API Documentation
 An index of all services can be found at the application's context root:
 
