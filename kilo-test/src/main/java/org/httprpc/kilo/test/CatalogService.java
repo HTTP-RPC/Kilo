@@ -15,7 +15,6 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
-import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;

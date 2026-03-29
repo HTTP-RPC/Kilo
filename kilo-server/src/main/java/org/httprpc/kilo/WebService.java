@@ -36,6 +36,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -727,6 +731,31 @@ public abstract class WebService extends HttpServlet {
         public TypeDescriptor getValueType() {
             return valueType;
         }
+    }
+
+    /**
+     * Indicates that a service method may not immediately fulfill submitted
+     * requests.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface Accepts {
+    }
+
+    /**
+     * Indicates that a service method results in creation of a resource.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface Creates {
+    }
+
+    /**
+     * Indicates that a service method accepts form data.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface FormData {
     }
 
     private enum Verb {
