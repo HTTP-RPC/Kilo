@@ -889,4 +889,36 @@ public class Iterables {
 
         return n;
     }
+
+    /**
+     * Creates an iterable from an array.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param array
+     * The source array.
+     *
+     * @return
+     * The iterable array contents.
+     */
+    public static <T> Iterable<T> iterableOf(T[] array) {
+        return () -> new Iterator<>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                return array[i++];
+            }
+        };
+    }
 }
