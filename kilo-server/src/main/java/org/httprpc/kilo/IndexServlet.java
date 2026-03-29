@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 /**
  * Generates API documentation.
@@ -37,7 +39,38 @@ import static org.httprpc.kilo.util.Collections.*;
 public class IndexServlet extends HttpServlet implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        // TODO
+        var servletContext = event.getServletContext();
+
+        for (var entry : servletContext.getServletRegistrations().entrySet()) {
+            var name = entry.getKey();
+
+            Class<?> type;
+            try {
+                type = Class.forName(entry.getValue().getClassName());
+            } catch (ClassNotFoundException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            var webServlet = type.getAnnotation(WebServlet.class);
+
+            if (webServlet == null) {
+                throw new IllegalStateException("Missing web servlet annotation.");
+            }
+
+            var urlPattern = coalesce(firstOf(iterableOf(webServlet.value())), () -> firstOf(iterableOf(webServlet.urlPatterns())));
+
+            if (urlPattern == null) {
+                throw new IllegalStateException("Missing URL pattern.");
+            }
+
+            if (!(urlPattern.startsWith("/") && urlPattern.endsWith("/*"))) {
+                throw new IllegalStateException("Invalid URL pattern.");
+            }
+
+            var path = urlPattern.substring(0, urlPattern.length() - 2);
+
+            // TODO
+        }
     }
 
     @Override

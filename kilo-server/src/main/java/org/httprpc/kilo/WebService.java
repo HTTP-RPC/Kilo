@@ -15,7 +15,6 @@
 package org.httprpc.kilo;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,7 +74,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 /**
@@ -763,34 +761,33 @@ public abstract class WebService extends HttpServlet {
         Map<Verb, List<Method>> handlerLists = new TreeMap<>();
     }
 
-    private Resource root = null;
-
-    private ServiceDescriptor serviceDescriptor = null;
+    private Resource root;
+    private ServiceDescriptor serviceDescriptor;
 
     /**
      * JSON MIME type.
      */
-    protected static final String APPLICATION_JSON = "application/json";
+    public static final String APPLICATION_JSON = "application/json";
 
     /**
      * XML MIME type.
      */
-    protected static final String TEXT_XML = "text/xml";
+    public static final String TEXT_XML = "text/xml";
 
     /**
      * HTML MIME type.
      */
-    protected static final String TEXT_HTML = "text/html";
+    public static final String TEXT_HTML = "text/html";
 
     /**
      * CSV MIME type.
      */
-    protected static final String TEXT_CSV = "text/csv";
+    public static final String TEXT_CSV = "text/csv";
 
     /**
      * Plain text MIME type.
      */
-    protected static final String TEXT_PLAIN = "text/plain";
+    public static final String TEXT_PLAIN = "text/plain";
 
     /**
      * Content type format.
@@ -816,46 +813,12 @@ public abstract class WebService extends HttpServlet {
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
     /**
-     * Returns a service instance.
-     *
-     * @param <T>
-     * The service type.
-     *
-     * @param type
-     * The service type.
-     *
-     * @return
-     * The service instance, or {@code null} if no service of the given type
-     * exists.
+     * Constructs a new web service instance.
      */
-    @SuppressWarnings("unchecked")
-    public static synchronized <T extends WebService> T getInstance(Class<T> type) {
-        return (T)instances.get(type);
-    }
-
-    @Override
-    public void init() throws ServletException {
-        var type = getClass();
-
-        var webServlet = type.getAnnotation(WebServlet.class);
-
-        if (webServlet == null) {
-            throw new ServletException("Missing web servlet annotation.");
-        }
-
-        var urlPattern = coalesce(firstOf(iterableOf(webServlet.value())), () -> firstOf(iterableOf(webServlet.urlPatterns())));
-
-        if (urlPattern == null) {
-            throw new ServletException("Missing URL pattern.");
-        }
-
-        if (!(urlPattern.startsWith("/") && urlPattern.endsWith("/*"))) {
-            throw new ServletException("Invalid URL pattern.");
-        }
-
-        var path = urlPattern.substring(0, urlPattern.length() - 2);
-
+    public WebService() {
         root = new Resource();
+
+        var type = getClass();
 
         var methods = type.getMethods();
 
@@ -872,7 +835,7 @@ public abstract class WebService extends HttpServlet {
             try {
                 verb = Verb.valueOf(requestMethod.value().toUpperCase());
             } catch (Exception exception) {
-                throw new ServletException("Invalid verb.");
+                throw new IllegalStateException("Invalid verb.");
             }
 
             var resource = root;
@@ -886,7 +849,7 @@ public abstract class WebService extends HttpServlet {
                     var component = components[j];
 
                     if (component.isEmpty()) {
-                        throw new ServletException("Invalid resource path.");
+                        throw new IllegalStateException("Invalid resource path.");
                     }
 
                     resource = resource.resources.computeIfAbsent(component, key -> new Resource());
@@ -900,7 +863,7 @@ public abstract class WebService extends HttpServlet {
 
         serviceDescriptor = new ServiceDescriptor(type);
 
-        describeResource(path, root);
+        describeResource("", root);
 
         synchronized (WebService.class) {
             instances.put(type, this);
@@ -915,6 +878,24 @@ public abstract class WebService extends HttpServlet {
         for (var resource : root.resources.values()) {
             sort(resource);
         }
+    }
+
+    /**
+     * Returns a service instance.
+     *
+     * @param <T>
+     * The service type.
+     *
+     * @param type
+     * The service type.
+     *
+     * @return
+     * The service instance, or {@code null} if no service of the given type
+     * exists.
+     */
+    @SuppressWarnings("unchecked")
+    public static synchronized <T extends WebService> T getInstance(Class<T> type) {
+        return (T)instances.get(type);
     }
 
     @Override
