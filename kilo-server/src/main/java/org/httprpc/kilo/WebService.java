@@ -789,13 +789,10 @@ public abstract class WebService extends HttpServlet {
      */
     public static final String TEXT_PLAIN = "text/plain";
 
-    /**
-     * Content type format.
-     */
-    protected static final String CONTENT_TYPE_FORMAT = "%s;charset=%s";
-
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
+
+    private static final String CONTENT_TYPE_FORMAT = "%s;charset=%s";
 
     private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
 

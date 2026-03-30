@@ -26,7 +26,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -74,9 +73,6 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
                 throw new IllegalStateException("Invalid URL pattern.");
             }
 
-            // TODO
-            var path = urlPattern.substring(0, urlPattern.length() - 2);
-
             Servlet servlet;
             try {
                 servlet = servletContext.createServlet((Class<? extends Servlet>)type);
@@ -90,7 +86,7 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType(String.format(WebService.CONTENT_TYPE_FORMAT, WebService.TEXT_HTML, StandardCharsets.UTF_8));
+        response.setContentType("text/html;charset=UTF-8");
 
         var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
