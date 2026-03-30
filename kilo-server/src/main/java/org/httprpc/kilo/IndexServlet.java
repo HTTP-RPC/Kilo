@@ -26,7 +26,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -35,9 +37,11 @@ import static org.httprpc.kilo.util.Optionals.*;
 /**
  * Generates API documentation.
  */
-@WebServlet("*.html")
+@WebServlet({"", "*.html"})
 @WebListener
 public class IndexServlet extends HttpServlet implements ServletContextListener {
+    private static final TreeMap<String, WebService.ServiceDescriptor> services = new TreeMap<>();
+
     @Override
     @SuppressWarnings("unchecked")
     public void contextInitialized(ServletContextEvent event) {
@@ -73,6 +77,8 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
                 throw new IllegalStateException("Invalid URL pattern.");
             }
 
+            var path = urlPattern.substring(0, urlPattern.length() - 2);
+
             Servlet servlet;
             try {
                 servlet = servletContext.createServlet((Class<? extends Servlet>)type);
@@ -81,6 +87,8 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
             }
 
             servletContext.addServlet(name, servlet);
+
+            services.put(path, ((WebService)servlet).getServiceDescriptor());
         }
     }
 
@@ -92,13 +100,16 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
 
         var locale = request.getLocale();
 
-        templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), locale));
+        templateEncoder.setResourceBundle(getResourceBundle("index", locale));
         templateEncoder.setLocale(locale);
 
         templateEncoder.write(mapOf(
             entry("language", locale.getLanguage()),
-            entry("contextPath", request.getContextPath()),
-            entry("services", null) // TODO
+            entry("services", mapAll(services.entrySet(), entry -> entry(entry.getKey(), entry.getValue())))
         ), response.getOutputStream());
+    }
+
+    private static ResourceBundle getResourceBundle(String name, Locale locale) {
+        return ResourceBundle.getBundle(String.format("%s.%s", IndexServlet.class.getPackage().getName(), name), locale);
     }
 }

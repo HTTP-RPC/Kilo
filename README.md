@@ -260,7 +260,7 @@ private MathService mathService = null;
 An index of all services can be found at the application's context root:
 
 ```
-GET http://localhost:8080/kilo-test.html
+GET http://localhost:8080/kilo-test
 ```
 
 Documentation for a specific service can be viewed by appending ".html" to the service's base URL:
