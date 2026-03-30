@@ -392,6 +392,15 @@ public class IterablesTest {
     }
 
     @Test
+    public void testStream() {
+        var values = iterableOf(listOf(1, 2, 3).stream());
+
+        var result = maximumOf(values); // 3
+
+        assertEquals(3, result);
+    }
+
+    @Test
     public void testArray() {
         var values = iterableOf(new Integer[] {1, 2, 3});
 

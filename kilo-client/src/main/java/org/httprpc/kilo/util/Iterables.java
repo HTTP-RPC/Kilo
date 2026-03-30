@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
+import java.util.stream.Stream;
 
 /**
  * Provides static utility methods for working with iterables.
@@ -888,6 +889,22 @@ public class Iterables {
         }
 
         return n;
+    }
+
+    /**
+     * Creates an iterable from a stream.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param stream
+     * The source stream.
+     *
+     * @return
+     * The iterable stream contents.
+     */
+    public static <T> Iterable<T> iterableOf(Stream<T> stream) {
+        return stream::iterator;
     }
 
     /**
