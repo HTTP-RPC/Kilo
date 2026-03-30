@@ -26,6 +26,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -48,6 +52,8 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
     @SuppressWarnings("unchecked")
     public void contextInitialized(ServletContextEvent event) {
         var servletContext = event.getServletContext();
+
+        var instanceFields = new HashMap<Class<?>, List<Field>>();
 
         for (var entry : servletContext.getServletRegistrations().entrySet()) {
             var name = entry.getKey();
@@ -91,6 +97,33 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
             servletContext.addServlet(name, servlet);
 
             services.put(servicePath, ((WebService)servlet).getServiceDescriptor());
+
+            var fields = type.getDeclaredFields();
+
+            for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
+
+                if (WebService.class.isAssignableFrom(field.getType())
+                    && field.getAnnotation(WebService.Instance.class) != null) {
+                    instanceFields.computeIfAbsent(type, key -> new LinkedList<>()).add(field);
+                }
+            }
+        }
+
+        for (var entry : instanceFields.entrySet()) {
+            var webService = WebService.getInstance((Class<? extends WebService>)entry.getKey());
+
+            for (var field : entry.getValue()) {
+                field.setAccessible(true);
+
+                var instance = WebService.getInstance((Class<? extends WebService>)field.getType());
+
+                try {
+                    field.set(webService, instance);
+                } catch (IllegalAccessException exception) {
+                    throw new UnsupportedOperationException(exception);
+                }
+            }
         }
     }
 
