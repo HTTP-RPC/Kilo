@@ -23,17 +23,16 @@ import org.httprpc.kilo.io.TemplateEncoder;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 
 /**
  * Generates API documentation.
  */
 @WebServlet(urlPatterns = {"", "*.html"}, loadOnStartup = Integer.MAX_VALUE)
 public class IndexServlet extends HttpServlet {
-    private SortedMap<String, WebService.ServiceDescriptor> serviceDescriptors = null;
+    private TreeMap<String, WebService.ServiceDescriptor> serviceDescriptors = new TreeMap<>();
 
     private static final String HTML_EXTENSION = ".html";
 
@@ -41,9 +40,33 @@ public class IndexServlet extends HttpServlet {
     public void init() {
         var instances = WebService.getInstances();
 
-        serviceDescriptors = sortedMapOf(mapAll(mapAll(instances.values(), WebService::getServiceDescriptor),
-            serviceDescriptor -> entry(serviceDescriptor.getPath(), serviceDescriptor)
-        ));
+        for (var entry : instances.entrySet()) {
+            var type = entry.getKey();
+            var instance = entry.getValue();
+
+            var fields = type.getDeclaredFields();
+
+            for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
+
+                var fieldType = field.getType();
+
+                if (WebService.class.isAssignableFrom(fieldType)
+                    && field.getAnnotation(WebService.Instance.class) != null) {
+                    field.setAccessible(true);
+
+                    try {
+                        field.set(instance, instances.get(fieldType));
+                    } catch (IllegalAccessException exception) {
+                        throw new UnsupportedOperationException(exception);
+                    }
+                }
+            }
+
+            var serviceDescriptor = instance.getServiceDescriptor();
+
+            serviceDescriptors.put(serviceDescriptor.getPath(), serviceDescriptor);
+        }
     }
 
     @Override
