@@ -105,6 +105,7 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
 
         templateEncoder.write(mapOf(
             entry("language", locale.getLanguage()),
+            entry("contextPath", request.getContextPath()),
             entry("services", mapAll(services.entrySet(), entry -> entry(entry.getKey(), entry.getValue())))
         ), response.getOutputStream());
     }
