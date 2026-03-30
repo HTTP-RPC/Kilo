@@ -69,7 +69,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -836,15 +835,13 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Returns descriptors for all active services.
+     * Returns a map of all active service instances.
      *
      * @return
-     * Descriptors for all active services, sorted by path.
+     * A map of all active service instances, keyed by type.
      */
-    public static synchronized SortedMap<String, ServiceDescriptor> getServiceDescriptors() {
-        return sortedMapOf(mapAll(mapAll(instances.values(), WebService::getServiceDescriptor),
-            serviceDescriptor -> entry(serviceDescriptor.getPath(), serviceDescriptor)
-        ));
+    public static synchronized Map<Class<? extends WebService>, WebService> getInstances() {
+        return immutableMapOf(instances);
     }
 
     @Override

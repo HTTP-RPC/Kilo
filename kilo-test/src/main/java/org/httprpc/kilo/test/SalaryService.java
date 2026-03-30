@@ -27,7 +27,7 @@ import java.time.LocalDate;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-@WebServlet(urlPatterns = {"/salaries/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = "/salaries/*", loadOnStartup = 0)
 public class SalaryService extends WebService {
     @Override
     protected String getDataSourceName() {

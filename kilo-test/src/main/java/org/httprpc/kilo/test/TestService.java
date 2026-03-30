@@ -51,7 +51,7 @@ import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 
-@WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = "/test/*", loadOnStartup = 0)
 @MultipartConfig
 public class TestService extends AbstractDatabaseService {
     public interface A {

@@ -23,21 +23,32 @@ import org.httprpc.kilo.io.TemplateEncoder;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.SortedMap;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 
 /**
  * Generates API documentation.
  */
-@WebServlet({"", "*.html"})
+@WebServlet(urlPatterns = {"", "*.html"}, loadOnStartup = Integer.MAX_VALUE)
 public class IndexServlet extends HttpServlet {
+    private SortedMap<String, WebService.ServiceDescriptor> serviceDescriptors = null;
+
     private static final String HTML_EXTENSION = ".html";
+
+    @Override
+    public void init() {
+        var instances = WebService.getInstances();
+
+        serviceDescriptors = sortedMapOf(mapAll(mapAll(instances.values(), WebService::getServiceDescriptor),
+            serviceDescriptor -> entry(serviceDescriptor.getPath(), serviceDescriptor)
+        ));
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        var services = WebService.getServiceDescriptors();
 
         if (request.getPathInfo() != null) {
             var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
@@ -50,16 +61,16 @@ public class IndexServlet extends HttpServlet {
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
                 entry("contextPath", request.getContextPath()),
-                entry("services", services.values())
+                entry("services", serviceDescriptors.values())
             ), response.getOutputStream());
         } else {
             var servletPath = request.getServletPath();
 
             var path = servletPath.substring(0, servletPath.length() - HTML_EXTENSION.length());
 
-            var service = services.get(path);
+            var serviceDescriptor = serviceDescriptors.get(path);
 
-            if (service == null) {
+            if (serviceDescriptor == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
@@ -74,7 +85,7 @@ public class IndexServlet extends HttpServlet {
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
                 entry("contextPath", request.getContextPath()),
-                entry("service", service)
+                entry("service", serviceDescriptor)
             ), response.getOutputStream());
         }
     }
