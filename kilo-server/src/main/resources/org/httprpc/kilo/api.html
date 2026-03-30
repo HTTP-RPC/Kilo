@@ -187,7 +187,7 @@
         <li><a href="#endpoints">{{$endpoints}}</a>
             <ol>
                 <!-- {{#endpoints}} -->
-                <li><a href="#{{path}}">{{path}}</a></li>
+                <li><a href="#{{servicePath}}{{path}}">{{servicePath}}{{path}}</a></li>
                 <!-- {{/endpoints}} -->
             </ol>
         </li>
@@ -218,8 +218,8 @@
     <div id="endpoints">
         <h1>{{$endpoints}}</h1>
         <!-- {{#endpoints}} -->
-        <section id="{{path}}">
-            <h2><code>{{path}}</code></h2>
+        <section id="{{servicePath}}{{path}}">
+            <h2><code>{{servicePath}}{{path}}</code></h2>
             <!-- {{#operations}} -->
             <pre><span class="method {{method}}">{{method}}{{?formData}}°{{/formData}}</span>{{?produces}} : {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{$deprecated}}</strong>{{/deprecated}}</pre>
             <!-- {{?description}} -->

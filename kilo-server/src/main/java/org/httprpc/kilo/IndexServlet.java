@@ -79,7 +79,7 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
                 throw new IllegalStateException("Invalid URL pattern.");
             }
 
-            var path = urlPattern.substring(0, urlPattern.length() - 2);
+            var servicePath = urlPattern.substring(0, urlPattern.length() - 2);
 
             Servlet servlet;
             try {
@@ -90,7 +90,7 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
 
             servletContext.addServlet(name, servlet);
 
-            services.put(path, ((WebService)servlet).getServiceDescriptor());
+            services.put(servicePath, ((WebService)servlet).getServiceDescriptor());
         }
     }
 
@@ -119,9 +119,9 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
                 return;
             }
 
-            var path = servletPath.substring(0, servletPath.length() - HTML_EXTENSION.length());
+            var servicePath = servletPath.substring(0, servletPath.length() - HTML_EXTENSION.length());
 
-            var service = services.get(path);
+            var service = services.get(servicePath);
 
             if (service == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -138,7 +138,7 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
                 entry("contextPath", request.getContextPath()),
-                entry("path", path),
+                entry("servicePath", servicePath),
                 entry("service", service)
             ), response.getOutputStream());
         }
