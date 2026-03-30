@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 
 /**
  * Generates API documentation.
@@ -51,19 +50,14 @@ public class IndexServlet extends HttpServlet {
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
                 entry("contextPath", request.getContextPath()),
-                entry("services", services)
+                entry("services", services.values())
             ), response.getOutputStream());
         } else {
             var servletPath = request.getServletPath();
 
-            if (!servletPath.endsWith(HTML_EXTENSION)) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-
             var path = servletPath.substring(0, servletPath.length() - HTML_EXTENSION.length());
 
-            var service = firstOf(filter(services, whereEqualTo(WebService.ServiceDescriptor::getPath, path)));
+            var service = services.get(path);
 
             if (service == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);

@@ -422,7 +422,9 @@ public class BeanAdapterTest {
     public void testGetProperties() {
         var properties = BeanAdapter.getProperties(TestBean.class);
 
-        var propertyTypes = mapOf(mapAll(properties.entrySet(), entry -> entry(entry.getKey(), entry.getValue().getAccessor().getGenericReturnType())));
+        var propertyTypes = mapOf(mapAll(properties.entrySet(),
+            entry -> entry(entry.getKey(), entry.getValue().getAccessor().getGenericReturnType())
+        ));
 
         assertEquals(Integer.TYPE, propertyTypes.get("i"));
         assertEquals(Long.TYPE, propertyTypes.get("long"));
