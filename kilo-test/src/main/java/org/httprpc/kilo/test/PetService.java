@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
-@WebServlet(urlPatterns = "/pets/*", loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
 public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
     public List<Pet> getPets(@Required String owner) throws SQLException {

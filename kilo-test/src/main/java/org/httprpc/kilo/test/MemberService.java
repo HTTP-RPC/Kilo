@@ -23,7 +23,7 @@ import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.*;
 
-@WebServlet(urlPatterns = "/members/*", loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/members/*"}, loadOnStartup = 1)
 public class MemberService extends WebService {
     @RequestMethod("GET")
     public List<Person> getMembers(

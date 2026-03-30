@@ -29,7 +29,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-@WebServlet(urlPatterns = "/films/*", loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/films/*"}, loadOnStartup = 1)
 @Description("Film service.")
 public class FilmService extends WebService {
     @Override
