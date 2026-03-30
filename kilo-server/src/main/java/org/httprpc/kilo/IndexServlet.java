@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo;
 
-import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +31,7 @@ import static org.httprpc.kilo.util.Iterables.*;
  * Generates API documentation.
  */
 @WebServlet({"", "*.html"})
-public class IndexServlet extends HttpServlet implements ServletContextListener {
+public class IndexServlet extends HttpServlet {
     private static final String HTML_EXTENSION = ".html";
 
     @Override
@@ -64,6 +63,13 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
 
             var path = servletPath.substring(0, servletPath.length() - HTML_EXTENSION.length());
 
+            var service = firstOf(filter(services, whereEqualTo(WebService.ServiceDescriptor::getPath, path)));
+
+            if (service == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
             var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
 
             var locale = request.getLocale();
@@ -74,7 +80,7 @@ public class IndexServlet extends HttpServlet implements ServletContextListener 
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
                 entry("contextPath", request.getContextPath()),
-                entry("service", firstOf(filter(services, whereEqualTo(WebService.ServiceDescriptor::getPath, path))))
+                entry("service", service)
             ), response.getOutputStream());
         }
     }
