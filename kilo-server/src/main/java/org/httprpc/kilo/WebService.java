@@ -1489,7 +1489,7 @@ public abstract class WebService extends HttpServlet {
                 for (var handler : entry.getValue()) {
                     var operation = new OperationDescriptor(entry.getKey().toString(), handler);
 
-                    operation.produces = describeType(handler.getGenericReturnType());
+                    operation.produces = describeGenericType(handler.getGenericReturnType());
 
                     var parameters = handler.getParameters();
 
@@ -1520,7 +1520,7 @@ public abstract class WebService extends HttpServlet {
                             operation.bodyParameter = parameterDescriptor;
                         }
 
-                        parameterDescriptor.type = describeType(parameter.getParameterizedType());
+                        parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
                     }
 
                     endpoint.operations.add(operation);
@@ -1535,7 +1535,7 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private TypeDescriptor describeType(Type type) {
+    private TypeDescriptor describeGenericType(Type type) {
         if (type instanceof Class<?>) {
             return describeRawType((Class<?>)type);
         } else if (type instanceof ParameterizedType parameterizedType) {
@@ -1543,9 +1543,9 @@ public abstract class WebService extends HttpServlet {
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (Iterable.class.isAssignableFrom(rawType)) {
-                return new IterableTypeDescriptor(describeType(actualTypeArguments[0]));
+                return new IterableTypeDescriptor(describeGenericType(actualTypeArguments[0]));
             } else if (Map.class.isAssignableFrom(rawType)) {
-                return new MapTypeDescriptor(describeType(actualTypeArguments[0]), describeType(actualTypeArguments[1]));
+                return new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
             } else {
                 throw new IllegalArgumentException("Unsupported parameterized type.");
             }
@@ -1638,7 +1638,7 @@ public abstract class WebService extends HttpServlet {
 
                 var propertyDescriptor = new PropertyDescriptor(entry.getKey(), accessor);
 
-                propertyDescriptor.type = describeType(accessor.getGenericReturnType());
+                propertyDescriptor.type = describeGenericType(accessor.getGenericReturnType());
 
                 structure.properties.add(propertyDescriptor);
             }
