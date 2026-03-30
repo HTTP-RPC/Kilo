@@ -1543,67 +1543,71 @@ public abstract class WebService extends HttpServlet {
             return new IterableTypeDescriptor(describeRawType(Object.class));
         } else if (Map.class.isAssignableFrom(type)) {
             return new MapTypeDescriptor(describeRawType(Object.class), describeRawType(Object.class));
+        } else if (type.isEnum()) {
+            return describeEnumeration(type);
         } else {
-            if (type.isEnum()) {
-                var enumeration = serviceDescriptor.enumerations.get(type);
+            return describeStructure(type);
+        }
+    }
 
-                if (enumeration == null) {
-                    enumeration = new EnumerationDescriptor(type);
+    private TypeDescriptor describeEnumeration(Class<?> type) {
+        if (!serviceDescriptor.enumerations.containsKey(type)) {
+            var enumeration = new EnumerationDescriptor(type);
 
-                    serviceDescriptor.enumerations.put(type, enumeration);
+            serviceDescriptor.enumerations.put(type, enumeration);
 
-                    var fields = type.getDeclaredFields();
+            var fields = type.getDeclaredFields();
 
-                    for (var i = 0; i < fields.length; i++) {
-                        var field = fields[i];
+            for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
 
-                        if (!field.isEnumConstant()) {
-                            continue;
-                        }
+                if (!field.isEnumConstant()) {
+                    continue;
+                }
 
-                        enumeration.values.add(new ConstantDescriptor(field));
-                    }
+                enumeration.values.add(new ConstantDescriptor(field));
+            }
+        }
+
+        return new TypeDescriptor(type, false);
+    }
+
+    private TypeDescriptor describeStructure(Class<?> type) {
+        if (!serviceDescriptor.structures.containsKey(type)) {
+            var structure = new StructureDescriptor(type);
+
+            serviceDescriptor.structures.put(type, structure);
+
+            if (type.isInterface()) {
+                var interfaces = type.getInterfaces();
+
+                for (var i = 0; i < interfaces.length; i++) {
+                    structure.supertypes.add(describeRawType(interfaces[i]));
                 }
             } else {
-                var structure = serviceDescriptor.structures.get(type);
+                var baseType = type.getSuperclass();
 
-                if (structure == null) {
-                    structure = new StructureDescriptor(type);
-
-                    serviceDescriptor.structures.put(type, structure);
-
-                    if (type.isInterface()) {
-                        var interfaces = type.getInterfaces();
-
-                        for (var i = 0; i < interfaces.length; i++) {
-                            structure.supertypes.add(describeRawType(interfaces[i]));
-                        }
-                    } else {
-                        var baseType = type.getSuperclass();
-
-                        if (baseType != Object.class && baseType != Record.class) {
-                            structure.supertypes.add(describeRawType(baseType));
-                        }
-                    }
-
-                    for (var entry : BeanAdapter.getProperties(type).entrySet()) {
-                        var accessor = entry.getValue().getAccessor();
-
-                        if (accessor.getDeclaringClass() != type) {
-                            continue;
-                        }
-
-                        var propertyDescriptor = new PropertyDescriptor(entry.getKey(), accessor);
-
-                        propertyDescriptor.type = describeType(accessor.getGenericReturnType());
-
-                        structure.properties.add(propertyDescriptor);
-                    }
+                if (baseType != Object.class && baseType != Record.class) {
+                    structure.supertypes.add(describeRawType(baseType));
                 }
             }
 
-            return new TypeDescriptor(type, false);
+            for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+                var accessor = entry.getValue().getAccessor();
+
+                if (accessor.getDeclaringClass() != type) {
+                    continue;
+                }
+
+                var propertyDescriptor = new PropertyDescriptor(entry.getKey(), accessor);
+
+                propertyDescriptor.type = describeType(accessor.getGenericReturnType());
+
+                structure.properties.add(propertyDescriptor);
+            }
         }
+
+        return new TypeDescriptor(type, false);
     }
 
     private static String getTypeName(Class<?> type) {
