@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
-@WebServlet("/bulk-upload/*")
+@WebServlet(urlPatterns = "/bulk-upload/*", loadOnStartup = 1)
 public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 5000;
 

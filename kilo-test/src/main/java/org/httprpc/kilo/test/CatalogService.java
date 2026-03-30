@@ -29,7 +29,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-@WebServlet("/catalog/*")
+@WebServlet(urlPatterns = "/catalog/*", loadOnStartup = 1)
 @Description("Catalog service.")
 public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")

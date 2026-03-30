@@ -15,6 +15,7 @@
 package org.httprpc.kilo;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -74,6 +75,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 /**
@@ -84,6 +86,7 @@ public abstract class WebService extends HttpServlet {
      * Describes a service instance.
      */
     public static class ServiceDescriptor {
+        private String path;
         private String description;
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
@@ -91,8 +94,20 @@ public abstract class WebService extends HttpServlet {
         private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
         private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
 
-        private ServiceDescriptor(Class<? extends WebService> type) {
+        private ServiceDescriptor(String path, Class<? extends WebService> type) {
+            this.path = path;
+
             description = map(type.getAnnotation(Description.class), Description::value);
+        }
+
+        /**
+         * Returns the path to the service.
+         *
+         * @return
+         * The service's path.
+         */
+        public String getPath() {
+            return path;
         }
 
         /**
@@ -717,14 +732,6 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Indicates that a field represents a service instance.
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
-    public @interface Instance {
-    }
-
-    /**
      * Indicates that a service method may not immediately fulfill submitted
      * requests.
      */
@@ -810,22 +817,56 @@ public abstract class WebService extends HttpServlet {
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
     /**
-     * Constructs a new web service instance.
+     * Returns a service instance.
+     *
+     * @param <T>
+     * The service type.
+     *
+     * @param type
+     * The service type.
+     *
+     * @return
+     * The service instance, or {@code null} if no service of the given type
+     * exists.
      */
-    public WebService() {
-        var type = getClass();
-
-        root = index(type);
-
-        serviceDescriptor = new ServiceDescriptor(type);
-
-        describeResource("", root);
-
-        instances.put(type, this);
+    @SuppressWarnings("unchecked")
+    public static synchronized <T extends WebService> T getInstance(Class<T> type) {
+        return (T)instances.get(type);
     }
 
-    private static Resource index(Class<? extends WebService> type) {
-        var root = new Resource();
+    /**
+     * Returns a list of descriptors for all active services.
+     *
+     * @return
+     * A list of active service descriptors.
+     */
+    public static synchronized List<ServiceDescriptor> getServiceDescriptors() {
+        return sortBy(mapAll(instances.values(), WebService::getServiceDescriptor), ServiceDescriptor::getPath);
+    }
+
+    @Override
+    public void init() throws ServletException {
+        var type = getClass();
+
+        var webServlet = type.getAnnotation(WebServlet.class);
+
+        if (webServlet == null) {
+            throw new ServletException("Missing web servlet annotation.");
+        }
+
+        var urlPattern = firstOf(iterableOf(webServlet.urlPatterns()));
+
+        if (urlPattern == null) {
+            throw new ServletException("Missing URL pattern.");
+        }
+
+        if (!(urlPattern.startsWith("/") && urlPattern.endsWith("/*"))) {
+            throw new ServletException("Invalid URL pattern.");
+        }
+
+        var path = urlPattern.substring(0, urlPattern.length() - 2);
+
+        root = new Resource();
 
         var methods = type.getMethods();
 
@@ -842,7 +883,7 @@ public abstract class WebService extends HttpServlet {
             try {
                 verb = Verb.valueOf(requestMethod.value().toUpperCase());
             } catch (Exception exception) {
-                throw new IllegalStateException("Invalid verb.");
+                throw new ServletException("Invalid verb.");
             }
 
             var resource = root;
@@ -856,7 +897,7 @@ public abstract class WebService extends HttpServlet {
                     var component = components[j];
 
                     if (component.isEmpty()) {
-                        throw new IllegalStateException("Invalid resource path.");
+                        throw new ServletException("Invalid resource path.");
                     }
 
                     resource = resource.resources.computeIfAbsent(component, key -> new Resource());
@@ -868,7 +909,13 @@ public abstract class WebService extends HttpServlet {
 
         sort(root);
 
-        return root;
+        serviceDescriptor = new ServiceDescriptor(path, type);
+
+        describeResource(path, root);
+
+        synchronized (WebService.class) {
+            instances.put(type, this);
+        }
     }
 
     private static void sort(Resource root) {
@@ -879,24 +926,6 @@ public abstract class WebService extends HttpServlet {
         for (var resource : root.resources.values()) {
             sort(resource);
         }
-    }
-
-    /**
-     * Returns a service instance.
-     *
-     * @param <T>
-     * The service type.
-     *
-     * @param type
-     * The service type.
-     *
-     * @return
-     * The service instance, or {@code null} if no service of the given type
-     * exists.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends WebService> T getInstance(Class<T> type) {
-        return (T)instances.get(type);
     }
 
     @Override

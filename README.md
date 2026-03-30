@@ -35,7 +35,7 @@ Each is discussed in more detail below. Java 21 or later is required.
 For example, the following service implements some simple mathematical operations:
 
 ```java
-@WebServlet("/math/*")
+@WebServlet(urlPatterns = "/math/*", loadOnStartup = 1)
 @Description("Math service.")
 public class MathService extends WebService {
     @RequestMethod("GET")
@@ -139,7 +139,7 @@ public List<Pet> getPets(@Required String owner) throws SQLException {
 The `Name` annotation can be used to associate a custom name with a method parameter. For example:
 
 ```java
-@WebServlet("/members/*")
+@WebServlet(urlPatterns = "/members/*", loadOnStartup = 1)
 public class MemberService extends WebService {
     @RequestMethod("GET")
     public List<Person> getMembers(
@@ -249,15 +249,8 @@ The response object can also be used to produce a custom result. If a service me
 ## Inter-Service Communication
 A reference to any active service can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
-Alternatively, the `Instance` annotation can be used to automatically inject a service instance into a member variable:
-
-```java
-@Instance
-private MathService mathService = null;
-```
-
 ## API Documentation
-An index of all services can be found at the application's context root:
+An index of all active services can be found at the application's context root:
 
 ```
 GET http://localhost:8080/kilo-test
@@ -272,7 +265,7 @@ GET http://localhost:8080/kilo-test/catalog.html
 Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
-@WebServlet("/catalog/*")
+@WebServlet(urlPatterns = "/catalog/*", loadOnStartup = 1)
 @Description("Catalog service.")
 public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")

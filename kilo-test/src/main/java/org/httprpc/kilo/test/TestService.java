@@ -51,7 +51,7 @@ import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 
-@WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = "/test/*", loadOnStartup = 1)
 @MultipartConfig
 public class TestService extends AbstractDatabaseService {
     public interface A {
@@ -177,9 +177,6 @@ public class TestService extends AbstractDatabaseService {
             }
         }
     }
-
-    @Instance
-    private MathService mathService = null;
 
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,
@@ -440,7 +437,7 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("math/sum")
     public double getSum(double a, double b) {
-        return mathService.getSum(a, b);
+        return getInstance(MathService.class).getSum(a, b);
     }
 
     @RequestMethod("GET")
