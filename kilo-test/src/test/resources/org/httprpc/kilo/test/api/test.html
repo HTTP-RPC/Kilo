@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+    :root {
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      scroll-behavior: smooth;
+      color: #393939;
+      --color-neutral: hsl(0, 0%, 60%);
+      --color-neutral-medium: hsl(0, 0%, 80%);
+      --color-neutral-light: hsl(0, 0%, 97%);
+      --color-get: hsl(194, 65%, 50%);
+      --color-post: hsl(150, 65%, 50%);
+      --color-put: hsl(31, 95%, 66%);
+      --color-delete: hsl(0, 94%, 76%);
+      --color-link: hsl(214, 83%, 43%);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 3fr;
+      height: 100vh;
+      line-height: 1.2;
+    }
+    #toc {
+      padding: 1em;
+      background: var(--color-neutral-light);
+      border-right: 1px solid var(--color-neutral-medium);
+      max-height: 100vh;
+      overflow: scroll;
+    }
+    ol {
+      padding-left: 1em;
+    }
+    ol li {
+      list-style: none;
+    }
+    #toc > ol > li + li {
+      margin-top: 1rem;
+    }
+    #toc a {
+      display: block;
+      padding: .25rem;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    #toc a.active {
+      border-bottom-color: var(--color-neutral-medium);
+    }
+    #docs {
+      padding: 1em;
+      scroll-behavior: smooth;
+      overflow-y: scroll;
+    }
+    #docs > div {
+      border-top: 1px solid #FFF;
+    }
+    section {
+      padding: 1rem;
+    }
+    :is(h1, h2, h3) a {
+      text-decoration-thickness: 1px;
+    }
+    table {
+      border-collapse: collapse;
+      width: calc(100% - 1rem);
+    }
+    table + table {
+      margin-top: 1rem;
+    }
+    thead tr {
+      border-bottom: 1px solid var(--color-neutral-medium);
+    }
+    tbody tr:has(+ tr) {
+      border-bottom: 1px solid var(--color-neutral-light);
+    }
+    tbody + tbody {
+      border-top: 1px solid var(--color-neutral-medium);
+    }
+    td {
+      padding: .5rem;
+    }
+    th {
+      padding: .25rem .5rem;
+      font-size: .8rem;
+      font-weight: normal;
+      text-transform: uppercase;
+      text-align: left;
+      color: var(--color-neutral);
+    }
+    :first-child:is(td,th) {
+      padding-left: 0;
+    }
+    th:nth-child(1) {
+      width: 22%;
+    }
+    th:nth-child(2) {
+      width: 22%;
+    }
+    th:nth-child(3) {
+      width: 66%;
+    }
+    td:nth-child(3) {
+      display: flex;
+      gap: .5rem;
+      align-items: start;
+    }
+    code, pre {
+      font-family: monospace;
+      font-size: .9em;
+    }
+    pre {
+      padding: 1rem;
+      background: var(--color-neutral-light);
+    }
+    :is(table, p) + :is(pre, h2) {
+      margin-top: 2rem;
+    }
+    section :is(table,p) {
+      margin-left: 1rem;
+    }
+    a {
+      color: var(--color-link);
+    }
+    .method {
+      padding: .25rem .5rem;
+      border-radius: .25em;
+      color: #FFF;
+      background: var(--color-neutral);
+    }
+    .method.GET {
+      background: var(--color-get);
+    }
+    .method.PUT {
+      background: var(--color-put);
+    }
+    .method.POST {
+      background: var(--color-post);
+    }
+    .method.DELETE {
+      background: var(--color-delete);
+    }
+    .label {
+      padding: .2em .4em;
+      border-radius: .25em;
+      font-size: .8rem;
+      text-transform: uppercase;
+      background: var(--color-neutral-light);
+    }
+    strong.deprecated {
+      text-transform: uppercase;
+      color: var(--color-neutral);
+    }
+    span.supertypes :not(:last-of-type)::after {
+      content: ", "
+    }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tocLinks = document.querySelectorAll('#toc a');
+      const highlightActive = function() {
+        var hash = window.location.hash;
+        if (hash) {
+          tocLinks.forEach(link => {
+            if (link.getAttribute('href') === hash) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      }
+      window.addEventListener('load', highlightActive, false);
+      window.addEventListener('hashchange', highlightActive, false);
+    });
+    </script>
+</head>
+<body>
+<!--  -->
+<div id="toc">
+    <p><a href="/kilo-test/">Services</a></p>
+    <ol>
+        <li><a href="#endpoints">Endpoints</a>
+            <ol>
+                <!--  -->
+                <li><a href="#/test">/test</a></li>
+                <!--  -->
+                <li><a href="#/test/?">/test/?</a></li>
+                <!--  -->
+                <li><a href="#/test/a#/?/b*/?/c@/?/d=/?">/test/a#/?/b*/?/c@/?/d=/?</a></li>
+                <!--  -->
+                <li><a href="#/test/body">/test/body</a></li>
+                <!--  -->
+                <li><a href="#/test/c">/test/c</a></li>
+                <!--  -->
+                <li><a href="#/test/coordinates">/test/coordinates</a></li>
+                <!--  -->
+                <li><a href="#/test/deferred">/test/deferred</a></li>
+                <!--  -->
+                <li><a href="#/test/deprecated">/test/deprecated</a></li>
+                <!--  -->
+                <li><a href="#/test/e">/test/e</a></li>
+                <!--  -->
+                <li><a href="#/test/error">/test/error</a></li>
+                <!--  -->
+                <li><a href="#/test/fibonacci">/test/fibonacci</a></li>
+                <!--  -->
+                <li><a href="#/test/foo/?/bar/?">/test/foo/?/bar/?</a></li>
+                <!--  -->
+                <li><a href="#/test/form-data">/test/form-data</a></li>
+                <!--  -->
+                <li><a href="#/test/headers">/test/headers</a></li>
+                <!--  -->
+                <li><a href="#/test/image">/test/image</a></li>
+                <!--  -->
+                <li><a href="#/test/invalid-result">/test/invalid-result</a></li>
+                <!--  -->
+                <li><a href="#/test/list">/test/list</a></li>
+                <!--  -->
+                <li><a href="#/test/map">/test/map</a></li>
+                <!--  -->
+                <li><a href="#/test/math/sum">/test/math/sum</a></li>
+                <!--  -->
+                <li><a href="#/test/set">/test/set</a></li>
+                <!--  -->
+                <li><a href="#/test/varargs">/test/varargs</a></li>
+                <!--  -->
+                <li><a href="#/test/xml">/test/xml</a></li>
+                <!--  -->
+            </ol>
+        </li>
+        <!--  -->
+        <li><a href="#enumerations">Enumerations</a>
+            <ol>
+                <!--  -->
+                <li><a href="#DayOfWeek">DayOfWeek</a></li>
+                <!--  -->
+                <li><a href="#TestService.TestEnum">TestService.TestEnum</a></li>
+                <!--  -->
+            </ol>
+        </li>
+        <!--  -->
+        <!--  -->
+        <li><a href="#structures">Structures</a>
+            <ol>
+                <!--  -->
+                <li><a href="#Character">Character</a></li>
+                <!--  -->
+                <li><a href="#Coordinates">Coordinates</a></li>
+                <!--  -->
+                <li><a href="#TestService.A">TestService.A</a></li>
+                <!--  -->
+                <li><a href="#TestService.B">TestService.B</a></li>
+                <!--  -->
+                <li><a href="#TestService.Body">TestService.Body</a></li>
+                <!--  -->
+                <li><a href="#TestService.C">TestService.C</a></li>
+                <!--  -->
+                <li><a href="#TestService.D">TestService.D</a></li>
+                <!--  -->
+                <li><a href="#TestService.E">TestService.E</a></li>
+                <!--  -->
+                <li><a href="#TestService.Response">TestService.Response</a></li>
+                <!--  -->
+                <li><a href="#TestService.TestRecord">TestService.TestRecord</a></li>
+                <!--  -->
+            </ol>
+        </li>
+        <!--  -->
+    </ol>
+</div>
+<div id="docs">
+    <!--  -->
+    <div id="endpoints">
+        <h1>Endpoints</h1>
+        <!--  -->
+        <section id="/test">
+            <h2><code>/test</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : <a href="#TestService.Response">TestService.Response</a></pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>string</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>strings</code></td>
+                    <td><code>[String]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>number</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>numbers</code></td>
+                    <td><code>[Integer]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>character</code></td>
+                    <td><code>char</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>characters</code></td>
+                    <td><code>[<a href="#Character">Character</a>]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>flag</code></td>
+                    <td><code>boolean</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>dayOfWeek</code></td>
+                    <td><code><a href="#DayOfWeek">DayOfWeek</a></code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>date</code></td>
+                    <td><code>Instant</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>dates</code></td>
+                    <td><code>[Instant]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>localDate</code></td>
+                    <td><code>LocalDate</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>localTime</code></td>
+                    <td><code>LocalTime</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>localDateTime</code></td>
+                    <td><code>LocalDateTime</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>duration</code></td>
+                    <td><code>Duration</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>period</code></td>
+                    <td><code>Period</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>uuid</code></td>
+                    <td><code>UUID</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+            <pre><span class="method GET">GET</span> : int</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>value</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>delay</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+            <pre><span class="method POST">POST</span> : void</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>number</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>strings</code></td>
+                    <td><code>[String]&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+            <pre><span class="method PUT">PUT</span> : void</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>body</code></td>
+                    <td><code>Void&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/?">
+            <h2><code>/test/?</code></h2>
+            <!--  -->
+            <pre><span class="method PUT">PUT</span> : int</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>id</code></td>
+                    <td><code>int&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>value</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+            <pre><span class="method DELETE">DELETE</span> : Integer</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>id</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/a#/?/b*/?/c@/?/d=/?">
+            <h2><code>/test/a#/?/b*/?/c@/?/d=/?</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : [String: Object]</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>a</code></td>
+                    <td><code>int&nbsp;•</code></td>
+                    <td>First key.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>b</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td>Second key.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>c</code></td>
+                    <td><code>int&nbsp;•</code></td>
+                    <td>Third key.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>d</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td>Fourth key.</td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/body">
+            <h2><code>/test/body</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST</span> : <a href="#TestService.Body">TestService.Body</a></pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>body</code></td>
+                    <td><code><a href="#TestService.Body">TestService.Body</a>&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/c">
+            <h2><code>/test/c</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : <a href="#TestService.C">TestService.C</a></pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/coordinates">
+            <h2><code>/test/coordinates</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST</span> : <a href="#Coordinates">Coordinates</a></pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>coordinates</code></td>
+                    <td><code><a href="#Coordinates">Coordinates</a>&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/deferred">
+            <h2><code>/test/deferred</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST</span> : int</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>body</code></td>
+                    <td><code>Void&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/deprecated">
+            <h2><code>/test/deprecated</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : <a href="#TestService.TestRecord">TestService.TestRecord</a> <strong class="deprecated">Deprecated</strong></pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/e">
+            <h2><code>/test/e</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : <a href="#TestService.E">TestService.E</a></pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/error">
+            <h2><code>/test/error</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : void</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>committed</code></td>
+                    <td><code>boolean</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/fibonacci">
+            <h2><code>/test/fibonacci</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : [Number]</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>count</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/foo/?/bar/?">
+            <h2><code>/test/foo/?/bar/?</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST</span> : [String: Object]</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>x</code></td>
+                    <td><code>int&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>y</code></td>
+                    <td><code>int&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>a</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>b</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>values</code></td>
+                    <td><code>[Double]&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/form-data">
+            <h2><code>/test/form-data</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST°</span> : [String: Object]</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>string</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>strings</code></td>
+                    <td><code>[String]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>number</code></td>
+                    <td><code>Integer</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>date</code></td>
+                    <td><code>Instant</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>file</code></td>
+                    <td><code>Part</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>files</code></td>
+                    <td><code>[Part]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/headers">
+            <h2><code>/test/headers</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : [String: String]</pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/image">
+            <h2><code>/test/image</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST</span> : void</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>body</code></td>
+                    <td><code>Void&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/invalid-result">
+            <h2><code>/test/invalid-result</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : [Double]</pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/list">
+            <h2><code>/test/list</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : [Object]</pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+            <pre><span class="method POST">POST</span> : [String]</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>list</code></td>
+                    <td><code>[String]&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/map">
+            <h2><code>/test/map</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : [Object: Object]</pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+            <pre><span class="method POST">POST</span> : [String: Double]</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>map</code></td>
+                    <td><code>[String: Double]&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/math/sum">
+            <h2><code>/test/math/sum</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : double</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>a</code></td>
+                    <td><code>double</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>b</code></td>
+                    <td><code>double</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+            <pre><span class="method GET">GET</span> : double</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>values</code></td>
+                    <td><code>[Double]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/set">
+            <h2><code>/test/set</code></h2>
+            <!--  -->
+            <pre><span class="method GET">GET</span> : [Object]</pre>
+            <!--  -->
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/varargs">
+            <h2><code>/test/varargs</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST</span> : [String: Object]</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>numbers</code></td>
+                    <td><code>[int]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>strings</code></td>
+                    <td><code>[String]&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+        <section id="/test/xml">
+            <h2><code>/test/xml</code></h2>
+            <!--  -->
+            <pre><span class="method POST">POST</span> : Document</pre>
+            <!--  -->
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>a</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>b</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+                <!--  -->
+                <!--  -->
+                <tbody>
+                <tr>
+                    <td><code>document</code></td>
+                    <td><code>Document&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                </tbody>
+                <!--  -->
+            </table>
+            <!--  -->
+            <!--  -->
+        </section>
+        <!--  -->
+    </div>
+    <!--  -->
+    <div id="enumerations">
+        <h1>Enumerations</h1>
+        <!--  -->
+        <section id="DayOfWeek">
+            <h2><a id="DayOfWeek">DayOfWeek</a></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th style="width: 88%">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>MONDAY</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>TUESDAY</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>WEDNESDAY</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>THURSDAY</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>FRIDAY</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>SATURDAY</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>SUNDAY</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.TestEnum">
+            <h2><a id="TestService.TestEnum">TestService.TestEnum</a></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th style="width: 88%">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>ONE</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>TWO</code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code><s>THREE</s></code></td>
+                    <td style="width: 88%"></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+    </div>
+    <!--  -->
+    <!--  -->
+    <div id="structures">
+        <h1>Structures</h1>
+        <!--  -->
+        <section id="Character">
+            <h2><a id="Character">Character</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="Coordinates">
+            <h2><a id="Coordinates">Coordinates</a></span></h2>
+            <!--  -->
+            <p>Represents an x/y coordinate pair.</p>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>x</code></td>
+                    <td><code>int&nbsp;•</code></td>
+                    <td>The x-coordinate.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>y</code></td>
+                    <td><code>int&nbsp;•</code></td>
+                    <td>The y-coordinate.</td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.A">
+            <h2><a id="TestService.A">TestService.A</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>a</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.B">
+            <h2><a id="TestService.B">TestService.B</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>b</code></td>
+                    <td><code>double</code></td>
+                    <td>B's version of B</td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.Body">
+            <h2><a id="TestService.Body">TestService.Body</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>flag</code></td>
+                    <td><code>boolean</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>number</code></td>
+                    <td><code>Integer</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>numbers</code></td>
+                    <td><code>[Integer]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>string</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>strings</code></td>
+                    <td><code>[String]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.C">
+            <h2><a id="TestService.C">TestService.C</a> : <span class="supertypes"><a href="#TestService.A">TestService.A</a><a href="#TestService.B">TestService.B</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>b</code></td>
+                    <td><code>double</code></td>
+                    <td>C's version of B</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>c</code></td>
+                    <td><code>[String]</code></td>
+                    <td>An array of strings</td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.D">
+            <h2><a id="TestService.D">TestService.D</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>d</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.E">
+            <h2><a id="TestService.E">TestService.E</a> : <span class="supertypes"><a href="#TestService.D">TestService.D</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>e</code></td>
+                    <td><code>double</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.Response">
+            <h2><a id="TestService.Response">TestService.Response</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>character</code></td>
+                    <td><code>char</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>characters</code></td>
+                    <td><code>[<a href="#Character">Character</a>]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>date</code></td>
+                    <td><code>Instant</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>dates</code></td>
+                    <td><code>[Instant]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>dayOfWeek</code></td>
+                    <td><code><a href="#DayOfWeek">DayOfWeek</a></code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>duration</code></td>
+                    <td><code>Duration</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>flag</code></td>
+                    <td><code>boolean</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>localDate</code></td>
+                    <td><code>LocalDate</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>localDateTime</code></td>
+                    <td><code>LocalDateTime</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>localTime</code></td>
+                    <td><code>LocalTime</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>number</code></td>
+                    <td><code>Integer</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>numbers</code></td>
+                    <td><code>[Integer]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>period</code></td>
+                    <td><code>Period</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>string</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>strings</code></td>
+                    <td><code>[String]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>uuid</code></td>
+                    <td><code>UUID</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.TestRecord">
+            <h2><a id="TestService.TestRecord">TestService.TestRecord</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>number</code></td>
+                    <td><code>int</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code><s>testEnum</s></code></td>
+                    <td><code><a href="#TestService.TestEnum">TestService.TestEnum</a></code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+    </div>
+    <!--  -->
+</div>
+<!--  -->
+</body>
+</html>

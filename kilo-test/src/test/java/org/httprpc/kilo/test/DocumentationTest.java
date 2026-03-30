@@ -15,14 +15,12 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
-import org.httprpc.kilo.io.JSONDecoder;
+import org.httprpc.kilo.io.TextDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
 
-import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentationTest {
@@ -74,18 +72,20 @@ public class DocumentationTest {
     }
 
     private void testDocumentation(String name) throws IOException {
-        Map<?, ?> expected;
-        try (var inputStream = getClass().getResourceAsStream(String.format("api/%s.json", name))) {
-            var jsonDecoder = new JSONDecoder();
+        String expected;
+        try (var inputStream = getClass().getResourceAsStream(String.format("api/%s.html", name))) {
+            var textDecoder = new TextDecoder();
 
-            expected = (Map<?, ?>)jsonDecoder.read(inputStream);
+            expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("%s?api", name)));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("%s.html", name)));
 
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "application/json")
-        ));
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
+            var textDecoder = new TextDecoder();
+
+            return textDecoder.read(inputStream);
+        });
 
         var actual = webServiceProxy.invoke();
 
