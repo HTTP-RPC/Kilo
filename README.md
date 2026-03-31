@@ -103,7 +103,7 @@ Method parameters may be any of the following types:
 * `java.time.Period`
 * `java.util.UUID`
 
-These types are supported for multi-value parameters:
+These types are also supported for multi-value parameters:
 
 * `java.util.List`
 * `java.util.Set`/`SequencedSet`/`SortedSet`
