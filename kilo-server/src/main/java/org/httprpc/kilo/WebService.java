@@ -774,6 +774,20 @@ public abstract class WebService extends HttpServlet {
     private static class Resource {
         Map<String, Resource> resources = new TreeMap<>();
         Map<Verb, List<Method>> handlerLists = new TreeMap<>();
+
+        static final Comparator<Method> handlerComparator;
+        static {
+            var nameComparator = Comparator.comparing(Method::getName);
+            var parameterCountComparator = Comparator.comparing(Method::getParameterCount);
+
+            handlerComparator = nameComparator.thenComparing(parameterCountComparator.reversed());
+        }
+
+        void sort() {
+            for (var handlerList : handlerLists.values()) {
+                handlerList.sort(handlerComparator);
+            }
+        }
     }
 
     private Resource root;
@@ -814,15 +828,7 @@ public abstract class WebService extends HttpServlet {
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
-    private static final Comparator<Method> handlerComparator;
-    static {
-        var nameComparator = Comparator.comparing(Method::getName);
-        var parameterCountComparator = Comparator.comparing(Method::getParameterCount);
-
-        handlerComparator = nameComparator.thenComparing(parameterCountComparator.reversed());
-    }
-
-    private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
+    static final Map<Class<? extends WebService>, WebService> instances = synchronizedMapOf(new HashMap<>());
 
     /**
      * Returns a service instance.
@@ -838,18 +844,8 @@ public abstract class WebService extends HttpServlet {
      * exists.
      */
     @SuppressWarnings("unchecked")
-    public static synchronized <T extends WebService> T getInstance(Class<T> type) {
+    public static <T extends WebService> T getInstance(Class<T> type) {
         return (T)instances.get(type);
-    }
-
-    /**
-     * Returns a map of all active service instances.
-     *
-     * @return
-     * A map of all active service instances, keyed by type.
-     */
-    public static synchronized Map<Class<? extends WebService>, WebService> getInstances() {
-        return immutableMapOf(instances);
     }
 
     @Override
@@ -915,25 +911,11 @@ public abstract class WebService extends HttpServlet {
             resource.handlerLists.computeIfAbsent(verb, key -> new LinkedList<>()).add(handler);
         }
 
-        sort(root);
-
         serviceDescriptor = new ServiceDescriptor(path, type);
 
         describeResource(path, root);
 
-        synchronized (WebService.class) {
-            instances.put(type, this);
-        }
-    }
-
-    private static void sort(Resource root) {
-        for (var handlerList : root.handlerLists.values()) {
-            handlerList.sort(handlerComparator);
-        }
-
-        for (var resource : root.resources.values()) {
-            sort(resource);
-        }
+        instances.put(type, this);
     }
 
     @Override
@@ -1472,6 +1454,8 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeResource(String path, Resource resource) {
+        resource.sort();
+
         if (!resource.handlerLists.isEmpty()) {
             var endpoint = new EndpointDescriptor(path);
 

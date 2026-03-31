@@ -22,6 +22,7 @@ import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -32,15 +33,13 @@ import static org.httprpc.kilo.util.Collections.*;
  */
 @WebServlet(urlPatterns = {"", "*.html"}, loadOnStartup = Integer.MAX_VALUE)
 public class IndexServlet extends HttpServlet {
-    private TreeMap<String, WebService.ServiceDescriptor> serviceDescriptors = new TreeMap<>();
+    private Map<String, WebService.ServiceDescriptor> serviceDescriptors = new TreeMap<>();
 
     private static final String HTML_EXTENSION = ".html";
 
     @Override
     public void init() {
-        var instances = WebService.getInstances();
-
-        for (var entry : instances.entrySet()) {
+        for (var entry : WebService.instances.entrySet()) {
             var type = entry.getKey();
             var instance = entry.getValue();
 
@@ -56,7 +55,7 @@ public class IndexServlet extends HttpServlet {
                     field.setAccessible(true);
 
                     try {
-                        field.set(instance, instances.get(fieldType));
+                        field.set(instance, WebService.instances.get(fieldType));
                     } catch (IllegalAccessException exception) {
                         throw new UnsupportedOperationException(exception);
                     }
