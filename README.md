@@ -511,7 +511,7 @@ Hello, World!
 ```
 
 # CSVEncoder and CSVDecoder
-The `CSVEncoder` and `CSVDecoder` classes serialize a sequence of values to and from CSV, respectively. For example:
+The `CSVEncoder` and `CSVDecoder` classes write and read a sequence of values to and from CSV, respectively. For example:
 
 ```java
 var rows = listOf(
