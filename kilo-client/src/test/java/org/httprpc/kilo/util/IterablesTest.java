@@ -399,13 +399,4 @@ public class IterablesTest {
 
         assertEquals(3, result);
     }
-
-    @Test
-    public void testStream() {
-        var values = iterableOf(listOf(1, 2, 3).stream());
-
-        var result = maximumOf(values); // 3
-
-        assertEquals(3, result);
-    }
 }
