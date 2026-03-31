@@ -252,8 +252,7 @@ A reference to any active service can be obtained via the `getInstance()` method
 Alternatively, the `Instance` annotation can be used to automatically inject a service instance into a member variable:
 
 ```java
-@Instance
-private MathService mathService = null;
+private @Instance MathService mathService = null;
 ```
 
 ## API Documentation

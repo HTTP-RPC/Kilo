@@ -892,22 +892,6 @@ public class Iterables {
     }
 
     /**
-     * Creates an iterable from a stream.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param stream
-     * The source stream.
-     *
-     * @return
-     * The iterable stream contents.
-     */
-    public static <T> Iterable<T> iterableOf(Stream<T> stream) {
-        return stream::iterator;
-    }
-
-    /**
      * Creates an iterable from an array.
      *
      * @param <T>
@@ -920,6 +904,10 @@ public class Iterables {
      * The iterable array contents.
      */
     public static <T> Iterable<T> iterableOf(T[] array) {
+        if (array == null) {
+            throw new IllegalArgumentException();
+        }
+
         return () -> new Iterator<>() {
             int i = 0;
 
@@ -937,5 +925,25 @@ public class Iterables {
                 return array[i++];
             }
         };
+    }
+
+    /**
+     * Creates an iterable from a stream.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param stream
+     * The source stream.
+     *
+     * @return
+     * The iterable stream contents.
+     */
+    public static <T> Iterable<T> iterableOf(Stream<T> stream) {
+        if (stream == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return stream::iterator;
     }
 }

@@ -178,8 +178,7 @@ public class TestService extends AbstractDatabaseService {
         }
     }
 
-    @Instance
-    private MathService mathService = null;
+    private @Instance MathService mathService = null;
 
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,

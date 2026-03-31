@@ -392,8 +392,8 @@ public class IterablesTest {
     }
 
     @Test
-    public void testStream() {
-        var values = iterableOf(listOf(1, 2, 3).stream());
+    public void testArray() {
+        var values = iterableOf(new Integer[] {1, 2, 3});
 
         var result = maximumOf(values); // 3
 
@@ -401,8 +401,8 @@ public class IterablesTest {
     }
 
     @Test
-    public void testArray() {
-        var values = iterableOf(new Integer[] {1, 2, 3});
+    public void testStream() {
+        var values = iterableOf(listOf(1, 2, 3).stream());
 
         var result = maximumOf(values); // 3
 
