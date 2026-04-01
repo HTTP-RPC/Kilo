@@ -47,16 +47,16 @@ public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("items/?")
     @Description("Returns detailed information about a specific item.")
-    public ItemDetail getItem(
+    public ItemDetails getItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.select(ItemDetail.class).filterByPrimaryKey("itemID");
+        var queryBuilder = QueryBuilder.select(ItemDetails.class).filterByPrimaryKey("itemID");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("itemID", itemID)
             ))) {
-            return map(firstOf(results), BeanAdapter.toType(ItemDetail.class));
+            return map(firstOf(results), BeanAdapter.toType(ItemDetails.class));
         }
     }
 
@@ -64,10 +64,10 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items")
     @Description("Adds an item to the catalog.")
     @Creates
-    public ItemDetail addItem(
-        @Description("The item to add.") ItemDetail item
+    public ItemDetails addItem(
+        @Description("The item to add.") ItemDetails item
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.insert(ItemDetail.class);
+        var queryBuilder = QueryBuilder.insert(ItemDetails.class);
 
         item.setCreated(Instant.now());
 
@@ -81,13 +81,13 @@ public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("PUT")
     @ResourcePath("items/?")
     @Description("Updates an item.")
-    public ItemDetail updateItem(
+    public ItemDetails updateItem(
         @Description("The item ID.") Integer itemID,
-        @Description("The updated item.") ItemDetail item
+        @Description("The updated item.") ItemDetails item
     ) throws SQLException {
         item.setID(itemID);
 
-        var queryBuilder = QueryBuilder.update(ItemDetail.class).filterByPrimaryKey("id");
+        var queryBuilder = QueryBuilder.update(ItemDetails.class).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));

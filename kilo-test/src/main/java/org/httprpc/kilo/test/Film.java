@@ -39,11 +39,19 @@ public interface Film {
     @Required
     String getTitle();
 
-    @Column("rating")
-    @Description("The film's rating.")
-    Rating getRating();
+    @Column("description")
+    @Description("A description of the film.")
+    String getDescription();
 
     @Column("release_year")
     @Description("The date the film was released.")
     LocalDate getReleaseDate();
+
+    @Column("length")
+    @Description("The length of the film, in minutes.")
+    Integer getLength();
+
+    @Column("rating")
+    @Description("The film's rating.")
+    Rating getRating();
 }

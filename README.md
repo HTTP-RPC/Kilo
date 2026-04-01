@@ -164,7 +164,7 @@ Path variables (or "keys") are specified by a "?" character in a handler's resou
 @RequestMethod("GET")
 @ResourcePath("items/?")
 @Description("Returns detailed information about a specific item.")
-public ItemDetail getItem(
+public ItemDetails getItem(
     @Description("The item ID.") Integer itemID
 ) throws SQLException { ... }
 ```
@@ -172,7 +172,7 @@ public ItemDetail getItem(
 Path parameters must precede query parameters in the method signature and are implicitly required. Values are mapped to method arguments in declaration order.
 
 ## Body Content
-Body content may be declared as the final parameter in a `POST` or `PUT` handler. For example, this method accepts an item ID as a path variable and an instance of `ItemDetail` as a body argument:
+Body content may be declared as the final parameter in a `POST` or `PUT` handler. For example, this method accepts an item ID as a path variable and an instance of `ItemDetails` as a body argument:
 
 ```java
 @RequestMethod("PUT")
@@ -180,7 +180,7 @@ Body content may be declared as the final parameter in a `POST` or `PUT` handler
 @Description("Updates an item.")
 public void updateItem(
     @Description("The item ID.") Integer itemID,
-    @Description("The updated item.") ItemDetail item
+    @Description("The updated item.") ItemDetails item
 ) throws SQLException { ... }
 ```
 

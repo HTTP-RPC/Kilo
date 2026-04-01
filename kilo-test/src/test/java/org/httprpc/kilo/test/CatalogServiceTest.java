@@ -32,7 +32,7 @@ public class CatalogServiceTest {
     public void testCatalog() throws IOException {
         var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, baseURI);
 
-        var item = BeanAdapter.coerce(mapOf(), ItemDetail.class);
+        var item = BeanAdapter.coerce(mapOf(), ItemDetails.class);
 
         item.setDescription("abc");
         item.setPrice(150.0);

@@ -210,9 +210,9 @@
                 <!--  -->
                 <li><a href="#Category">Category</a></li>
                 <!--  -->
-                <li><a href="#Film">Film</a></li>
+                <li><a href="#ExpandedFilm">ExpandedFilm</a></li>
                 <!--  -->
-                <li><a href="#FilmDetail">FilmDetail</a></li>
+                <li><a href="#Film">Film</a></li>
                 <!--  -->
             </ol>
         </li>
@@ -263,9 +263,9 @@
         <section id="/films/?">
             <h2><code>/films/?</code></h2>
             <!--  -->
-            <pre><span class="method GET">GET</span> : <a href="#FilmDetail">FilmDetail</a></pre>
+            <pre><span class="method GET">GET</span> : <a href="#ExpandedFilm">ExpandedFilm</a></pre>
             <!--  -->
-            <p>Returns detailed information about a specific film.</p>
+            <p>Returns expanded information about a specific film.</p>
             <!--  -->
             <!--  -->
             <table>
@@ -416,53 +416,10 @@
             </table>
         </section>
         <!--  -->
-        <section id="Film">
-            <h2><a id="Film">Film</a></span></h2>
+        <section id="ExpandedFilm">
+            <h2><a id="ExpandedFilm">ExpandedFilm</a> : <span class="supertypes"><a href="#Film">Film</a></span></h2>
             <!--  -->
-            <p>Represents a film.</p>
-            <!--  -->
-            <table>
-                <thead>
-                <tr>
-                    <th>Property</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!--  -->
-                <tr>
-                    <td><code>id</code></td>
-                    <td><code>Integer</code></td>
-                    <td>The film's ID.</td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>rating</code></td>
-                    <td><code><a href="#Rating">Rating</a></code></td>
-                    <td>The film's rating.</td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>releaseDate</code></td>
-                    <td><code>LocalDate</code></td>
-                    <td>The date the film was released.</td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>title</code></td>
-                    <td><code>String&nbsp;•</code></td>
-                    <td>The title of the film.</td>
-                </tr>
-                <!--  -->
-                </tbody>
-            </table>
-        </section>
-        <!--  -->
-        <section id="FilmDetail">
-            <h2><a id="FilmDetail">FilmDetail</a> : <span class="supertypes"><a href="#Film">Film</a></span></h2>
-            <!--  -->
-            <p>Represents detailed information about a film.</p>
+            <p>Represents expanded information about a film.</p>
             <!--  -->
             <table>
                 <thead>
@@ -486,6 +443,25 @@
                     <td>The categories associated with the film.</td>
                 </tr>
                 <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="Film">
+            <h2><a id="Film">Film</a></span></h2>
+            <!--  -->
+            <p>Represents a film.</p>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
                 <tr>
                     <td><code>description</code></td>
                     <td><code>String</code></td>
@@ -493,9 +469,33 @@
                 </tr>
                 <!--  -->
                 <tr>
+                    <td><code>id</code></td>
+                    <td><code>Integer</code></td>
+                    <td>The film's ID.</td>
+                </tr>
+                <!--  -->
+                <tr>
                     <td><code>length</code></td>
                     <td><code>Integer</code></td>
                     <td>The length of the film, in minutes.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>rating</code></td>
+                    <td><code><a href="#Rating">Rating</a></code></td>
+                    <td>The film's rating.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>releaseDate</code></td>
+                    <td><code>LocalDate</code></td>
+                    <td>The date the film was released.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>title</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td>The title of the film.</td>
                 </tr>
                 <!--  -->
                 </tbody>

@@ -21,7 +21,7 @@ import org.httprpc.kilo.sql.Final;
 import java.time.Instant;
 
 @Description("Represents detailed information about a catalog item.")
-public interface ItemDetail extends Item {
+public interface ItemDetails extends Item {
     @Column("size")
     @Description("The item's size.")
     Size getSize();
