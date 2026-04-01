@@ -57,17 +57,17 @@ public class EmployeeServiceTest {
     }
 
     @Test
-    public void testEmployeeDetail() throws IOException {
+    public void testEmployeeDetails() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("employees/%d", 10001)));
 
-        var employeeDetail = BeanAdapter.coerce(webServiceProxy.invoke(), EmployeeDetails.class);
+        var employee = BeanAdapter.coerce(webServiceProxy.invoke(), EmployeeDetails.class);
 
-        assertEquals(10001, employeeDetail.getEmployeeNumber());
+        assertEquals(10001, employee.getEmployeeNumber());
 
-        assertEquals("Georgi", employeeDetail.getFirstName());
-        assertEquals("Facello", employeeDetail.getLastName());
+        assertEquals("Georgi", employee.getFirstName());
+        assertEquals("Facello", employee.getLastName());
 
-        var salaries = employeeDetail.getSalaries();
+        var salaries = employee.getSalaries();
 
         assertEquals(17, salaries.size());
 
