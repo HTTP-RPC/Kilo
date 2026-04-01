@@ -20,8 +20,8 @@ import org.httprpc.kilo.sql.Table;
 
 import java.util.List;
 
-@Table("expanded_employee")
-public interface ExpandedEmployee extends Employee {
+@Table("employee_details")
+public interface EmployeeDetails extends Employee {
     @Column("salaries")
     @JSON
     List<Salary> getSalaries();

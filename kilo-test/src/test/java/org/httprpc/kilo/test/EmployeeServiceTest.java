@@ -60,7 +60,7 @@ public class EmployeeServiceTest {
     public void testEmployeeDetail() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("employees/%d", 10001)));
 
-        var employeeDetail = BeanAdapter.coerce(webServiceProxy.invoke(), ExpandedEmployee.class);
+        var employeeDetail = BeanAdapter.coerce(webServiceProxy.invoke(), EmployeeDetails.class);
 
         assertEquals(10001, employeeDetail.getEmployeeNumber());
 

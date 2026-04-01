@@ -95,9 +95,9 @@ flush privileges;
 
 use employees;
 
-drop view if exists expanded_employee;
+drop view if exists employee_details;
 
-create view expanded_employee as
+create view employee_details as
 select employees.*, (select json_arrayagg(json_object(
   'salary', salary,
   'fromDate', from_date,

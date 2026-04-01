@@ -28,5 +28,5 @@ public interface FilmServiceProxy {
 
     @RequestMethod("GET")
     @ResourcePath("?")
-    ExpandedFilm getFilm(Integer filmID) throws IOException;
+    FilmDetails getFilm(Integer filmID) throws IOException;
 }

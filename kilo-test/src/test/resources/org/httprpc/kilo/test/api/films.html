@@ -210,9 +210,9 @@
                 <!--  -->
                 <li><a href="#Category">Category</a></li>
                 <!--  -->
-                <li><a href="#ExpandedFilm">ExpandedFilm</a></li>
-                <!--  -->
                 <li><a href="#Film">Film</a></li>
+                <!--  -->
+                <li><a href="#FilmDetails">FilmDetails</a></li>
                 <!--  -->
             </ol>
         </li>
@@ -263,7 +263,7 @@
         <section id="/films/?">
             <h2><code>/films/?</code></h2>
             <!--  -->
-            <pre><span class="method GET">GET</span> : <a href="#ExpandedFilm">ExpandedFilm</a></pre>
+            <pre><span class="method GET">GET</span> : <a href="#FilmDetails">FilmDetails</a></pre>
             <!--  -->
             <p>Returns expanded information about a specific film.</p>
             <!--  -->
@@ -416,37 +416,6 @@
             </table>
         </section>
         <!--  -->
-        <section id="ExpandedFilm">
-            <h2><a id="ExpandedFilm">ExpandedFilm</a> : <span class="supertypes"><a href="#Film">Film</a></span></h2>
-            <!--  -->
-            <p>Represents expanded information about a film.</p>
-            <!--  -->
-            <table>
-                <thead>
-                <tr>
-                    <th>Property</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!--  -->
-                <tr>
-                    <td><code>actors</code></td>
-                    <td><code>[<a href="#Actor">Actor</a>]</code></td>
-                    <td>The actors that appeared in the film.</td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>categories</code></td>
-                    <td><code>[<a href="#Category">Category</a>]</code></td>
-                    <td>The categories associated with the film.</td>
-                </tr>
-                <!--  -->
-                </tbody>
-            </table>
-        </section>
-        <!--  -->
         <section id="Film">
             <h2><a id="Film">Film</a></span></h2>
             <!--  -->
@@ -496,6 +465,37 @@
                     <td><code>title</code></td>
                     <td><code>String&nbsp;•</code></td>
                     <td>The title of the film.</td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="FilmDetails">
+            <h2><a id="FilmDetails">FilmDetails</a> : <span class="supertypes"><a href="#Film">Film</a></span></h2>
+            <!--  -->
+            <p>Represents detailed information about a film.</p>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--  -->
+                <tr>
+                    <td><code>actors</code></td>
+                    <td><code>[<a href="#Actor">Actor</a>]</code></td>
+                    <td>The actors that appeared in the film.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>categories</code></td>
+                    <td><code>[<a href="#Category">Category</a>]</code></td>
+                    <td>The categories associated with the film.</td>
                 </tr>
                 <!--  -->
                 </tbody>

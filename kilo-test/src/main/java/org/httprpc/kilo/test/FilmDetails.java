@@ -18,8 +18,8 @@ import org.httprpc.kilo.Description;
 
 import java.util.List;
 
-@Description("Represents expanded information about a film.")
-public interface ExpandedFilm extends Film {
+@Description("Represents detailed information about a film.")
+public interface FilmDetails extends Film {
     @Description("The actors that appeared in the film.")
     List<Actor> getActors();
     void setActors(List<Actor> actors);

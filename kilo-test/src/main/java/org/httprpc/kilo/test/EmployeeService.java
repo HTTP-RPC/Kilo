@@ -74,14 +74,14 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("?")
-    public ExpandedEmployee getEmployee(Integer employeeNumber) throws SQLException {
-        var queryBuilder = QueryBuilder.select(ExpandedEmployee.class).filterByPrimaryKey("employeeNumber");
+    public EmployeeDetails getEmployee(Integer employeeNumber) throws SQLException {
+        var queryBuilder = QueryBuilder.select(EmployeeDetails.class).filterByPrimaryKey("employeeNumber");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("employeeNumber", employeeNumber)
             ))) {
-            return map(firstOf(results), BeanAdapter.toType(ExpandedEmployee.class));
+            return map(firstOf(results), BeanAdapter.toType(EmployeeDetails.class));
         }
     }
 }

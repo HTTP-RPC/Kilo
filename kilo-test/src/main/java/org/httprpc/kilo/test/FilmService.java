@@ -61,17 +61,17 @@ public class FilmService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("?")
     @Description("Returns expanded information about a specific film.")
-    public ExpandedFilm getFilm(
+    public FilmDetails getFilm(
         @Description("The film ID.") Integer filmID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.select(ExpandedFilm.class).filterByPrimaryKey("filmID");
+        var queryBuilder = QueryBuilder.select(FilmDetails.class).filterByPrimaryKey("filmID");
 
-        ExpandedFilm film;
+        FilmDetails film;
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            film = map(firstOf(results), BeanAdapter.toType(ExpandedFilm.class));
+            film = map(firstOf(results), BeanAdapter.toType(FilmDetails.class));
         }
 
         film.setActors(getActors(filmID));
