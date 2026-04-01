@@ -409,14 +409,14 @@ public class WebServiceProxyTest {
         var textURL = getClass().getResource("test.txt");
         var imageURL = getClass().getResource("test.jpg");
 
-        var formData = BeanAdapter.coerce(mapOf(
-            entry("string", "héllo&gøod+bye?"),
-            entry("strings", listOf("a", "b", "c")),
-            entry("number", 123),
-            entry("date", now),
-            entry("file", Paths.get(textURL.toURI())),
-            entry("files", listOf(Paths.get(textURL.toURI()), Paths.get(imageURL.toURI())))
-        ), TestServiceProxy.FormData.class);
+        var formData = new TestServiceProxy.FormData(
+            "héllo&gøod+bye?",
+            listOf("a", "b", "c"),
+            123,
+            now,
+            Paths.get(textURL.toURI()),
+            listOf(Paths.get(textURL.toURI()), Paths.get(imageURL.toURI()))
+        );
 
         var result = testServiceProxy.testFormDataPost(formData);
 

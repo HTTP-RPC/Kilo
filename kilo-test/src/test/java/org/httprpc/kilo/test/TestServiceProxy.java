@@ -40,14 +40,15 @@ import static org.httprpc.kilo.util.Iterables.*;
 
 @ServicePath("test")
 public interface TestServiceProxy {
-    interface FormData {
+    record FormData (
         @Required
-        String getString();
-        List<String> getStrings();
-        Integer getNumber();
-        Instant getDate();
-        Path getFile();
-        List<Path> getFiles();
+        String string,
+        List<String> strings,
+        Integer number,
+        Instant date,
+        Path file,
+        List<Path> files
+    ) {
     }
 
     class CustomRequestHandler implements WebServiceProxy.RequestHandler {
