@@ -39,10 +39,6 @@ public interface Film {
     @Required
     String getTitle();
 
-    @Column("description")
-    @Description("A description of the film.")
-    String getDescription();
-
     @Column("release_year")
     @Description("The date the film was released.")
     LocalDate getReleaseDate();

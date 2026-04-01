@@ -15,11 +15,16 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.sql.Column;
 
 import java.util.List;
 
 @Description("Represents detailed information about a film.")
 public interface FilmDetails extends Film {
+    @Column("description")
+    @Description("A description of the film.")
+    String getDescription();
+
     @Description("The actors that appeared in the film.")
     List<Actor> getActors();
     void setActors(List<Actor> actors);
