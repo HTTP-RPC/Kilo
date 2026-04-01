@@ -60,7 +60,7 @@ public class FilmService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("?")
-    @Description("Returns expanded information about a specific film.")
+    @Description("Returns detailed information about a specific film.")
     public FilmDetails getFilm(
         @Description("The film ID.") Integer filmID
     ) throws SQLException {
