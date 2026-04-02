@@ -184,7 +184,7 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. A body parameter of type `Void` may be used to indicate that the handler will process the input stream [directly](#request-and-repsonse-properties).
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. A body parameter of type `Void` may be used to indicate that the handler does not accept a body or will process the input stream [directly](#request-and-repsonse-properties).
 
 ## Return Values
 Return values are converted to JSON as follows:
