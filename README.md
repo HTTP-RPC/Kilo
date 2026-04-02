@@ -115,8 +115,6 @@ Additionally, the following types are supported for [body content](#body-content
 * `org.w3c.dom.Document`
 * bean/record
 
-The `FormData` annotation can be used to indicate that a handler method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Arguments of type `jakarta.servlet.http.Part` may be used with requests submitted as [multi-part](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig) form data.
-
 Parameter values are parsed from their string representations. Unspecified values are automatically converted to 0, `false`, or the null character for primitive types. `List`, `Set`, and array elements are converted to their declared types. If no values are provided for a list, set, or array parameter, an empty instance (not `null`) will be passed to the method.
 
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
