@@ -409,7 +409,7 @@ public class WebServiceProxyTest {
         var textURL = getClass().getResource("test.txt");
         var imageURL = getClass().getResource("test.jpg");
 
-        var formData = new TestServiceProxy.FormData(
+        var formContents = new TestService.FormContents(
             "héllo&gøod+bye?",
             listOf("a", "b", "c"),
             123,
@@ -418,7 +418,7 @@ public class WebServiceProxyTest {
             listOf(Paths.get(textURL.toURI()), Paths.get(imageURL.toURI()))
         );
 
-        var result = testServiceProxy.testFormDataPost(formData);
+        var result = testServiceProxy.testFormDataPost(formContents);
 
         assertEquals("héllo&gøod+bye?", result.get("string"));
         assertEquals(listOf("a", "b", "c"), result.get("strings"));

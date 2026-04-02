@@ -16,7 +16,6 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Part;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.RequestMethod;
@@ -24,10 +23,12 @@ import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextEncoder;
+import org.httprpc.kilo.util.Collections;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -50,6 +51,8 @@ import java.util.SortedSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = "/test/*", loadOnStartup = 0)
 @MultipartConfig
@@ -123,10 +126,15 @@ public class TestService extends AbstractDatabaseService {
         boolean getFlag();
     }
 
-    public enum TestEnum {
-        ONE,
-        TWO,
-        @Deprecated THREE
+    public record FormContents (
+        @Required
+        String string,
+        List<String> strings,
+        Integer number,
+        Instant date,
+        Path file,
+        List<Path> files
+    ) {
     }
 
     public record TestRecord(
@@ -134,6 +142,11 @@ public class TestService extends AbstractDatabaseService {
         @Deprecated
         TestEnum testEnum
     ) {
+        public enum TestEnum {
+            ONE,
+            TWO,
+            @Deprecated THREE
+        }
     }
 
     private static class FibonacciIterator implements Iterator<Number> {
@@ -318,31 +331,22 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("form-data")
     @FormData
-    public Map<String, Object> testPostFormData(@Required String string, List<String> strings,
-        Integer number, Instant date,
-        Part file, List<Part> files) {
-        var fileSize = 0L;
-
-        if (file != null) {
-            fileSize += file.getSize();
-        }
-
-        var totalFileSize = fileSize;
-
-        if (files != null) {
-            for (var part : files) {
-                totalFileSize += part.getSize();
-            }
-        }
+    public Map<String, Object> testPostFormData(FormContents formContents) {
+        var fileSize = coalesce(map(formContents.file(), TestService::lengthOf), () -> 0L);
+        var totalFileSize = sumOf(coalesce(mapAll(formContents.files(), TestService::lengthOf), Collections::listOf), Long::longValue) + fileSize;
 
         return mapOf(
-            entry("string", string),
-            entry("strings", strings),
-            entry("number", number),
-            entry("date", date),
+            entry("string", formContents.string()),
+            entry("strings", formContents.strings()),
+            entry("number", formContents.number()),
+            entry("date", formContents.date()),
             entry("fileSize", fileSize),
             entry("totalFileSize", totalFileSize)
         );
+    }
+
+    private static long lengthOf(Path path) {
+        return path.toFile().length();
     }
 
     @RequestMethod("POST")

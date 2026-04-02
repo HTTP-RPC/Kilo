@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.nio.file.Path;
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.SequencedSet;
@@ -40,17 +38,6 @@ import static org.httprpc.kilo.util.Iterables.*;
 
 @ServicePath("test")
 public interface TestServiceProxy {
-    record FormData (
-        @Required
-        String string,
-        List<String> strings,
-        Integer number,
-        Instant date,
-        Path file,
-        List<Path> files
-    ) {
-    }
-
     class CustomRequestHandler implements WebServiceProxy.RequestHandler {
         private static final int EOF = -1;
 
@@ -106,7 +93,7 @@ public interface TestServiceProxy {
     @RequestMethod("POST")
     @ResourcePath("form-data")
     @WebServiceProxy.Configuration(requestHandler = WebServiceProxy.FormDataRequestHandler.class)
-    Map<String, Object> testFormDataPost(FormData formData) throws IOException;
+    Map<String, Object> testFormDataPost(TestService.FormContents formContents) throws IOException;
 
     @RequestMethod("POST")
     @ResourcePath("xml")
