@@ -188,11 +188,10 @@ Return values are converted to JSON as follows:
 * `Number`/numeric primitive: number
 * `Boolean`/`boolean`: boolean
 * `CharSequence`: string
-* `java.util.Date`/`java.time.Instant`: number representing epoch time in milliseconds
 * `Iterable`: array
 * `java.util.Map`, bean, or record type: object
 
-Additionally, instances of the following types are automatically converted to their string representations:
+Additionally, instances of `java.util.Date` or `java.time.Instant` are converted to a number representing epoch time in milliseconds. Instances of the following types are converted to their string representations:
 
 * `Character`/`char`
 * `Enum`
