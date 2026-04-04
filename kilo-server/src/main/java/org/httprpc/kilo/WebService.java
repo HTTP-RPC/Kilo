@@ -875,9 +875,9 @@ public abstract class WebService extends HttpServlet {
         var methods = type.getMethods();
 
         for (var i = 0; i < methods.length; i++) {
-            var handler = methods[i];
+            var method = methods[i];
 
-            var requestMethod = handler.getAnnotation(RequestMethod.class);
+            var requestMethod = method.getAnnotation(RequestMethod.class);
 
             if (requestMethod == null) {
                 continue;
@@ -892,7 +892,7 @@ public abstract class WebService extends HttpServlet {
 
             var resource = root;
 
-            var resourcePath = handler.getAnnotation(ResourcePath.class);
+            var resourcePath = method.getAnnotation(ResourcePath.class);
 
             if (resourcePath != null) {
                 var components = resourcePath.value().split("/");
@@ -908,7 +908,7 @@ public abstract class WebService extends HttpServlet {
                 }
             }
 
-            resource.handlerLists.computeIfAbsent(verb, key -> new LinkedList<>()).add(handler);
+            resource.handlerLists.computeIfAbsent(verb, key -> new LinkedList<>()).add(method);
         }
 
         serviceDescriptor = new ServiceDescriptor(path, type);
@@ -1003,14 +1003,18 @@ public abstract class WebService extends HttpServlet {
      * @param response
      * The servlet response.
      *
-     * @throws ServletException
-     * If an unexpected error occurs.
-     *
      * @throws IOException
      * If an error occurs while decoding the request or encoding the response.
      */
-    @SuppressWarnings("unchecked")
-    protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Verb verb;
+        try {
+            verb = Verb.valueOf(request.getMethod().toUpperCase());
+        } catch (Exception exception) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         var resource = root;
 
         List<String> keys = new ArrayList<>();
@@ -1040,14 +1044,6 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        Verb verb;
-        try {
-            verb = Verb.valueOf(request.getMethod().toUpperCase());
-        } catch (Exception exception) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
         var handlerList = resource.handlerLists.get(verb);
 
         if (handlerList == null) {
@@ -1059,45 +1055,11 @@ public abstract class WebService extends HttpServlet {
             request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         }
 
-        Map<String, List<?>> argumentMap = new HashMap<>();
+        var contentType = map(request.getContentType(), value -> value.substring(0, value.indexOf(";")).trim().toLowerCase());
 
-        var parameterNames = request.getParameterNames();
+        var formData = contentType.equals(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.equals(MULTIPART_FORM_DATA);
 
-        while (parameterNames.hasMoreElements()) {
-            var name = parameterNames.nextElement();
-
-            argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
-        }
-
-        var contentType = map(request.getContentType(), String::toLowerCase);
-
-        if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA)) {
-            for (var part : request.getParts()) {
-                var submittedFileName = part.getSubmittedFileName();
-
-                if (submittedFileName == null || submittedFileName.isEmpty()) {
-                    continue;
-                }
-
-                var name = part.getName();
-
-                var values = (List<Part>)argumentMap.get(name);
-
-                if (values == null) {
-                    values = new ArrayList<>();
-
-                    argumentMap.put(name, values);
-                }
-
-                values.add(part);
-            }
-        }
-
-        var empty = contentType == null
-            || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
-            || contentType.startsWith(MULTIPART_FORM_DATA);
-
-        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
+        var handler = getHandler(request, handlerList, keys.size(), formData);
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -1106,7 +1068,7 @@ public abstract class WebService extends HttpServlet {
 
         Object[] arguments;
         try {
-            arguments = getArguments(handler.getParameters(), keys, argumentMap, empty, request);
+            arguments = getArguments(handler, keys, formData, request);
         } catch (Exception exception) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
@@ -1182,13 +1144,15 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static Method getHandler(List<Method> handlerList, int keyCount, Set<String> argumentNames, boolean empty) {
+    private static Method getHandler(HttpServletRequest request, List<Method> handlerList, int keyCount, boolean formData) {
+        var parameterNames = request.getParameterMap().keySet();
+
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
             var n = parameters.length;
 
-            if (!empty) {
+            if (request.getContentType() != null) {
                 n--;
             }
 
@@ -1196,20 +1160,28 @@ public abstract class WebService extends HttpServlet {
                 continue;
             }
 
-            if (argumentNames.isEmpty()) {
+            if (formData) {
+                if (handler.getAnnotation(FormData.class) != null && n >= keyCount) {
+                    return handler;
+                } else {
+                    continue;
+                }
+            }
+
+            if (parameterNames.isEmpty()) {
                 return handler;
             }
 
             var c = 0;
 
-            var argumentCount = argumentNames.size();
+            var parameterCount = parameterNames.size();
 
             for (var i = keyCount; i < n; i++) {
                 var parameter = parameters[i];
 
                 var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
 
-                if (argumentNames.contains(name) && ++c == argumentCount) {
+                if (parameterNames.contains(name) && ++c == parameterCount) {
                     return handler;
                 }
             }
@@ -1218,86 +1190,98 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, boolean empty, HttpServletRequest request) {
+    private Object[] getArguments(Method handler, List<String> keys, boolean formData, HttpServletRequest request) {
+        var parameters = handler.getParameters();
+
         var n = parameters.length;
 
         var arguments = new Object[n];
 
-        if (!empty) {
+        if (request.getContentType() != null) {
             n--;
         }
 
         var keyCount = keys.size();
 
-        for (var i = 0; i < n; i++) {
-            var parameter = parameters[i];
-
-            if (i < keyCount) {
-                arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
-            } else {
-                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
-                var type = parameter.getType();
-
-                var values = coalesce(argumentMap.get(name), () -> emptyListOf(Object.class));
-
-                Object argument;
-                if (type.isArray()) {
-                    var componentType = type.getComponentType();
-
-                    argument = Array.newInstance(componentType, values.size());
-
-                    var j = 0;
-
-                    for (var value : values) {
-                        Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
-                    }
-                } else if (Collection.class.isAssignableFrom(type)) {
-                    var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                    var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
-
-                    Collection<Object> collection;
-                    if (type == List.class) {
-                        collection = new ArrayList<>(values.size());
-                    } else if (Set.class.isAssignableFrom(type)) {
-                        collection = (type == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(values.size());
-                    } else {
-                        throw new UnsupportedOperationException("Unsupported collection type.");
-                    }
-
-                    for (var value : values) {
-                        collection.add(BeanAdapter.coerce(value, elementType));
-                    }
-
-                    argument = collection;
-                } else {
-                    var value = values.isEmpty() ? null : values.getLast();
-
-                    if (parameter.getAnnotation(Required.class) != null && value == null) {
-                        throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
-                    }
-
-                    argument = BeanAdapter.coerce(value, type);
-                }
-
-                arguments[i] = argument;
-            }
+        for (var i = 0; i < keyCount; i++) {
+            arguments[i] = BeanAdapter.coerce(keys.get(i), parameters[i].getType());
         }
 
-        if (n < parameters.length) {
-            var type = parameters[n].getParameterizedType();
+        var parameterMap = request.getParameterMap();
 
-            Object body;
-            if (type == Void.class) {
-                body = null;
-            } else {
-                try {
-                    body = decodeBody(request, type);
-                } catch (IOException exception) {
-                    throw new UnsupportedOperationException(exception);
+        if (formData) {
+            arguments[n] = BeanAdapter.coerce(parameterMap, parameters[keyCount].getType());
+        } else {
+            for (var i = keyCount; i < n; i++) {
+                var parameter = parameters[i];
+
+                if (i < keyCount) {
+                    arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
+                } else {
+                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
+                    var type = parameter.getType();
+
+                    var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
+
+                    Object argument;
+                    if (type.isArray()) {
+                        var componentType = type.getComponentType();
+
+                        argument = Array.newInstance(componentType, values.size());
+
+                        var j = 0;
+
+                        for (var value : values) {
+                            Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
+                        }
+                    } else if (Collection.class.isAssignableFrom(type)) {
+                        var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                        var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
+
+                        Collection<Object> collection;
+                        if (type == List.class) {
+                            collection = new ArrayList<>(values.size());
+                        } else if (Set.class.isAssignableFrom(type)) {
+                            collection = (type == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(values.size());
+                        } else {
+                            throw new UnsupportedOperationException("Unsupported collection type.");
+                        }
+
+                        for (var value : values) {
+                            collection.add(BeanAdapter.coerce(value, elementType));
+                        }
+
+                        argument = collection;
+                    } else {
+                        var value = values.isEmpty() ? null : values.getLast();
+
+                        if (parameter.getAnnotation(Required.class) != null && value == null) {
+                            throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
+                        }
+
+                        argument = BeanAdapter.coerce(value, type);
+                    }
+
+                    arguments[i] = argument;
                 }
             }
 
-            arguments[n] = body;
+            if (n < parameters.length) {
+                var type = parameters[n].getParameterizedType();
+
+                Object body;
+                if (type == Void.class) {
+                    body = null;
+                } else {
+                    try {
+                        body = decodeBody(request, type);
+                    } catch (IOException exception) {
+                        throw new UnsupportedOperationException(exception);
+                    }
+                }
+
+                arguments[n] = body;
+            }
         }
 
         return arguments;
