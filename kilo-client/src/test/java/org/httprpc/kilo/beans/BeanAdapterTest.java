@@ -19,8 +19,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -71,8 +71,11 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testBeanAdapter() {
+    public void testBeanAdapter() throws MalformedURLException {
         var now = LocalDate.now();
+
+        var uri = URI.create("http://localhost:8080");
+        var path = Paths.get(System.getProperty("user.home"));
 
         var map = mapOf(
             entry("i", 1),
@@ -81,16 +84,18 @@ public class BeanAdapterTest {
             entry("string", "abc"),
             entry("bigInteger", BigInteger.valueOf(8192L)),
             entry("dayOfWeek", DayOfWeek.MONDAY),
+            entry("instant", Instant.ofEpochMilli(0)),
             entry("date", new Date(0)),
-            entry("instant", Instant.ofEpochMilli(1)),
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
             entry("duration", Duration.parse("PT2H30M")),
             entry("period", Period.parse("P3Y2M")),
             entry("UUID", UUID.randomUUID()),
-            entry("URI", URI.create("http://localhost:8080")),
-            entry("path", Paths.get(System.getProperty("user.home"))),
+            entry("URI", uri),
+            entry("URL", uri.toURL()),
+            entry("path", path),
+            entry("file", path.toFile()),
             entry("nestedBean", mapOf(
                 entry("flag", true),
                 entry("character", 'y')
@@ -250,20 +255,6 @@ public class BeanAdapterTest {
         var uuid = UUID.randomUUID();
 
         assertEquals(uuid, BeanAdapter.coerce(uuid.toString(), UUID.class));
-    }
-
-    @Test
-    public void testURICoercion() {
-        var uri = URI.create("http://localhost:8080");
-
-        assertEquals(uri, BeanAdapter.coerce(uri.toString(), URI.class));
-    }
-
-    @Test
-    public void testPathCoercion() {
-        var path = Paths.get(System.getProperty("user.home"));
-
-        assertEquals(path, BeanAdapter.coerce(path.toString(), Path.class));
     }
 
     @Test

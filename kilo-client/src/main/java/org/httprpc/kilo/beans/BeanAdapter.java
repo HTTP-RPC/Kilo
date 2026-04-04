@@ -18,6 +18,7 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.w3c.dom.Document;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -27,8 +28,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -549,8 +550,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link TemporalAccessor}</li>
      * <li>{@link TemporalAmount}</li>
      * <li>{@link UUID}</li>
-     * <li>{@link URI}</li>
-     * <li>{@link Path}</li>
+     * <li>{@link URL} or {@link URI}</li>
+     * <li>{@link File} or {@link Path}</li>
      * <li>{@link Document}</li>
      * </ul>
      * <p>
@@ -587,8 +588,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof TemporalAccessor
             || value instanceof TemporalAmount
             || value instanceof UUID
-            || value instanceof URI
-            || value instanceof Path
+            || value instanceof URL || value instanceof URI
+            || value instanceof File || value instanceof Path
             || value instanceof Document) {
             return value;
         } else if (value.getClass().isArray()) {
@@ -626,8 +627,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Duration}</li>
      * <li>{@link Period}</li>
      * <li>{@link UUID}</li>
-     * <li>{@link URI}</li>
-     * <li>{@link Path}</li>
      * </ul>
      * <p>
      * If the target type is an array, the provided value must be an array or
@@ -855,10 +854,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return Period.parse(value.toString());
             } else if (type == UUID.class) {
                 return UUID.fromString(value.toString());
-            } else if (type == URI.class) {
-                return URI.create(value.toString());
-            } else if (type == Path.class) {
-                return Paths.get(value.toString());
             } else if (type.isArray()) {
                 if (value.getClass().isArray()) {
                     return toArray(new ArrayAdapter(value), type);

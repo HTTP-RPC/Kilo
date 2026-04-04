@@ -93,8 +93,6 @@ Method parameters may be any of the following types:
 * `Boolean`/`boolean`
 * `Character`/`char`
 * `String`
-* `java.net.URI`
-* `java.nio.file.Path`
 * `java.time.Instant`
 * `java.time.LocalDate`
 * `java.time.LocalTime`
@@ -198,8 +196,6 @@ Additionally, instances of the following types are automatically converted to th
 
 * `Character`/`char`
 * `Enum`
-* `java.net.URI`
-* `java.nio.file.Path`
 * `java.time.LocalDate`
 * `java.time.LocalTime`
 * `java.time.LocalDateTime`

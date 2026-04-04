@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -65,7 +64,6 @@ public class TestBean implements TestInterface {
     private String string = null;
     private BigInteger bigInteger = null;
     private DayOfWeek dayOfWeek = null;
-    private Date date = null;
     private Instant instant = null;
     private LocalDate localDate = null;
     private LocalTime localTime = null;
@@ -144,15 +142,6 @@ public class TestBean implements TestInterface {
 
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
-    }
-
-    @Override
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     @Override

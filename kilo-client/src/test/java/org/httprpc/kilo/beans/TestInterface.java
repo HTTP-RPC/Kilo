@@ -17,8 +17,11 @@ package org.httprpc.kilo.beans;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 
+import java.io.File;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -31,6 +34,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.httprpc.kilo.util.Optionals.*;
 
 public interface TestInterface {
     interface NestedInterface {
@@ -55,8 +60,10 @@ public interface TestInterface {
 
     BigInteger getBigInteger();
     DayOfWeek getDayOfWeek();
-    Date getDate();
     Instant getInstant();
+    default Date getDate() {
+        return map(getInstant(), Date::from);
+    }
     LocalDate getLocalDate();
     LocalTime getLocalTime();
     LocalDateTime getLocalDateTime();
@@ -64,7 +71,19 @@ public interface TestInterface {
     Period getPeriod();
     UUID getUUID();
     URI getURI();
+    default URL getURL() {
+        return map(getURI(), uri -> {
+            try {
+                return uri.toURL();
+            } catch (MalformedURLException exception) {
+                throw new RuntimeException(exception);
+            }
+        });
+    }
     Path getPath();
+    default File getFile() {
+        return map(getPath(), Path::toFile);
+    }
 
     NestedInterface getNestedBean();
     void setNestedBean(NestedInterface nestedBean);
