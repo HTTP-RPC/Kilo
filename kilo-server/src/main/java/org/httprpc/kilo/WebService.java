@@ -1145,8 +1145,6 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static Method getHandler(HttpServletRequest request, List<Method> handlerList, int keyCount, boolean formData) {
-        var parameterNames = request.getParameterMap().keySet();
-
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
@@ -1161,28 +1159,28 @@ public abstract class WebService extends HttpServlet {
             }
 
             if (formData) {
-                if (handler.getAnnotation(FormData.class) != null && n >= keyCount) {
+                if (handler.getAnnotation(FormData.class) != null) {
                     return handler;
-                } else {
-                    continue;
                 }
-            }
+            } else {
+                var parameterNames = request.getParameterMap().keySet();
 
-            if (parameterNames.isEmpty()) {
-                return handler;
-            }
-
-            var c = 0;
-
-            var parameterCount = parameterNames.size();
-
-            for (var i = keyCount; i < n; i++) {
-                var parameter = parameters[i];
-
-                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
-
-                if (parameterNames.contains(name) && ++c == parameterCount) {
+                if (parameterNames.isEmpty()) {
                     return handler;
+                }
+
+                var c = 0;
+
+                var parameterCount = parameterNames.size();
+
+                for (var i = keyCount; i < n; i++) {
+                    var parameter = parameters[i];
+
+                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
+
+                    if (parameterNames.contains(name) && ++c == parameterCount) {
+                        return handler;
+                    }
                 }
             }
         }
