@@ -1210,7 +1210,7 @@ public abstract class WebService extends HttpServlet {
         var parameterMap = request.getParameterMap();
 
         if (formData) {
-            arguments[n] = BeanAdapter.coerce(parameterMap, parameters[keyCount].getType());
+            arguments[n] = BeanAdapter.coerceGeneric(parameterMap, parameters[keyCount].getParameterizedType());
         } else {
             for (var i = keyCount; i < n; i++) {
                 var parameter = parameters[i];
