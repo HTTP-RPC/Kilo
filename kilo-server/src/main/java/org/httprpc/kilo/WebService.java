@@ -818,6 +818,8 @@ public abstract class WebService extends HttpServlet {
      */
     public static final String TEXT_PLAIN = "text/plain";
 
+    private static final String KEY_PLACEHOLDER = "?";
+
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
@@ -895,6 +897,8 @@ public abstract class WebService extends HttpServlet {
             var resourcePath = method.getAnnotation(ResourcePath.class);
 
             if (resourcePath != null) {
+                var keyCount = 0;
+
                 var components = resourcePath.value().split("/");
 
                 for (var j = 0; j < components.length; j++) {
@@ -905,6 +909,14 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     resource = resource.resources.computeIfAbsent(component, key -> new Resource());
+
+                    if (component.equals(KEY_PLACEHOLDER)) {
+                        keyCount++;
+                    }
+                }
+
+                if (keyCount > method.getParameterCount()) {
+                    throw new ServletException("Insufficient parameter count.");
                 }
             }
 
@@ -1030,7 +1042,7 @@ public abstract class WebService extends HttpServlet {
                 var child = resource.resources.get(component);
 
                 if (child == null) {
-                    child = resource.resources.get("?");
+                    child = resource.resources.get(KEY_PLACEHOLDER);
 
                     if (child == null) {
                         response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -1244,10 +1256,6 @@ public abstract class WebService extends HttpServlet {
                 n--;
             }
 
-            if (keyCount > n) {
-                continue;
-            }
-
             if (formData) {
                 if (handler.getAnnotation(FormData.class) != null) {
                     return handler;
@@ -1428,7 +1436,7 @@ public abstract class WebService extends HttpServlet {
             var components = path.split("/");
 
             for (var j = 0; j < components.length; j++) {
-                if (components[j].equals("?")) {
+                if (components[j].equals(KEY_PLACEHOLDER)) {
                     keyCount++;
                 }
             }
