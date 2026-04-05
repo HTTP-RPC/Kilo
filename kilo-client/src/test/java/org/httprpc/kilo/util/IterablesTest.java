@@ -392,11 +392,13 @@ public class IterablesTest {
     }
 
     @Test
-    public void testArray() {
+    public void testIterableOf() {
         var values = iterableOf(new Integer[] {1, 2, 3});
 
         var result = maximumOf(values); // 3
 
         assertEquals(3, result);
+
+        assertEquals(0, countOf(iterableOf(new Integer[] {1, 2, 3}, 3)));
     }
 }

@@ -1163,25 +1163,16 @@ public abstract class WebService extends HttpServlet {
                     return handler;
                 }
             } else {
-                var parameterNames = request.getParameterMap().keySet();
+                var parameterNames = setOf(limit(mapAll(iterableOf(parameters, keyCount),
+                    parameter -> coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName)),
+                    n - keyCount
+                ));
 
-                if (parameterNames.isEmpty()) {
-                    return handler;
+                if (!parameterNames.containsAll(request.getParameterMap().keySet())) {
+                    continue;
                 }
 
-                var c = 0;
-
-                var parameterCount = parameterNames.size();
-
-                for (var i = keyCount; i < n; i++) {
-                    var parameter = parameters[i];
-
-                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
-
-                    if (parameterNames.contains(name) && ++c == parameterCount) {
-                        return handler;
-                    }
-                }
+                return handler;
             }
         }
 

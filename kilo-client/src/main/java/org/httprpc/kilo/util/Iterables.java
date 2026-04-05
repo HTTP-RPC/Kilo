@@ -903,12 +903,31 @@ public class Iterables {
      * The iterable array contents.
      */
     public static <T> Iterable<T> iterableOf(T[] array) {
-        if (array == null) {
+        return iterableOf(array, 0);
+    }
+
+    /**
+     * Creates an iterable from an array.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param array
+     * The source array.
+     *
+     * @param start
+     * The index of the first element to include.
+     *
+     * @return
+     * The iterable array contents.
+     */
+    public static <T> Iterable<T> iterableOf(T[] array, int start) {
+        if (array == null || start < 0 || start > array.length) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            int i = 0;
+            int i = start;
 
             @Override
             public boolean hasNext() {
