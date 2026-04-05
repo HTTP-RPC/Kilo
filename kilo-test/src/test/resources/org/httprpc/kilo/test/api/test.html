@@ -239,7 +239,7 @@
                 <!--  -->
                 <li><a href="#DayOfWeek">DayOfWeek</a></li>
                 <!--  -->
-                <li><a href="#TestService.TestEnum">TestService.TestEnum</a></li>
+                <li><a href="#TestService.TestRecord.TestEnum">TestService.TestRecord.TestEnum</a></li>
                 <!--  -->
             </ol>
         </li>
@@ -247,8 +247,6 @@
         <!--  -->
         <li><a href="#structures">Structures</a>
             <ol>
-                <!--  -->
-                <li><a href="#Character">Character</a></li>
                 <!--  -->
                 <li><a href="#Coordinates">Coordinates</a></li>
                 <!--  -->
@@ -263,6 +261,8 @@
                 <li><a href="#TestService.D">TestService.D</a></li>
                 <!--  -->
                 <li><a href="#TestService.E">TestService.E</a></li>
+                <!--  -->
+                <li><a href="#TestService.FormContents">TestService.FormContents</a></li>
                 <!--  -->
                 <li><a href="#TestService.Response">TestService.Response</a></li>
                 <!--  -->
@@ -317,18 +317,6 @@
                 <tr>
                     <td><code>numbers</code></td>
                     <td><code>[Integer]</code></td>
-                    <td></td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>character</code></td>
-                    <td><code>char</code></td>
-                    <td></td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>characters</code></td>
-                    <td><code>[<a href="#Character">Character</a>]</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -872,38 +860,8 @@
                 <tbody>
                 <!--  -->
                 <tr>
-                    <td><code>string</code></td>
-                    <td><code>String&nbsp;•</code></td>
-                    <td></td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>strings</code></td>
-                    <td><code>[String]</code></td>
-                    <td></td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>number</code></td>
-                    <td><code>Integer</code></td>
-                    <td></td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>date</code></td>
-                    <td><code>Instant</code></td>
-                    <td></td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>file</code></td>
-                    <td><code>Part</code></td>
-                    <td></td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>files</code></td>
-                    <td><code>[Part]</code></td>
+                    <td><code>formContents</code></td>
+                    <td><code><a href="#TestService.FormContents">TestService.FormContents</a></code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1247,8 +1205,8 @@
             </table>
         </section>
         <!--  -->
-        <section id="TestService.TestEnum">
-            <h2><a id="TestService.TestEnum">TestService.TestEnum</a></h2>
+        <section id="TestService.TestRecord.TestEnum">
+            <h2><a id="TestService.TestRecord.TestEnum">TestService.TestRecord.TestEnum</a></h2>
             <!--  -->
             <table>
                 <thead>
@@ -1283,23 +1241,6 @@
     <!--  -->
     <div id="structures">
         <h1>Structures</h1>
-        <!--  -->
-        <section id="Character">
-            <h2><a id="Character">Character</a></span></h2>
-            <!--  -->
-            <table>
-                <thead>
-                <tr>
-                    <th>Property</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!--  -->
-                </tbody>
-            </table>
-        </section>
         <!--  -->
         <section id="Coordinates">
             <h2><a id="Coordinates">Coordinates</a></span></h2>
@@ -1500,8 +1441,8 @@
             </table>
         </section>
         <!--  -->
-        <section id="TestService.Response">
-            <h2><a id="TestService.Response">TestService.Response</a></span></h2>
+        <section id="TestService.FormContents">
+            <h2><a id="TestService.FormContents">TestService.FormContents</a></span></h2>
             <!--  -->
             <table>
                 <thead>
@@ -1514,16 +1455,57 @@
                 <tbody>
                 <!--  -->
                 <tr>
-                    <td><code>character</code></td>
-                    <td><code>char</code></td>
+                    <td><code>string</code></td>
+                    <td><code>String&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
-                    <td><code>characters</code></td>
-                    <td><code>[<a href="#Character">Character</a>]</code></td>
+                    <td><code>strings</code></td>
+                    <td><code>[String]</code></td>
                     <td></td>
                 </tr>
+                <!--  -->
+                <tr>
+                    <td><code>number</code></td>
+                    <td><code>Integer</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>date</code></td>
+                    <td><code>Instant</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>file</code></td>
+                    <td><code>Path</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>files</code></td>
+                    <td><code>[Path]</code></td>
+                    <td></td>
+                </tr>
+                <!--  -->
+                </tbody>
+            </table>
+        </section>
+        <!--  -->
+        <section id="TestService.Response">
+            <h2><a id="TestService.Response">TestService.Response</a></span></h2>
+            <!--  -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
                 <!--  -->
                 <tr>
                     <td><code>date</code></td>
@@ -1634,7 +1616,7 @@
                 <!--  -->
                 <tr>
                     <td><code><s>testEnum</s></code></td>
-                    <td><code><a href="#TestService.TestEnum">TestService.TestEnum</a></code></td>
+                    <td><code><a href="#TestService.TestRecord.TestEnum">TestService.TestRecord.TestEnum</a></code></td>
                     <td></td>
                 </tr>
                 <!--  -->

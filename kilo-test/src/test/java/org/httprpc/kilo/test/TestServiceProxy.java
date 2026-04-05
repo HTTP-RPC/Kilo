@@ -32,7 +32,6 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.SequencedSet;
-import java.util.SortedSet;
 
 import static org.httprpc.kilo.util.Iterables.*;
 
@@ -75,7 +74,7 @@ public interface TestServiceProxy {
 
     @RequestMethod("GET")
     TestService.Response testGet(@Required String string, List<String> strings,
-        int number, SequencedSet<Integer> numbers, char character, SortedSet<Character> characters,
+        int number, SequencedSet<Integer> numbers,
         boolean flag) throws IOException;
 
     @RequestMethod("GET")

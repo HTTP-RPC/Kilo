@@ -1055,9 +1055,9 @@ public abstract class WebService extends HttpServlet {
             request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         }
 
-        var contentType = map(request.getContentType(), value -> value.substring(0, value.indexOf(";")).trim().toLowerCase());
+        var contentType = map(request.getContentType(), value -> value.split(";")[0].trim().toLowerCase());
 
-        var formData = contentType.equals(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.equals(MULTIPART_FORM_DATA);
+        var formData = contentType != null && (contentType.equals(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.equals(MULTIPART_FORM_DATA));
 
         var handler = getHandler(request, handlerList, keys.size(), formData);
 

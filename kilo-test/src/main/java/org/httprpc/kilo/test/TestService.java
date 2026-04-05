@@ -47,7 +47,6 @@ import java.util.NoSuchElementException;
 import java.util.SequencedMap;
 import java.util.SequencedSet;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -102,8 +101,6 @@ public class TestService extends AbstractDatabaseService {
         List<String> getStrings();
         Integer getNumber();
         Set<Integer> getNumbers();
-        char getCharacter();
-        Set<Character> getCharacters();
         boolean getFlag();
         DayOfWeek getDayOfWeek();
         Instant getDate();
@@ -195,7 +192,7 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,
-        int number, SequencedSet<Integer> numbers, char character, SortedSet<Character> characters,
+        int number, SequencedSet<Integer> numbers,
         boolean flag, DayOfWeek dayOfWeek,
         Instant date, List<Instant> dates,
         LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
@@ -206,8 +203,6 @@ public class TestService extends AbstractDatabaseService {
             entry("strings", strings),
             entry("number", number),
             entry("numbers", numbers),
-            entry("character", character),
-            entry("characters", characters),
             entry("flag", flag),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
