@@ -162,6 +162,11 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testArrayAdapter() {
+        assertEquals(listOf(1, 2, 3), BeanAdapter.adapt(new int[] {1, 2, 3}));
+    }
+
+    @Test
     public void testBeanCoercion() {
         var testBean = BeanAdapter.coerce(mapOf(
             entry("long", 10),
@@ -173,6 +178,29 @@ public class BeanAdapterTest {
         assertEquals(10, testBean.getLong());
         assertEquals("xyz", testBean.getString());
         assertEquals(listOf(1, 2, 3), testBean.getIntegerList());
+    }
+
+    @Test
+    public void testInterfaceCoercion() {
+        var map = new HashMap<String, Object>();
+
+        map.put("nestedBean", mapOf());
+
+        var testInterface = BeanAdapter.coerce(map, TestInterface.class);
+
+        testInterface.setInteger(150);
+
+        assertEquals(150, map.get("i"));
+
+        testInterface.getNestedBean().setFlag(true);
+
+        assertTrue(testInterface.getNestedBean().getFlag());
+
+        testInterface.setNestedBean(new TestBean.NestedBean());
+
+        assertInstanceOf(Map.class, map.get("nestedBean"));
+
+        assertFalse(testInterface.getNestedBean().getFlag());
     }
 
     @Test
@@ -205,23 +233,7 @@ public class BeanAdapterTest {
         assertEquals(Boolean.FALSE, BeanAdapter.coerce(0.0, Boolean.TYPE));
 
         assertEquals('\0', BeanAdapter.coerce(null, Character.TYPE));
-        assertEquals('a', BeanAdapter.coerce("abc", Character.TYPE));
-    }
-
-    @Test
-    public void testArrayAdapter() {
-        assertEquals(listOf(1, 2, 3), BeanAdapter.adapt(new int[] {1, 2, 3}));
-    }
-
-    @Test
-    public void testArrayCoercion() {
-        assertArrayEquals(new int[]{1, 2, 3}, (int[]) BeanAdapter.coerce(new String[] {"1", "2", "3"}, Integer.TYPE.arrayType()));
-        assertArrayEquals(new int[]{1, 2, 3}, (int[]) BeanAdapter.coerce(listOf("1", "2", "3"), Integer.TYPE.arrayType()));
-    }
-
-    @Test
-    public void testEnumCoercion() {
-        assertEquals(DayOfWeek.MONDAY, BeanAdapter.coerce(DayOfWeek.MONDAY.toString(), DayOfWeek.class));
+        assertEquals('a', BeanAdapter.coerce(0x61, Character.TYPE));
     }
 
     @Test
@@ -258,6 +270,17 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testEnumCoercion() {
+        assertEquals(DayOfWeek.MONDAY, BeanAdapter.coerce(DayOfWeek.MONDAY.toString(), DayOfWeek.class));
+    }
+
+    @Test
+    public void testArrayCoercion() {
+        assertArrayEquals(new int[]{1, 2, 3}, (int[]) BeanAdapter.coerce(new String[] {"1", "2", "3"}, Integer.TYPE.arrayType()));
+        assertArrayEquals(new int[]{1, 2, 3}, (int[]) BeanAdapter.coerce(listOf("1", "2", "3"), Integer.TYPE.arrayType()));
+    }
+
+    @Test
     public void testListCoercion() {
         assertInstanceOf(List.class, BeanAdapter.coerce(listOf(), List.class));
 
@@ -289,29 +312,6 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testInterfaceCoercion() {
-        var map = new HashMap<String, Object>();
-
-        map.put("nestedBean", mapOf());
-
-        var testInterface = BeanAdapter.coerce(map, TestInterface.class);
-
-        testInterface.setInteger(150);
-
-        assertEquals(150, map.get("i"));
-
-        testInterface.getNestedBean().setFlag(true);
-
-        assertTrue(testInterface.getNestedBean().getFlag());
-
-        testInterface.setNestedBean(new TestBean.NestedBean());
-
-        assertInstanceOf(Map.class, map.get("nestedBean"));
-
-        assertFalse(testInterface.getNestedBean().getFlag());
-    }
-
-    @Test
     public void testObjectMethods() {
         var map1 = new HashMap<String, Object>();
 
@@ -331,7 +331,7 @@ public class BeanAdapterTest {
         };
 
         map2.put("flag", 1);
-        map2.put("character", "abc");
+        map2.put("character", 0x61);
         map2.put("foo", 2);
 
         var nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);

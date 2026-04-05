@@ -629,14 +629,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link UUID}</li>
      * </ul>
      * <p>
+     * If the target type is an {@link Enum}, the resulting value is the first
+     * constant whose string representation matches the value's string
+     * representation.
+     * <p>
      * If the target type is an array, the provided value must be an array or
      * {@link Collection}. The return value is an array of the same length as
      * the provided value whose elements have been coerced to the array's
      * component type.
-     * <p>
-     * If the target type is an {@link Enum}, the resulting value is the first
-     * constant whose string representation matches the value's string
-     * representation.
      * <p>
      * If none of the previous conditions apply, the provided value is assumed
      * to be a map. If the if the target type is a {@link Record}, the
@@ -816,8 +816,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (type == Character.class || type == Character.TYPE) {
             if (value == null) {
                 return '\0';
+            } else if (value instanceof Number number) {
+                return (char)number.intValue();
             } else {
-                return value.toString().charAt(0);
+                throw new IllegalArgumentException("Value is not a number.");
             }
         } else {
             if (value == null) {
@@ -830,7 +832,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value instanceof Number number) {
                     return new Date(number.longValue());
                 } else {
-                    throw new UnsupportedOperationException("Value is not a number.");
+                    throw new IllegalArgumentException("Value is not a number.");
                 }
             } else if (type == Instant.class) {
                 if (value instanceof Number number) {
@@ -854,6 +856,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return Period.parse(value.toString());
             } else if (type == UUID.class) {
                 return UUID.fromString(value.toString());
+            } else if (type.isEnum()) {
+                return toEnum(value.toString(), type);
             } else if (type.isArray()) {
                 if (value.getClass().isArray()) {
                     return toArray(new ArrayAdapter(value), type);
@@ -862,8 +866,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else {
                     throw new IllegalArgumentException("Value is not an array or collection.");
                 }
-            } else if (type.isEnum()) {
-                return toEnum(value.toString(), type);
             } else {
                 if (!(value instanceof Map<?, ?> map)) {
                     throw new IllegalArgumentException("Value is not a map.");
@@ -876,20 +878,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
             }
         }
-    }
-
-    private static Object toArray(Collection<?> collection, Class<?> type) {
-        var componentType = type.getComponentType();
-
-        var array = Array.newInstance(componentType, collection.size());
-
-        var i = 0;
-
-        for (var element : collection) {
-            Array.set(array, i++, toRawType(element, componentType));
-        }
-
-        return array;
     }
 
     private static Object toEnum(String value, Class<?> type) {
@@ -915,6 +903,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         throw new IllegalArgumentException("Invalid value.");
+    }
+
+    private static Object toArray(Collection<?> collection, Class<?> type) {
+        var componentType = type.getComponentType();
+
+        var array = Array.newInstance(componentType, collection.size());
+
+        var i = 0;
+
+        for (var element : collection) {
+            Array.set(array, i++, toRawType(element, componentType));
+        }
+
+        return array;
     }
 
     private static Object toRecord(Map<?, ?> map, Class<?> type) {

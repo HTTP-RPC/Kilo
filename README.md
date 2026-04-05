@@ -91,7 +91,6 @@ Method parameters may be any of the following types:
 * `Float`/`float`
 * `Double`/`double`
 * `Boolean`/`boolean`
-* `Character`/`char`
 * `String`
 * `java.time.Instant`
 * `java.time.LocalDate`
@@ -100,22 +99,23 @@ Method parameters may be any of the following types:
 * `java.time.Duration`
 * `java.time.Period`
 * `java.util.UUID`
+* enum
 
-These types are also supported for multi-value parameters:
+Additionally, these types are supported for multi-value parameters:
 
 * `java.util.List`
 * `java.util.Set`/`SequencedSet`/`SortedSet`
 * array/varargs
 
-Additionally, the following types are supported for [body content](#body-content):
+The following additional types are supported for [body content](#body-content):
 
+* bean/record
 * `java.util.Map`/`SequencedMap`/`SortedMap`
 * `org.w3c.dom.Document`
-* bean/record
 
-Parameter values are parsed from their string representations. Unspecified values are automatically converted to 0, `false`, or the null character for primitive types. `List`, `Set`, and array elements are converted to their declared types. If no values are provided for a list, set, or array parameter, an empty instance (not `null`) will be passed to the method.
+Parameter values are parsed from their string representations. Unspecified values are automatically converted to 0 or `false` for primitive types. If no values are provided for a multi-value parameter, an empty instance (not `null`) will be passed to the method.
 
-If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
+If a value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
 
@@ -191,16 +191,7 @@ Return values are converted to JSON as follows:
 * `Iterable`: array
 * `java.util.Map`, bean, or record type: object
 
-Additionally, instances of `java.util.Date` or `java.time.Instant` are converted to a number representing epoch time in milliseconds. Instances of the following types are converted to their string representations:
-
-* `Character`/`char`
-* `Enum`
-* `java.time.LocalDate`
-* `java.time.LocalTime`
-* `java.time.LocalDateTime`
-* `java.time.Duration`
-* `java.time.Period`
-* `java.util.UUID`
+Instances of `java.util.Date` or `java.time.Instant` are converted to a number representing epoch time in milliseconds. Instances of other types are converted to their string representations.
 
 A method may return an instance of `org.w3c.dom.Document` to produce an XML response.
 
