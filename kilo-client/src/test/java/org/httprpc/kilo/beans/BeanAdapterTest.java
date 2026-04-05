@@ -312,36 +312,6 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testObjectMethods() {
-        var map1 = new HashMap<String, Object>();
-
-        map1.put("flag", true);
-        map1.put("character", 'a');
-        map1.put("foo", 1);
-
-        var nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
-
-        assertEquals(0, nestedBean1.hashCode());
-
-        var map2 = new HashMap<String, Object>() {
-            @Override
-            public String toString() {
-                return "xyz";
-            }
-        };
-
-        map2.put("flag", 1);
-        map2.put("character", 0x61);
-        map2.put("foo", 2);
-
-        var nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);
-
-        assertEquals(nestedBean1, nestedBean2);
-
-        assertEquals(map2.toString(), nestedBean2.toString());
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
     public void testRequired() {
         var testBean = new TestBean();
@@ -410,7 +380,61 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testGetProperties() {
+    public void testReadOnly() {
+        var readOnly = BeanAdapter.coerce(mapOf(
+            entry("x", 10),
+            entry("y", 200)
+        ), ReadOnly.class);
+
+        assertEquals(10, readOnly.getX());
+        assertEquals(100, readOnly.getY());
+    }
+
+    @Test
+    public void testDefaultMethod() {
+        var defaultMethod = BeanAdapter.coerce(mapOf(
+            entry("x", 1)
+        ), DefaultMethod.class);
+
+        assertEquals(2, defaultMethod.getY());
+
+        var beanAdapter = new BeanAdapter(defaultMethod);
+
+        assertEquals(2, beanAdapter.get("z"));
+    }
+
+    @Test
+    public void testObjectMethods() {
+        var map1 = new HashMap<String, Object>();
+
+        map1.put("flag", true);
+        map1.put("character", 'a');
+        map1.put("foo", 1);
+
+        var nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
+
+        assertEquals(0, nestedBean1.hashCode());
+
+        var map2 = new HashMap<String, Object>() {
+            @Override
+            public String toString() {
+                return "xyz";
+            }
+        };
+
+        map2.put("flag", 1);
+        map2.put("character", 0x61);
+        map2.put("foo", 2);
+
+        var nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);
+
+        assertEquals(nestedBean1, nestedBean2);
+
+        assertEquals(map2.toString(), nestedBean2.toString());
+    }
+
+    @Test
+    public void testProperties() {
         var properties = BeanAdapter.getProperties(TestBean.class);
 
         var propertyTypes = mapOf(mapAll(properties.entrySet(),
@@ -462,30 +486,6 @@ public class BeanAdapterTest {
         assertNull(propertyTypes.get("xyz"));
 
         assertThrows(UnsupportedOperationException.class, () -> properties.remove("i"));
-    }
-
-    @Test
-    public void testReadOnly() {
-        var readOnly = BeanAdapter.coerce(mapOf(
-            entry("x", 10),
-            entry("y", 200)
-        ), ReadOnly.class);
-
-        assertEquals(10, readOnly.getX());
-        assertEquals(100, readOnly.getY());
-    }
-
-    @Test
-    public void testDefaultMethod() {
-        var defaultMethod = BeanAdapter.coerce(mapOf(
-            entry("x", 1)
-        ), DefaultMethod.class);
-
-        assertEquals(2, defaultMethod.getY());
-
-        var beanAdapter = new BeanAdapter(defaultMethod);
-
-        assertEquals(2, beanAdapter.get("z"));
     }
 
     @Test

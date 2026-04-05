@@ -115,7 +115,7 @@ The following additional types are supported for [body content](#body-content):
 
 Parameter values are parsed from their string representations. Unspecified values are automatically converted to 0 or `false` for primitive types. If no values are provided for a multi-value parameter, an empty instance (not `null`) will be passed to the method.
 
-If a value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
+If an argument cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
 
