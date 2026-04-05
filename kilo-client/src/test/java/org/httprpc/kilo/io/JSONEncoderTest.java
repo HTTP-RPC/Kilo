@@ -74,6 +74,11 @@ public class JSONEncoderTest {
     }
 
     @Test
+    public void testCharacter() throws IOException {
+        assertEquals("97", encode('a'));
+    }
+
+    @Test
     public void testDate() throws IOException {
         assertEquals("0", encode(new Date(0)));
     }

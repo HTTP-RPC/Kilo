@@ -160,6 +160,10 @@ public class JSONDecoder extends Decoder<Object> {
             readLiteral(reader, FALSE);
 
             return Boolean.FALSE;
+        } else if (c == NULL.charAt(0)) {
+            readLiteral(reader, NULL);
+
+            return null;
         } else if (c == '[') {
             var list = new ArrayList<>();
 
@@ -228,10 +232,6 @@ public class JSONDecoder extends Decoder<Object> {
             c = reader.read();
 
             return map;
-        } else if (c == NULL.charAt(0)) {
-            readLiteral(reader, NULL);
-
-            return null;
         } else {
             throw new IOException(String.format("Unexpected character (0x%04X).", c));
         }

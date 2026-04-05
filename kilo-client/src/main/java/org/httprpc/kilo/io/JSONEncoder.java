@@ -82,6 +82,7 @@ public class JSONEncoder extends Encoder<Object> {
                 encode(number, writer);
             }
             case Number number -> encode(number, writer);
+            case Character character -> encode((int)character, writer);
             case Date date -> encode(date.getTime(), writer);
             case Instant instant -> encode(instant.toEpochMilli(), writer);
             case Boolean flag -> encode(flag, writer);
