@@ -190,7 +190,6 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
-        private boolean formData;
         private boolean deprecated;
 
         private TypeDescriptor produces = null;
@@ -207,7 +206,6 @@ public abstract class WebService extends HttpServlet {
 
             description = map(handler.getAnnotation(Description.class), Description::value);
 
-            formData = handler.getAnnotation(FormData.class) != null;
             deprecated = handler.getAnnotation(Deprecated.class) != null;
         }
 
@@ -229,13 +227,6 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
-        }
-
-        /**
-         * Indicates that the operation accepts form data.
-         */
-        public boolean isFormData() {
-            return formData;
         }
 
         /**
@@ -756,14 +747,6 @@ public abstract class WebService extends HttpServlet {
     public @interface Creates {
     }
 
-    /**
-     * Indicates that a service method accepts form data.
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public @interface FormData {
-    }
-
     private enum Verb {
         GET,
         POST,
@@ -1257,7 +1240,7 @@ public abstract class WebService extends HttpServlet {
             }
 
             if (formData) {
-                if (handler.getAnnotation(FormData.class) != null) {
+                if (n == keyCount) {
                     return handler;
                 }
             } else {
@@ -1453,7 +1436,7 @@ public abstract class WebService extends HttpServlet {
 
                     operation.parameters = n > 0;
 
-                    if ((operation.method.equals("POST") || operation.method.equals("PUT")) && handler.getAnnotation(FormData.class) == null) {
+                    if ((operation.method.equals("POST") || operation.method.equals("PUT"))) {
                         n--;
                     }
 

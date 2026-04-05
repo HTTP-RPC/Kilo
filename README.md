@@ -112,8 +112,6 @@ For [body content](#body-content), the following types are also supported:
 * `java.util.Map`/`SequencedMap`/`SortedMap`
 * bean/record
 
-The `FormData` annotation can be used to indicate that a handler method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Arguments of type `java.nio.file.Path` may be used with requests submitted as [multi-part](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig) form data.
-
 Unspecified values are automatically converted to 0 or `false` for primitive types. If no values are provided for a multi-value parameter, an empty instance (not `null`) will be passed to the method.
 
 If an argument cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
@@ -181,9 +179,7 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. However, a body parameter of type `org.w3c.dom.Document` can be used to indicate that the method accepts XML data. 
-
-A body parameter of type `Void` indicates that a handler method either does not accept a body or will process the input stream [directly](#request-and-repsonse-properties).
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. However, a body parameter of type `org.w3c.dom.Document` can be used to indicate that the method expects XML content. A body parameter of type `Void` indicates that the handler either does not accept a body or will process the input stream [directly](#request-and-repsonse-properties).
 
 ## Return Values
 Return values are converted to JSON as follows:
@@ -194,7 +190,7 @@ Return values are converted to JSON as follows:
 * `Iterable`: array
 * `java.util.Map`, bean, or record type: object
 
-`Character` or `char` values are represented as a number. Instances of `java.util.Date` or `java.time.Instant` are converted to a number representing epoch time in milliseconds. Instances of other types are converted to their string representations.
+`Character` or `char` values are converted to a number. Instances of `java.util.Date` or `java.time.Instant` are converted to a number representing epoch time in milliseconds. Instances of other types are converted to their string representations.
 
 A method may return an instance of `org.w3c.dom.Document` to produce an XML response.
 

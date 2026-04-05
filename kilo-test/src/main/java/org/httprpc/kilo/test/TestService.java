@@ -325,7 +325,6 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("form-data")
-    @FormData
     public Map<String, Object> testPostFormData(FormContents formContents) {
         var fileSize = coalesce(map(formContents.file(), TestService::lengthOf), () -> 0L);
         var totalFileSize = sumOf(coalesce(mapAll(formContents.files(), TestService::lengthOf), Collections::listOf), Long::longValue) + fileSize;
