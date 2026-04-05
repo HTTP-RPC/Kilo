@@ -1055,11 +1055,13 @@ public abstract class WebService extends HttpServlet {
             request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         }
 
+        var keyCount = keys.size();
+
         var contentType = map(request.getContentType(), value -> value.split(";")[0].trim().toLowerCase());
 
         var formData = contentType != null && (contentType.equals(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.equals(MULTIPART_FORM_DATA));
 
-        var handler = getHandler(request, handlerList, keys.size(), formData);
+        var handler = getHandler(request, handlerList, keyCount, formData);
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -1075,8 +1077,6 @@ public abstract class WebService extends HttpServlet {
         if (contentType != null) {
             n--;
         }
-
-        var keyCount = keys.size();
 
         try {
             for (var i = 0; i < keyCount; i++) {
@@ -1258,11 +1258,9 @@ public abstract class WebService extends HttpServlet {
                     n - keyCount
                 ));
 
-                if (!parameterNames.containsAll(request.getParameterMap().keySet())) {
-                    continue;
+                if (parameterNames.containsAll(request.getParameterMap().keySet())) {
+                    return handler;
                 }
-
-                return handler;
             }
         }
 
