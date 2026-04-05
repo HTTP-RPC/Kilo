@@ -1066,9 +1066,99 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        Object[] arguments;
+        var parameters = handler.getParameters();
+
+        var n = parameters.length;
+
+        var arguments = new Object[n];
+
+        if (contentType != null) {
+            n--;
+        }
+
+        var keyCount = keys.size();
+
         try {
-            arguments = getArguments(handler, keys, formData, request);
+            for (var i = 0; i < keyCount; i++) {
+                arguments[i] = BeanAdapter.coerce(keys.get(i), parameters[i].getType());
+            }
+
+            var parameterMap = request.getParameterMap();
+
+            if (formData) {
+                arguments[n] = BeanAdapter.coerceGeneric(parameterMap, parameters[keyCount].getParameterizedType());
+            } else {
+                for (var i = keyCount; i < n; i++) {
+                    var parameter = parameters[i];
+
+                    if (i < keyCount) {
+                        arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
+                    } else {
+                        var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
+                        var type = parameter.getType();
+
+                        var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
+
+                        Object argument;
+                        if (type.isArray()) {
+                            var componentType = type.getComponentType();
+
+                            argument = Array.newInstance(componentType, values.size());
+
+                            var j = 0;
+
+                            for (var value : values) {
+                                Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
+                            }
+                        } else if (Collection.class.isAssignableFrom(type)) {
+                            var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                            var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
+
+                            Collection<Object> collection;
+                            if (type == List.class) {
+                                collection = new ArrayList<>(values.size());
+                            } else if (Set.class.isAssignableFrom(type)) {
+                                collection = (type == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(values.size());
+                            } else {
+                                throw new UnsupportedOperationException("Unsupported collection type.");
+                            }
+
+                            for (var value : values) {
+                                collection.add(BeanAdapter.coerce(value, elementType));
+                            }
+
+                            argument = collection;
+                        } else {
+                            var value = values.isEmpty() ? null : values.getLast();
+
+                            if (parameter.getAnnotation(Required.class) != null && value == null) {
+                                throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
+                            }
+
+                            argument = BeanAdapter.coerce(value, type);
+                        }
+
+                        arguments[i] = argument;
+                    }
+                }
+
+                if (n < parameters.length) {
+                    var type = parameters[n].getParameterizedType();
+
+                    Object body;
+                    if (type == Void.class) {
+                        body = null;
+                    } else {
+                        try {
+                            body = decodeBody(request, type);
+                        } catch (IOException exception) {
+                            throw new UnsupportedOperationException(exception);
+                        }
+                    }
+
+                    arguments[n] = body;
+                }
+            }
         } catch (Exception exception) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
@@ -1177,103 +1267,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         return null;
-    }
-
-    private Object[] getArguments(Method handler, List<String> keys, boolean formData, HttpServletRequest request) {
-        var parameters = handler.getParameters();
-
-        var n = parameters.length;
-
-        var arguments = new Object[n];
-
-        if (request.getContentType() != null) {
-            n--;
-        }
-
-        var keyCount = keys.size();
-
-        for (var i = 0; i < keyCount; i++) {
-            arguments[i] = BeanAdapter.coerce(keys.get(i), parameters[i].getType());
-        }
-
-        var parameterMap = request.getParameterMap();
-
-        if (formData) {
-            arguments[n] = BeanAdapter.coerceGeneric(parameterMap, parameters[keyCount].getParameterizedType());
-        } else {
-            for (var i = keyCount; i < n; i++) {
-                var parameter = parameters[i];
-
-                if (i < keyCount) {
-                    arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
-                } else {
-                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
-                    var type = parameter.getType();
-
-                    var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
-
-                    Object argument;
-                    if (type.isArray()) {
-                        var componentType = type.getComponentType();
-
-                        argument = Array.newInstance(componentType, values.size());
-
-                        var j = 0;
-
-                        for (var value : values) {
-                            Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
-                        }
-                    } else if (Collection.class.isAssignableFrom(type)) {
-                        var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                        var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
-
-                        Collection<Object> collection;
-                        if (type == List.class) {
-                            collection = new ArrayList<>(values.size());
-                        } else if (Set.class.isAssignableFrom(type)) {
-                            collection = (type == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(values.size());
-                        } else {
-                            throw new UnsupportedOperationException("Unsupported collection type.");
-                        }
-
-                        for (var value : values) {
-                            collection.add(BeanAdapter.coerce(value, elementType));
-                        }
-
-                        argument = collection;
-                    } else {
-                        var value = values.isEmpty() ? null : values.getLast();
-
-                        if (parameter.getAnnotation(Required.class) != null && value == null) {
-                            throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
-                        }
-
-                        argument = BeanAdapter.coerce(value, type);
-                    }
-
-                    arguments[i] = argument;
-                }
-            }
-
-            if (n < parameters.length) {
-                var type = parameters[n].getParameterizedType();
-
-                Object body;
-                if (type == Void.class) {
-                    body = null;
-                } else {
-                    try {
-                        body = decodeBody(request, type);
-                    } catch (IOException exception) {
-                        throw new UnsupportedOperationException(exception);
-                    }
-                }
-
-                arguments[n] = body;
-            }
-        }
-
-        return arguments;
     }
 
     /**
