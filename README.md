@@ -109,9 +109,8 @@ Additionally, these types are supported for multi-value parameters:
 
 For [body content](#body-content), the following types are also supported:
 
-* bean/record
 * `java.util.Map`/`SequencedMap`/`SortedMap`
-* `org.w3c.dom.Document`
+* bean/record
 
 The `FormData` annotation can be used to indicate that a handler method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Arguments of type `java.nio.file.Path` may be used with requests submitted as [multi-part](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig) form data.
 
@@ -182,7 +181,9 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. A body parameter of type `Void` may be used to indicate that the handler does not accept a body or will process the input stream [directly](#request-and-repsonse-properties).
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. However, a body parameter of type `org.w3c.dom.Document` can be used to indicate that the method accepts XML data. 
+
+A body parameter of type `Void` indicates that a handler method either does not accept a body or will process the input stream [directly](#request-and-repsonse-properties).
 
 ## Return Values
 Return values are converted to JSON as follows:
