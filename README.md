@@ -113,7 +113,9 @@ The following additional types are supported for [body content](#body-content):
 * `java.util.Map`/`SequencedMap`/`SortedMap`
 * `org.w3c.dom.Document`
 
-Parameter values are parsed from their string representations. Unspecified values are automatically converted to 0 or `false` for primitive types. If no values are provided for a multi-value parameter, an empty instance (not `null`) will be passed to the method.
+The `FormData` annotation can be used to indicate that a handler method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Arguments of type `java.nio.file.Path` may be used with requests submitted as [multi-part](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig) form data.
+
+Unspecified values are automatically converted to 0 or `false` for primitive types. If no values are provided for a multi-value parameter, an empty instance (not `null`) will be passed to the method.
 
 If an argument cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
