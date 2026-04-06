@@ -47,6 +47,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -1058,147 +1059,175 @@ public abstract class WebService extends HttpServlet {
             n--;
         }
 
+        var parts = new HashMap<String, List<Path>>();
+
         try {
-            for (var i = 0; i < keyCount; i++) {
-                arguments[i] = BeanAdapter.coerce(keys.get(i), parameters[i].getType());
-            }
-
-            var parameterMap = request.getParameterMap();
-
-            if (formData) {
-                var bodyType = parameters[keyCount].getType();
-
-                var map = new HashMap<String, Object>();
-
-                for (var entry : BeanAdapter.getProperties(bodyType).entrySet()) {
-                    var name = entry.getKey();
-                    var accessor = entry.getValue().getAccessor();
-
-                    var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
-
-                    if (Collection.class.isAssignableFrom(accessor.getReturnType())) {
-                        map.put(name, values);
-                    } else {
-                        map.put(name, firstOf(values));
-                    }
+            try {
+                for (var i = 0; i < keyCount; i++) {
+                    arguments[i] = BeanAdapter.coerce(keys.get(i), parameters[i].getType());
                 }
 
-                arguments[n] = BeanAdapter.coerce(map, bodyType);
-            } else {
-                for (var i = keyCount; i < n; i++) {
-                    var parameter = parameters[i];
+                var parameterMap = request.getParameterMap();
 
-                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
-                    var type = parameter.getType();
+                if (formData) {
+                    if (contentType.equals(MULTIPART_FORM_DATA)) {
+                        for (var part : request.getParts()) {
+                            var submittedFileName = part.getSubmittedFileName();
 
-                    var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
+                            if (submittedFileName == null || submittedFileName.isEmpty()) {
+                                continue;
+                            }
 
-                    Object argument;
-                    if (type.isArray()) {
-                        argument = BeanAdapter.coerce(values, type);
-                    } else if (Collection.class.isAssignableFrom(type)) {
-                        argument = BeanAdapter.coerceGeneric(values, parameter.getParameterizedType());
-                    } else {
-                        var value = firstOf(values);
+                            var name = part.getName();
 
-                        if (parameter.getAnnotation(Required.class) != null && value == null) {
-                            throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
-                        }
+                            var path = Files.createTempFile(null, null);
 
-                        argument = BeanAdapter.coerce(value, type);
-                    }
+                            part.write(path.toString());
 
-                    arguments[i] = argument;
-                }
-
-                if (n < parameters.length) {
-                    var type = parameters[n].getParameterizedType();
-
-                    Object body;
-                    if (type == Void.class) {
-                        body = null;
-                    } else {
-                        try {
-                            body = decodeBody(request, type);
-                        } catch (IOException exception) {
-                            throw new UnsupportedOperationException(exception);
+                            parts.computeIfAbsent(name, key -> new LinkedList<>()).add(path);
                         }
                     }
 
-                    arguments[n] = body;
+                    var bodyType = parameters[keyCount].getType();
+
+                    var map = new HashMap<String, Object>();
+
+                    for (var entry : BeanAdapter.getProperties(bodyType).entrySet()) {
+                        var name = entry.getKey();
+                        var accessor = entry.getValue().getAccessor();
+
+                        var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> coalesce(parts.get(name), () -> emptyListOf(Object.class)));
+
+                        if (Collection.class.isAssignableFrom(accessor.getReturnType())) {
+                            map.put(name, values);
+                        } else {
+                            map.put(name, firstOf(values));
+                        }
+                    }
+
+                    arguments[n] = BeanAdapter.coerce(map, bodyType);
+                } else {
+                    for (var i = keyCount; i < n; i++) {
+                        var parameter = parameters[i];
+
+                        var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
+                        var type = parameter.getType();
+
+                        var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
+
+                        Object argument;
+                        if (type.isArray()) {
+                            argument = BeanAdapter.coerce(values, type);
+                        } else if (Collection.class.isAssignableFrom(type)) {
+                            argument = BeanAdapter.coerceGeneric(values, parameter.getParameterizedType());
+                        } else {
+                            var value = firstOf(values);
+
+                            if (parameter.getAnnotation(Required.class) != null && value == null) {
+                                throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
+                            }
+
+                            argument = BeanAdapter.coerce(value, type);
+                        }
+
+                        arguments[i] = argument;
+                    }
+
+                    if (n < parameters.length) {
+                        var type = parameters[n].getParameterizedType();
+
+                        Object body;
+                        if (type == Void.class) {
+                            body = null;
+                        } else {
+                            try {
+                                body = decodeBody(request, type);
+                            } catch (IOException exception) {
+                                throw new UnsupportedOperationException(exception);
+                            }
+                        }
+
+                        arguments[n] = body;
+                    }
                 }
-            }
-        } catch (Exception exception) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            } catch (Exception exception) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            reportError(response, exception);
-
-            return;
-        }
-
-        WebService.request.set(request);
-        WebService.response.set(response);
-
-        Object result;
-        try {
-            result = handler.invoke(this, arguments);
-        } catch (IllegalAccessException | InvocationTargetException exception) {
-            var cause = exception.getCause();
-
-            if (response.isCommitted()) {
-                if (cause != null) {
-                    log(cause.getMessage(), cause);
-                }
+                reportError(response, exception);
 
                 return;
             }
 
-            int status;
-            if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
-                status = HttpServletResponse.SC_FORBIDDEN;
-            } else if (cause instanceof NoSuchElementException) {
-                status = HttpServletResponse.SC_NOT_FOUND;
-            } else if (cause instanceof IllegalStateException) {
-                status = HttpServletResponse.SC_CONFLICT;
-            } else {
-                status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            }
+            WebService.request.set(request);
+            WebService.response.set(response);
 
-            response.setStatus(status);
-
-            reportError(response, cause);
-
-            return;
-        } finally {
-            WebService.request.remove();
-            WebService.response.remove();
-        }
-
-        if (response.isCommitted()) {
-            return;
-        }
-
-        if (result != null) {
-            if (handler.getAnnotation(Accepts.class) != null) {
-                response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            } else if (handler.getAnnotation(Creates.class) != null) {
-                response.setStatus(HttpServletResponse.SC_CREATED);
-            } else {
-                response.setStatus(HttpServletResponse.SC_OK);
-            }
-
+            Object result;
             try {
-                encodeResult(request, response, result);
-            } catch (Exception exception) {
-                log(exception.getMessage(), exception);
-            }
-        } else {
-            var returnType = handler.getReturnType();
+                result = handler.invoke(this, arguments);
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                var cause = exception.getCause();
 
-            if (returnType == Void.TYPE || returnType == Void.class) {
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                if (response.isCommitted()) {
+                    if (cause != null) {
+                        log(cause.getMessage(), cause);
+                    }
+
+                    return;
+                }
+
+                int status;
+                if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
+                    status = HttpServletResponse.SC_FORBIDDEN;
+                } else if (cause instanceof NoSuchElementException) {
+                    status = HttpServletResponse.SC_NOT_FOUND;
+                } else if (cause instanceof IllegalStateException) {
+                    status = HttpServletResponse.SC_CONFLICT;
+                } else {
+                    status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                }
+
+                response.setStatus(status);
+
+                reportError(response, cause);
+
+                return;
+            } finally {
+                WebService.request.remove();
+                WebService.response.remove();
+            }
+
+            if (response.isCommitted()) {
+                return;
+            }
+
+            if (result != null) {
+                if (handler.getAnnotation(Accepts.class) != null) {
+                    response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                } else if (handler.getAnnotation(Creates.class) != null) {
+                    response.setStatus(HttpServletResponse.SC_CREATED);
+                } else {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                }
+
+                try {
+                    encodeResult(request, response, result);
+                } catch (Exception exception) {
+                    log(exception.getMessage(), exception);
+                }
             } else {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                var returnType = handler.getReturnType();
+
+                if (returnType == Void.TYPE || returnType == Void.class) {
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                }
+            }
+        } finally {
+            for (var paths : parts.values()) {
+                for (var path : paths) {
+                    Files.deleteIfExists(path);
+                }
             }
         }
     }
