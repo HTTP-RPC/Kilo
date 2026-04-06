@@ -179,7 +179,9 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. However, a body parameter of type `org.w3c.dom.Document` can be used to indicate that the method expects XML content. A body parameter of type `Void` indicates that the handler either does not accept a body or will process the input stream [directly](#request-and-repsonse-properties).
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. However, a body parameter of type `org.w3c.dom.Document` can be used to indicate that the method expects XML content. A body parameter of type `Void` indicates that a handler either does not accept a body or will process the input stream [directly](#request-and-repsonse-properties).
+
+Requests may also be submitted as [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). `WebService` collects parameter values into a single body object that is passed to the handler method. For [multi-part](https://jakarta.ee/specifications/servlet/6.1/jakarta-servlet-spec-6.1#_MultipartConfig) requests, `jakarta.servlet.http.Part` values are represented by instances of `java.nio.file.Path`.
 
 ## Return Values
 Return values are converted to JSON as follows:

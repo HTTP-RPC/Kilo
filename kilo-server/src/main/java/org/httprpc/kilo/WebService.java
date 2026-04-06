@@ -39,7 +39,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -63,15 +62,11 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -880,8 +875,6 @@ public abstract class WebService extends HttpServlet {
             var resourcePath = method.getAnnotation(ResourcePath.class);
 
             if (resourcePath != null) {
-                var keyCount = 0;
-
                 var components = resourcePath.value().split("/");
 
                 for (var j = 0; j < components.length; j++) {
@@ -892,14 +885,6 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     resource = resource.resources.computeIfAbsent(component, key -> new Resource());
-
-                    if (component.equals(KEY_PLACEHOLDER)) {
-                        keyCount++;
-                    }
-                }
-
-                if (keyCount > method.getParameterCount()) {
-                    throw new ServletException("Insufficient parameter count.");
                 }
             }
 
@@ -1081,60 +1066,49 @@ public abstract class WebService extends HttpServlet {
             var parameterMap = request.getParameterMap();
 
             if (formData) {
-                arguments[n] = BeanAdapter.coerceGeneric(parameterMap, parameters[keyCount].getParameterizedType());
+                var bodyType = parameters[keyCount].getType();
+
+                var map = new HashMap<String, Object>();
+
+                for (var entry : BeanAdapter.getProperties(bodyType).entrySet()) {
+                    var name = entry.getKey();
+                    var accessor = entry.getValue().getAccessor();
+
+                    var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
+
+                    if (Collection.class.isAssignableFrom(accessor.getReturnType())) {
+                        map.put(name, values);
+                    } else {
+                        map.put(name, firstOf(values));
+                    }
+                }
+
+                arguments[n] = BeanAdapter.coerce(map, bodyType);
             } else {
                 for (var i = keyCount; i < n; i++) {
                     var parameter = parameters[i];
 
-                    if (i < keyCount) {
-                        arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
+                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
+                    var type = parameter.getType();
+
+                    var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
+
+                    Object argument;
+                    if (type.isArray()) {
+                        argument = BeanAdapter.coerce(values, type);
+                    } else if (Collection.class.isAssignableFrom(type)) {
+                        argument = BeanAdapter.coerceGeneric(values, parameter.getParameterizedType());
                     } else {
-                        var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
-                        var type = parameter.getType();
+                        var value = firstOf(values);
 
-                        var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
-
-                        Object argument;
-                        if (type.isArray()) {
-                            var componentType = type.getComponentType();
-
-                            argument = Array.newInstance(componentType, values.size());
-
-                            var j = 0;
-
-                            for (var value : values) {
-                                Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
-                            }
-                        } else if (Collection.class.isAssignableFrom(type)) {
-                            var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                            var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
-
-                            Collection<Object> collection;
-                            if (type == List.class) {
-                                collection = new ArrayList<>(values.size());
-                            } else if (Set.class.isAssignableFrom(type)) {
-                                collection = (type == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(values.size());
-                            } else {
-                                throw new UnsupportedOperationException("Unsupported collection type.");
-                            }
-
-                            for (var value : values) {
-                                collection.add(BeanAdapter.coerce(value, elementType));
-                            }
-
-                            argument = collection;
-                        } else {
-                            var value = values.isEmpty() ? null : values.getLast();
-
-                            if (parameter.getAnnotation(Required.class) != null && value == null) {
-                                throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
-                            }
-
-                            argument = BeanAdapter.coerce(value, type);
+                        if (parameter.getAnnotation(Required.class) != null && value == null) {
+                            throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
                         }
 
-                        arguments[i] = argument;
+                        argument = BeanAdapter.coerce(value, type);
                     }
+
+                    arguments[i] = argument;
                 }
 
                 if (n < parameters.length) {
@@ -1239,8 +1213,12 @@ public abstract class WebService extends HttpServlet {
                 n--;
             }
 
+            if (keyCount > n) {
+                continue;
+            }
+
             if (formData) {
-                if (n == keyCount) {
+                if (n >= keyCount && parameters[n].getType() != Void.class) {
                     return handler;
                 }
             } else {
