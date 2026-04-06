@@ -1071,13 +1071,7 @@ public abstract class WebService extends HttpServlet {
 
                 if (formData) {
                     if (contentType.equals(MULTIPART_FORM_DATA)) {
-                        for (var part : request.getParts()) {
-                            var submittedFileName = part.getSubmittedFileName();
-
-                            if (submittedFileName == null || submittedFileName.isEmpty()) {
-                                continue;
-                            }
-
+                        for (var part : filter(request.getParts(), whereNotNull(Part::getSubmittedFileName))) {
                             var name = part.getName();
 
                             var path = Files.createTempFile(null, null);
