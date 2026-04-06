@@ -1130,18 +1130,13 @@ public abstract class WebService extends HttpServlet {
                     if (n < parameters.length) {
                         var type = parameters[n].getParameterizedType();
 
-                        Object body;
-                        if (type == Void.class) {
-                            body = null;
-                        } else {
+                        if (type != Void.class) {
                             try {
-                                body = decodeBody(request, type);
+                                arguments[n] = decodeBody(request, type);
                             } catch (IOException exception) {
                                 throw new UnsupportedOperationException(exception);
                             }
                         }
-
-                        arguments[n] = body;
                     }
                 }
             } catch (Exception exception) {
