@@ -123,7 +123,7 @@ public class TestService extends AbstractDatabaseService {
         boolean getFlag();
     }
 
-    public record FormContents (
+    public record FormContents(
         @Required
         String string,
         List<String> strings,
