@@ -873,6 +873,8 @@ public abstract class WebService extends HttpServlet {
 
             var resource = root;
 
+            var n = 0;
+
             var resourcePath = method.getAnnotation(ResourcePath.class);
 
             if (resourcePath != null) {
@@ -886,7 +888,19 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     resource = resource.resources.computeIfAbsent(component, key -> new Resource());
+
+                    if (component.equals(KEY_PLACEHOLDER)) {
+                        n++;
+                    }
                 }
+            }
+
+            if (verb == Verb.POST || verb == Verb.PUT) {
+                n++;
+            }
+
+            if (method.getParameterCount() < n) {
+                throw new ServletException("Invalid parameter count.");
             }
 
             resource.handlerLists.computeIfAbsent(verb, key -> new LinkedList<>()).add(method);
