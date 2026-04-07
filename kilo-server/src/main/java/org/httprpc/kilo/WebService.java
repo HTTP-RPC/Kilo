@@ -736,7 +736,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Indicates that a service method results in creation of a resource.
+     * Indicates that a service method results in the creation of a resource.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
@@ -868,12 +868,7 @@ public abstract class WebService extends HttpServlet {
                 continue;
             }
 
-            Verb verb;
-            try {
-                verb = Verb.valueOf(requestMethod.value().toUpperCase());
-            } catch (IllegalArgumentException exception) {
-                throw new ServletException("Invalid verb.");
-            }
+            var verb = Verb.valueOf(requestMethod.value().toUpperCase());
 
             var resource = root;
 
@@ -1006,17 +1001,11 @@ public abstract class WebService extends HttpServlet {
      * If an error occurs while decoding the request or encoding the response.
      */
     protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Verb verb;
-        try {
-            verb = Verb.valueOf(request.getMethod().toUpperCase());
-        } catch (IllegalArgumentException exception) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
+        var verb = Verb.valueOf(request.getMethod().toUpperCase());
 
         var resource = root;
 
-        List<String> keys = new ArrayList<>();
+        var keys = new ArrayList<String>();
 
         var pathInfo = request.getPathInfo();
 
