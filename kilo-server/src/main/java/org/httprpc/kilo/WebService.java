@@ -1422,7 +1422,9 @@ public abstract class WebService extends HttpServlet {
 
             for (var entry : resource.handlerLists.entrySet()) {
                 for (var handler : entry.getValue()) {
-                    var operation = new OperationDescriptor(entry.getKey().toString(), handler);
+                    var verb = entry.getKey();
+
+                    var operation = new OperationDescriptor(verb.toString(), handler);
 
                     operation.produces = describeGenericType(handler.getGenericReturnType());
 
@@ -1432,7 +1434,7 @@ public abstract class WebService extends HttpServlet {
 
                     operation.parameters = n > 0;
 
-                    if ((operation.method.equals("POST") || operation.method.equals("PUT"))) {
+                    if (verb == Verb.POST || verb == Verb.PUT) {
                         n--;
                     }
 
