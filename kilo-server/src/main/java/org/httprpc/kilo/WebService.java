@@ -747,7 +747,11 @@ public abstract class WebService extends HttpServlet {
         GET,
         POST,
         PUT,
-        DELETE
+        DELETE;
+
+        boolean hasBody() {
+            return (this == POST || this == PUT);
+        }
     }
 
     private static class Resource {
@@ -867,7 +871,7 @@ public abstract class WebService extends HttpServlet {
             Verb verb;
             try {
                 verb = Verb.valueOf(requestMethod.value().toUpperCase());
-            } catch (Exception exception) {
+            } catch (IllegalArgumentException exception) {
                 throw new ServletException("Invalid verb.");
             }
 
@@ -895,7 +899,7 @@ public abstract class WebService extends HttpServlet {
                 }
             }
 
-            if (verb == Verb.POST || verb == Verb.PUT) {
+            if (verb.hasBody()) {
                 n++;
             }
 
@@ -1005,7 +1009,7 @@ public abstract class WebService extends HttpServlet {
         Verb verb;
         try {
             verb = Verb.valueOf(request.getMethod().toUpperCase());
-        } catch (Exception exception) {
+        } catch (IllegalArgumentException exception) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -1056,7 +1060,24 @@ public abstract class WebService extends HttpServlet {
 
         var formData = contentType != null && (contentType.equals(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.equals(MULTIPART_FORM_DATA));
 
-        var handler = getHandler(request, handlerList, keyCount, formData);
+        var handler = firstOf(filter(handlerList, where(Method::getParameters, parameters -> {
+            var n = parameters.length;
+
+            if (verb.hasBody()) {
+                n--;
+            }
+
+            if (formData) {
+                return parameters[n].getType() != Void.class;
+            } else {
+                var parameterNames = setOf(limit(mapAll(iterableOf(parameters, keyCount),
+                    parameter -> coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName)),
+                    n - keyCount
+                ));
+
+                return parameterNames.containsAll(request.getParameterMap().keySet());
+            }
+        })));
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -1069,7 +1090,7 @@ public abstract class WebService extends HttpServlet {
 
         var arguments = new Object[n];
 
-        if (contentType != null) {
+        if (verb.hasBody()) {
             n--;
         }
 
@@ -1233,35 +1254,6 @@ public abstract class WebService extends HttpServlet {
                 }
             }
         }
-    }
-
-    private static Method getHandler(HttpServletRequest request, List<Method> handlerList, int keyCount, boolean formData) {
-        for (var handler : handlerList) {
-            var parameters = handler.getParameters();
-
-            var n = parameters.length;
-
-            if (request.getContentType() != null) {
-                n--;
-            }
-
-            if (formData) {
-                if (n >= keyCount && parameters[n].getType() != Void.class) {
-                    return handler;
-                }
-            } else {
-                var parameterNames = setOf(limit(mapAll(iterableOf(parameters, keyCount),
-                    parameter -> coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName)),
-                    n - keyCount
-                ));
-
-                if (parameterNames.containsAll(request.getParameterMap().keySet())) {
-                    return handler;
-                }
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -1444,7 +1436,7 @@ public abstract class WebService extends HttpServlet {
 
                     operation.parameters = n > 0;
 
-                    if (verb == Verb.POST || verb == Verb.PUT) {
+                    if (verb.hasBody()) {
                         n--;
                     }
 
