@@ -1245,10 +1245,6 @@ public abstract class WebService extends HttpServlet {
                 n--;
             }
 
-            if (keyCount > n) {
-                continue;
-            }
-
             if (formData) {
                 if (n >= keyCount && parameters[n].getType() != Void.class) {
                     return handler;
