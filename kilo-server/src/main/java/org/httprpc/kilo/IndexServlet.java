@@ -50,8 +50,7 @@ public class IndexServlet extends HttpServlet {
 
                 var fieldType = field.getType();
 
-                if (WebService.class.isAssignableFrom(fieldType)
-                    && field.getAnnotation(WebService.Instance.class) != null) {
+                if (WebService.class.isAssignableFrom(fieldType) && field.getAnnotation(WebService.Instance.class) != null) {
                     field.setAccessible(true);
 
                     try {

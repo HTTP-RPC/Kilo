@@ -36,10 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -84,15 +81,6 @@ public class TestService extends AbstractDatabaseService {
         public double getE() {
             return 0;
         }
-    }
-
-    public static class TestList extends ArrayList<Integer> {
-    }
-
-    public static class TestMap extends HashMap<String, Double> {
-    }
-
-    public static class TestSet extends HashSet<Double> {
     }
 
     public interface Response {
@@ -269,24 +257,6 @@ public class TestService extends AbstractDatabaseService {
     @ResourcePath("e")
     public E testGetE() {
         return null;
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("list")
-    public TestList testGetList() {
-        return new TestList();
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("map")
-    public TestMap testGetMap() {
-        return new TestMap();
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("set")
-    public TestSet testGetSet() {
-        return new TestSet();
     }
 
     @RequestMethod("POST")

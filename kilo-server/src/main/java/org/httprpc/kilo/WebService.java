@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -46,6 +47,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -1485,9 +1487,10 @@ public abstract class WebService extends HttpServlet {
     private TypeDescriptor describeRawType(Class<?> type) {
         if (type.isPrimitive()
             || type == Object.class
-            || type == Boolean.class
             || Number.class.isAssignableFrom(type)
-            || String.class.isAssignableFrom(type)
+            || type == Boolean.class
+            || type == Character.class
+            || CharSequence.class.isAssignableFrom(type)
             || type == Void.class
             || Date.class.isAssignableFrom(type)
             || type == Instant.class
@@ -1497,17 +1500,12 @@ public abstract class WebService extends HttpServlet {
             || type == Duration.class
             || type == Period.class
             || type == UUID.class
-            || type == URI.class
-            || type == Path.class
-            || type == Part.class
+            || type == URL.class || type == URI.class
+            || type == File.class || type == Path.class
             || type == Document.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
             return new IterableTypeDescriptor(describeRawType(type.getComponentType()));
-        } else if (Iterable.class.isAssignableFrom(type)) {
-            return new IterableTypeDescriptor(describeRawType(Object.class));
-        } else if (Map.class.isAssignableFrom(type)) {
-            return new MapTypeDescriptor(describeRawType(Object.class), describeRawType(Object.class));
         } else if (type.isEnum()) {
             return describeEnumeration(type);
         } else {
