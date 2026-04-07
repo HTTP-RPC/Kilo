@@ -167,7 +167,7 @@ public ItemDetails getItem(
 Path parameters must precede query parameters in the method signature and are implicitly required. Values are mapped to method arguments in declaration order.
 
 ## Body Content
-Body content may be declared as the final parameter in a `POST` or `PUT` handler. For example, this method accepts an item ID as a path variable and an instance of `ItemDetails` as a body argument:
+Body content is declared as the final parameter in a `POST` or `PUT` handler. For example, this method accepts an item ID as a path variable and an instance of `ItemDetails` as a body argument:
 
 ```java
 @RequestMethod("PUT")

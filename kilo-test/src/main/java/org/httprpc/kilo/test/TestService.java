@@ -381,7 +381,7 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("PUT")
     @ResourcePath("?")
-    public int testEmptyPut(int id, String value) {
+    public int testEmptyPut(int id, String value, Void body) {
         return id;
     }
 
