@@ -1108,7 +1108,7 @@ public abstract class WebService extends HttpServlet {
                         }
                     }
 
-                    var bodyType = parameters[keyCount].getType();
+                    var bodyType = parameters[n].getType();
 
                     var map = new HashMap<String, Object>();
 
