@@ -605,9 +605,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     /**
      * Coerces a value to a given type. If the value is already an instance of
-     * the target type, it is returned as is. Otherwise, if the type is one of
-     * the following, the return value is obtained via an appropriate
-     * conversion method:
+     * the target type, it is returned as is. If the target type is
+     * {@link Void} or {@code void}, {@code null} is returned.
+     * <p>
+     * Otherwise, if the target type is one of the following, the return value
+     * is obtained via an appropriate conversion method:
      * <p>
      * <ul>
      * <li>{@link Byte} or {@code byte}</li>
@@ -757,6 +759,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     private static Object toRawType(Object value, Class<?> type) {
         if (type.isInstance(value)) {
             return value;
+        } else if (type == Void.TYPE || type == Void.class) {
+            return null;
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
                 return (type == Byte.TYPE) ? (byte)0 : null;

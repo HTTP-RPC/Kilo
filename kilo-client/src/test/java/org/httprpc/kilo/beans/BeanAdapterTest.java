@@ -204,6 +204,12 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testVoidCoercion() {
+        assertNull(BeanAdapter.coerce(1, Void.class));
+        assertNull(BeanAdapter.coerce(1, Void.TYPE));
+    }
+
+    @Test
     public void testPrimitiveCoercion() {
         assertEquals((byte)0, BeanAdapter.coerce(null, Byte.TYPE));
         assertEquals((byte)1, BeanAdapter.coerce("1", Byte.TYPE));
