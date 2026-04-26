@@ -45,6 +45,7 @@ import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 /**
  * Applies a template document.
@@ -383,16 +384,9 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private void encode(Object root, Writer writer, Reader reader) throws IOException {
-        Map<?, ?> dictionary;
-        if (root instanceof Map<?, ?> map) {
-            dictionary = map;
-        } else {
-            dictionary = mapOf(
-                entry(SELF_REFERENCE, root)
-            );
-        }
-
-        dictionaries.push(dictionary);
+        dictionaries.push(coalesce(cast(root, Map.class), () -> mapOf(
+            entry(SELF_REFERENCE, root)
+        )));
 
         var c = reader.read();
 
@@ -618,7 +612,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             try (var inputStream = type.getResourceAsStream(marker)) {
-                                encode(dictionary, writer, new PagedReader(new InputStreamReader(inputStream)));
+                                encode(dictionaries.peek(), writer, new PagedReader(new InputStreamReader(inputStream)));
                             }
                         }
                         case COMMENT -> {
