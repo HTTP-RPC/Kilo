@@ -301,7 +301,7 @@ public class WebServiceProxyTest {
             public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
                 var textEncoder = new TextEncoder();
 
-                textEncoder.write(body, outputStream);
+                textEncoder.write(body.toString(), outputStream);
             }
         });
 

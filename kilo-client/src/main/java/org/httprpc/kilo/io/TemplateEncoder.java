@@ -364,8 +364,8 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     @Override
-    public void write(Object value, Writer writer) throws IOException {
-        if (value == null || writer == null) {
+    public void write(Object root, Writer writer) throws IOException {
+        if (root == null || writer == null) {
             throw new IllegalArgumentException();
         }
 
@@ -375,7 +375,7 @@ public class TemplateEncoder extends Encoder<Object> {
             var bufferedWriter = new BufferedWriter(writer);
 
             try {
-                encode(BeanAdapter.adapt(value), bufferedWriter, reader);
+                encode(BeanAdapter.adapt(root), bufferedWriter, reader);
             } finally {
                 bufferedWriter.flush();
             }
