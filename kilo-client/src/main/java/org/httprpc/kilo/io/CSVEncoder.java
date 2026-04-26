@@ -62,7 +62,11 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             throw new IllegalArgumentException();
         }
 
-        encode(row, writer);
+        try {
+            encode(row, writer);
+        } finally {
+            writer.flush();
+        }
     }
 
     /**

@@ -365,21 +365,19 @@ public class TemplateEncoder extends Encoder<Object> {
 
     @Override
     public void write(Object value, Writer writer) throws IOException {
-        if (writer == null) {
+        if (value == null || writer == null) {
             throw new IllegalArgumentException();
         }
 
-        if (value != null) {
-            try (var inputStream = type.getResourceAsStream(name)) {
-                Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
+        try (var inputStream = type.getResourceAsStream(name)) {
+            Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
 
-                var bufferedWriter = new BufferedWriter(writer);
+            var bufferedWriter = new BufferedWriter(writer);
 
-                try {
-                    encode(BeanAdapter.adapt(value), bufferedWriter, reader);
-                } finally {
-                    bufferedWriter.flush();
-                }
+            try {
+                encode(BeanAdapter.adapt(value), bufferedWriter, reader);
+            } finally {
+                bufferedWriter.flush();
             }
         }
     }
