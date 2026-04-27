@@ -116,7 +116,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 if (resourceBundle != null) {
                     encode(resourceBundle.getObject(key.toString()), writer);
                 } else {
-                    encode(key.toString(), writer);
+                    encode(key, writer);
                 }
 
                 i++;
