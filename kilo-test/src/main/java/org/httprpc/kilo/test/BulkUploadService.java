@@ -25,9 +25,6 @@ import org.httprpc.kilo.sql.QueryBuilder;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
-
 @WebServlet(urlPatterns = "/bulk-upload/*", loadOnStartup = 0)
 public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 5000;
@@ -68,12 +65,8 @@ public class BulkUploadService extends AbstractDatabaseService {
         try (var statement = queryBuilder.prepare(getConnection())) {
             var csvDecoder = new CSVDecoder();
 
-            var reader = getRequest().getReader();
-
-            var keys = csvDecoder.read(reader);
-
-            for (var iterator : mapAll(csvDecoder.readAll(reader), Iterable::iterator)) {
-                var row = BeanAdapter.coerce(mapOf(mapAll(keys, key -> entry(key, iterator.next()))), Row.class);
+            for (var map : csvDecoder.iterate(getRequest().getReader())) {
+                var row = BeanAdapter.coerce(map, Row.class);
 
                 queryBuilder.addBatch(statement, new BeanAdapter(row));
 

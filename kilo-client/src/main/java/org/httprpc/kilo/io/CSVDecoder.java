@@ -20,17 +20,21 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+
+import static org.httprpc.kilo.util.Collections.*;
 
 /**
  * Decodes CSV content.
  */
-public class CSVDecoder extends Decoder<List<String>> { // TODO Iterable<Map<String, String>>
-    private class RowIterator implements Iterator<List<String>> {
+public class CSVDecoder extends Decoder<List<Map<String, String>>> {
+    private class RowIterator implements Iterator<Map<String, String>> {
         Reader reader;
 
-        List<String> next = null;
+        Map<String, String> next = null;
 
         RowIterator(Reader reader) {
             this.reader = reader;
@@ -40,17 +44,27 @@ public class CSVDecoder extends Decoder<List<String>> { // TODO Iterable<Map<Str
         public boolean hasNext() {
             if (next == null) {
                 try {
-                    next = readRow(reader);
+                    var row = readRow(reader);
+
+                    if (!row.isEmpty()) {
+                        next = new LinkedHashMap<>();
+
+                        var n = Math.min(keys.size(), row.size());
+
+                        for (var i = 0; i < n; i++) {
+                            next.put(keys.get(i), row.get(i));
+                        }
+                    }
                 } catch (IOException exception) {
                     throw new RuntimeException(exception);
                 }
             }
 
-            return next != null && !next.isEmpty();
+            return next != null;
         }
 
         @Override
-        public List<String> next() {
+        public Map<String, String> next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
@@ -63,16 +77,19 @@ public class CSVDecoder extends Decoder<List<String>> { // TODO Iterable<Map<Str
         }
     }
 
+    private List<String> keys = null;
+
     private int rowSize = 0;
+
     private StringBuilder valueBuilder = new StringBuilder();
 
     @Override
-    public List<String> read(Reader reader) throws IOException {
+    public List<Map<String, String>> read(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
 
-        return readRow(reader);
+        return listOf(iterate(reader));
     }
 
     /**
@@ -84,12 +101,12 @@ public class CSVDecoder extends Decoder<List<String>> { // TODO Iterable<Map<Str
      * @return
      * The decoded rows.
      */
-    public Iterable<List<String>> readAll(InputStream inputStream) {
+    public Iterable<Map<String, String>> iterate(InputStream inputStream) throws IOException {
         if (inputStream == null) {
             throw new IllegalArgumentException();
         }
 
-        return readAll(new InputStreamReader(inputStream, getCharset()));
+        return iterate(new InputStreamReader(inputStream, getCharset()));
     }
 
     /**
@@ -101,9 +118,15 @@ public class CSVDecoder extends Decoder<List<String>> { // TODO Iterable<Map<Str
      * @return
      * The decoded rows.
      */
-    public Iterable<List<String>> readAll(Reader reader) {
+    public Iterable<Map<String, String>> iterate(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException();
+        }
+
+        keys = readRow(reader);
+
+        if (keys.isEmpty()) {
+            throw new IOException("Missing header row.");
         }
 
         return () -> new RowIterator(new BufferedReader(reader));
