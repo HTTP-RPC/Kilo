@@ -27,7 +27,6 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.Date;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -212,17 +211,17 @@ public class JSONEncoderTest {
             entry("d", null)
         );
 
-        var actual = encode(map, () -> new JSONEncoder(true));
+        var actual = encode(map, true);
 
         assertEquals(expected, actual);
     }
 
     private static String encode(Object value) throws IOException {
-        return encode(value, JSONEncoder::new);
+        return encode(value, false);
     }
 
-    private static String encode(Object value, Supplier<JSONEncoder> factory) throws IOException {
-        var jsonEncoder = factory.get();
+    private static String encode(Object value, boolean compact) throws IOException {
+        var jsonEncoder = new JSONEncoder(compact);
 
         var writer = new StringWriter();
 

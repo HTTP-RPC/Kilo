@@ -25,7 +25,25 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        // TODO
+        var text = "\"a\",\"b\",\"c\",\"d\"\r\n\"ABC\",123,true,0\r\n\"DEF\",,false,\r\n";
+
+        var csvDecoder = new CSVDecoder();
+
+        var rows = csvDecoder.read(new StringReader(text));
+
+        assertEquals(listOf(
+            mapOf(
+                entry("a", "ABC"),
+                entry("b", "123"),
+                entry("c", "true"),
+                entry("d", "0")
+            ),
+            mapOf(
+                entry("a", "DEF"),
+                entry("b", ""),
+                entry("c", "false")
+            )
+        ), rows);
     }
 
     @Test
@@ -41,10 +59,5 @@ public class CSVDecoderTest {
                 entry("a", "A,B,\"C\",\r\nD,É")
             )
         ), rows);
-    }
-
-    @Test
-    public void testIterate() throws IOException {
-        // TODO
     }
 }
