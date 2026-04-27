@@ -42,9 +42,7 @@ public class BulkUploadService extends AbstractDatabaseService {
         try (var statement = queryBuilder.prepare(getConnection())) {
             var jsonDecoder = new JSONDecoder();
 
-            var reader = getRequest().getReader();
-
-            for (var map : jsonDecoder.readAll(reader)) {
+            for (var map : jsonDecoder.iterate(getRequest().getReader())) {
                 var row = BeanAdapter.coerce(map, Row.class);
 
                 queryBuilder.addBatch(statement, new BeanAdapter(row));

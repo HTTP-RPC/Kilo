@@ -104,7 +104,8 @@ public class JSONDecoder extends Decoder<Object> {
     }
 
     /**
-     * Reads multiple values from an input stream.
+     * Reads multiple values from an input stream. The stream must contain a
+     * JSON array.
      *
      * @param inputStream
      * The input stream to read from.
@@ -112,16 +113,17 @@ public class JSONDecoder extends Decoder<Object> {
      * @return
      * The decoded values.
      */
-    public Iterable<Object> readAll(InputStream inputStream) {
+    public Iterable<Object> iterate(InputStream inputStream) {
         if (inputStream == null) {
             throw new IllegalArgumentException();
         }
 
-        return readAll(new InputStreamReader(inputStream, getCharset()));
+        return iterate(new InputStreamReader(inputStream, getCharset()));
     }
 
     /**
-     * Reads multiple values from a character stream.
+     * Reads multiple values from a character stream. The stream must contain a
+     * JSON array.
      *
      * @param reader
      * The character stream to read from.
@@ -129,7 +131,7 @@ public class JSONDecoder extends Decoder<Object> {
      * @return
      * The decoded values.
      */
-    public Iterable<Object> readAll(Reader reader) {
+    public Iterable<Object> iterate(Reader reader) {
         if (reader == null) {
             throw new IllegalArgumentException();
         }

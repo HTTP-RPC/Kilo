@@ -131,7 +131,7 @@ public class WebServiceProxy {
         @Override
         public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
             if (!(BeanAdapter.adapt(body) instanceof Map<?, ?> map)) {
-                throw new IllegalArgumentException("Invalid body.");
+                throw new IllegalArgumentException("Invalid body type.");
             }
 
             var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);

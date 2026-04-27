@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,70 +28,78 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        var row = listOf("a,b,\"c\",\r\nd,é", 123, true, new Date(0), Instant.ofEpochMilli(0));
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e"));
 
-        var csvEncoder = new CSVEncoder();
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(
+            mapOf(
+                entry("a", "ABC"),
+                entry("b", 123),
+                entry("c", true),
+                entry("d", new Date(0)),
+                entry("e", Instant.ofEpochMilli(0))
+            ),
+            mapOf(
+                entry("a", "DEF"),
+                entry("b", 456),
+                entry("c", false),
+                entry("d", null),
+                entry("e", null)
+            )
+        ), writer);
+
+        assertEquals("\"a\",\"b\",\"c\",\"d\",\"e\"\r\n\"ABC\",123,true,0,0\r\n\"DEF\",456,false,,\r\n", writer.toString());
+    }
+
+    @Test
+    public void testQuotes() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf("a"));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(
+            mapOf(
+                entry("a", "A,B,\"C\",\r\nD,É")
+            )
+        ), writer);
+
+        assertEquals("\"a\"\r\n\"A,B,\"\"C\"\",\r\nD,É\"\r\n", writer.toString());
+    }
+
+    @Test
+    public void testResourceBundle() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+        csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".resource"));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(
+            mapOf(
+                entry("a", 1),
+                entry("b", 2),
+                entry("c", 3)
+            )
+        ), writer);
+
+        assertEquals("\"A1\",\"B2\",\"c\"\r\n1,2,3\r\n", writer.toString());
+    }
+
+    @Test
+    public void testFormat() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf("a"));
 
         csvEncoder.format(Boolean.class, flag -> flag ? "Y" : "N");
 
         var writer = new StringWriter();
 
-        csvEncoder.write(row, writer);
-
-        assertEquals("\"a,b,\"\"c\"\",\r\nd,é\",123,\"Y\",0,0\r\n", writer.toString());
-    }
-
-    @Test
-    public void testWriteEmpty() throws IOException {
-        var csvEncoder = new CSVEncoder();
-
-        var writer = new StringWriter();
-
-        csvEncoder.write(listOf(), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testWriteAll() throws IOException {
-        var rows = listOf(
-            listOf("abc", 123, true),
-            listOf("def", 456, false)
-        );
-
-        var csvEncoder = new CSVEncoder();
-
-        var writer = new StringWriter();
-
-        csvEncoder.writeAll(rows, writer);
-
-        assertEquals("\"abc\",123,true\r\n\"def\",456,false\r\n", writer.toString());
-    }
-
-    @Test
-    public void testWriteAllEmpty() throws IOException {
-        var csvEncoder = new CSVEncoder();
-
-        var writer = new StringWriter();
-
-        csvEncoder.writeAll(listOf(), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testHeadings() throws IOException {
-        var csvEncoder = new CSVEncoder();
-
-        var writer = new StringWriter();
-
-        csvEncoder.write(listOf("a", "b", "c"), writer);
-
-        csvEncoder.writeAll(listOf(
-            listOf(1, 2, 3),
-            listOf(4, 5, 6)
+        csvEncoder.write(listOf(
+            mapOf(
+                entry("a", true)
+            )
         ), writer);
 
-        assertEquals("\"a\",\"b\",\"c\"\r\n1,2,3\r\n4,5,6\r\n", writer.toString());
+        assertEquals("\"a\"\r\n\"Y\"\r\n", writer.toString());
     }
 }

@@ -142,14 +142,8 @@ public class JSONDecoderTest {
         assertThrows(IOException.class, () -> decode("xyz"));
     }
 
-    private static Object decode(String text) throws IOException {
-        var jsonDecoder = new JSONDecoder();
-
-        return jsonDecoder.read(new StringReader(text));
-    }
-
     @Test
-    public void testReadAll() {
+    public void testIterate() {
         var expected = listOf(
             "abc",
             123,
@@ -162,8 +156,14 @@ public class JSONDecoderTest {
 
         var jsonDecoder = new JSONDecoder();
 
-        var actual = listOf(jsonDecoder.readAll(new StringReader(text)));
+        var actual = listOf(jsonDecoder.iterate(new StringReader(text)));
 
         assertEquals(expected, actual);
+    }
+
+    private static Object decode(String text) throws IOException {
+        var jsonDecoder = new JSONDecoder();
+
+        return jsonDecoder.read(new StringReader(text));
     }
 }

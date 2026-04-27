@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 /**
  * Decodes CSV content.
  */
-public class CSVDecoder extends Decoder<List<String>> {
+public class CSVDecoder extends Decoder<List<String>> { // TODO Iterable<Map<String, String>>
     private class RowIterator implements Iterator<List<String>> {
         Reader reader;
 
@@ -64,7 +64,6 @@ public class CSVDecoder extends Decoder<List<String>> {
     }
 
     private int rowSize = 0;
-
     private StringBuilder valueBuilder = new StringBuilder();
 
     @Override

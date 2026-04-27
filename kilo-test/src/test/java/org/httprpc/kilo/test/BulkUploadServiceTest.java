@@ -27,7 +27,6 @@ import java.net.URI;
 import java.util.Iterator;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BulkUploadServiceTest {
@@ -82,9 +81,7 @@ public class BulkUploadServiceTest {
             public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
                 var jsonEncoder = new JSONEncoder(true);
 
-                var writer = new OutputStreamWriter(outputStream);
-
-                jsonEncoder.write(body, writer);
+                jsonEncoder.write(body, new OutputStreamWriter(outputStream));
             }
         });
 
@@ -107,14 +104,9 @@ public class BulkUploadServiceTest {
 
             @Override
             public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
-                var csvEncoder = new CSVEncoder();
+                var csvEncoder = new CSVEncoder(listOf("text1", "text2", "number1", "number2", "number3"));
 
-                var writer = new OutputStreamWriter(outputStream);
-
-                var keys = listOf("text1", "text2", "number1", "number2", "number3");
-
-                csvEncoder.write(keys, writer);
-                csvEncoder.writeAll(mapAll(mapAll((Rows)body, BeanAdapter::new), map -> mapAll(keys, map::get)), writer);
+                csvEncoder.write((Rows)body, new OutputStreamWriter(outputStream));
             }
         });
 

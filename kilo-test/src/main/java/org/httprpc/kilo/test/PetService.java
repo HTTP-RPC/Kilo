@@ -83,16 +83,11 @@ public class PetService extends AbstractDatabaseService {
             } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
                 response.setContentType(TEXT_CSV);
 
-                var columns = listOf("name", "species", "sex", "birth", "death");
+                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
-                var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
+                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
-                var csvEncoder = new CSVEncoder();
-
-                var writer = response.getWriter();
-
-                csvEncoder.write(mapAll(columns, resourceBundle::getString), writer);
-                csvEncoder.writeAll(mapAll(results, result -> mapAll(columns, result::get)), writer);
+                csvEncoder.write(results, response.getWriter());
             } else {
                 throw new UnsupportedOperationException();
             }

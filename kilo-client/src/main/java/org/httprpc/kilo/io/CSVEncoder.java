@@ -14,22 +14,63 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
 /**
  * Encodes CSV content.
  */
 public class CSVEncoder extends Encoder<Iterable<?>> {
+    private Collection<?> keys;
+
+    private ResourceBundle resourceBundle = null;
+
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
+
+    /**
+     * Constructs a new CSV encoder.
+     *
+     * @param keys
+     * The column keys.
+     */
+    public CSVEncoder(Collection<?> keys) {
+        if (keys == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.keys = keys;
+    }
+
+    /**
+     * Returns the resource bundle.
+     *
+     * @return
+     * The resource bundle, or {@code null} if a resource bundle has not been
+     * set.
+     */
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    /**
+     * Sets the resource bundle.
+     *
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
+     */
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
 
     /**
      * Associates a formatter with a type.
@@ -57,51 +98,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     }
 
     @Override
-    public void write(Iterable<?> row, Writer writer) throws IOException {
-        if (row == null || writer == null) {
-            throw new IllegalArgumentException();
-        }
-
-        try {
-            encode(row, writer);
-        } finally {
-            writer.flush();
-        }
-    }
-
-    /**
-     * Writes multiple rows to an output stream.
-     *
-     * @param rows
-     * The rows to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void writeAll(Iterable<? extends Iterable<?>> rows, OutputStream outputStream) throws IOException {
-        if (rows == null || outputStream == null) {
-            throw new IllegalArgumentException();
-        }
-
-        writeAll(rows, new OutputStreamWriter(outputStream, getCharset()));
-    }
-
-    /**
-     * Writes multiple rows to a character stream.
-     *
-     * @param rows
-     * The rows to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void writeAll(Iterable<? extends Iterable<?>> rows, Writer writer) throws IOException {
+    public void write(Iterable<?> rows, Writer writer) throws IOException {
         if (rows == null || writer == null) {
             throw new IllegalArgumentException();
         }
@@ -109,37 +106,55 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         var bufferedWriter = new BufferedWriter(writer);
 
         try {
+            var i = 0;
+
+            for (var key : keys) {
+                if (i > 0) {
+                    writer.write(',');
+                }
+
+                if (resourceBundle != null) {
+                    encode(resourceBundle.getObject(key.toString()), writer);
+                } else {
+                    encode(key.toString(), writer);
+                }
+
+                i++;
+            }
+
+            writer.write("\r\n");
+
             for (var row : rows) {
-                encode(row, bufferedWriter);
+                if (!(BeanAdapter.adapt(row) instanceof Map<?, ?> map)) {
+                    throw new IllegalArgumentException("Invalid row type.");
+                }
+
+                i = 0;
+
+                for (var key : keys) {
+                    if (i > 0) {
+                        writer.write(',');
+                    }
+
+                    var value = map.get(key);
+
+                    if (value == null) {
+                        continue;
+                    }
+
+                    encode(value, writer);
+
+                    i++;
+                }
+
+                writer.write("\r\n");
             }
         } finally {
             bufferedWriter.flush();
         }
     }
 
-    private void encode(Iterable<?> row, Writer writer) throws IOException {
-        var i = 0;
-
-        for (var value : row) {
-            if (i > 0) {
-                writer.write(',');
-            }
-
-            encode(value, writer);
-
-            i++;
-        }
-
-        if (i > 0) {
-            writer.write("\r\n");
-        }
-    }
-
     private void encode(Object value, Writer writer) throws IOException {
-        if (value == null) {
-            return;
-        }
-
         var formatter = formatters.get(value.getClass());
 
         if (formatter != null) {

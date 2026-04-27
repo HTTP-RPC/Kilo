@@ -50,7 +50,7 @@ public class EmployeeServiceTest {
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
 
-            return countOf(jsonDecoder.readAll(inputStream));
+            return countOf(jsonDecoder.iterate(inputStream));
         });
 
         assertEquals(300024, webServiceProxy.invoke());

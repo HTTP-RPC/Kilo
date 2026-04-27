@@ -104,7 +104,9 @@ public class Examples {
     }
 
     public static void jsonEncoder() throws IOException {
-        var map = mapOf(
+        var jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.write(mapOf(
             entry("vegetables", listOf(
                 "carrots",
                 "peas",
@@ -115,46 +117,44 @@ public class Examples {
                 "cake",
                 "ice cream"
             ))
-        );
-
-        var jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.write(map, System.out);
+        ), System.out);
 
         System.out.println();
     }
 
     public static void textEncoder() throws IOException {
-        var text = "Hello, World!";
-
         var textEncoder = new TextEncoder();
 
-        textEncoder.write(text, System.out);
+        textEncoder.write("Hello, World!", System.out);
 
         System.out.println();
     }
 
     public static void csvEncoder() throws IOException {
-        var rows = listOf(
-            listOf("a", "b", "c"),
-            listOf("d", "e", "f")
-        );
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
-        var csvEncoder = new CSVEncoder();
-
-        csvEncoder.writeAll(rows, System.out);
+        csvEncoder.write(listOf(
+            mapOf(
+                entry("a", 1),
+                entry("b", 2),
+                entry("c", 3)
+            ),
+            mapOf(
+                entry("a", 4),
+                entry("b", 5),
+                entry("c", 6)
+            )
+        ), System.out);
     }
 
     public static void templateEncoder() throws Exception {
-        var map = mapOf(
+        var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
+
+        templateEncoder.write(mapOf(
             entry("a", "hello"),
             entry("b", 123),
             entry("c", true)
-        );
-
-        var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
-
-        templateEncoder.write(map, System.out);
+        ), System.out);
     }
 
     public static void variables() throws IOException {

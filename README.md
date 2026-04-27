@@ -449,7 +449,9 @@ Note that proxy types must be compiled with the `-parameters` flag so their meth
 The `JSONEncoder` and `JSONDecoder` classes are used internally by `WebService` and `WebServiceProxy` to process request and response data. However, they can also be used directly by application logic. For example:
 
 ```java
-var map = mapOf(
+var jsonEncoder = new JSONEncoder();
+
+jsonEncoder.write(mapOf(
     entry("vegetables", listOf(
         "carrots",
         "peas",
@@ -460,11 +462,7 @@ var map = mapOf(
         "cake",
         "ice cream"
     ))
-);
-
-var jsonEncoder = new JSONEncoder();
-
-jsonEncoder.write(map, System.out);
+), System.out);
 ```
 
 ```json
@@ -486,11 +484,9 @@ jsonEncoder.write(map, System.out);
 The `TextEncoder` and `TextDecoder` classes can be used to write and read plain text content, respectively. For example:
 
 ```java
-var text = "Hello, World!";
-
 var textEncoder = new TextEncoder();
 
-textEncoder.write(text, System.out);
+textEncoder.write("Hello, World!", System.out);
 ```
 
 ```
@@ -501,34 +497,39 @@ Hello, World!
 The `CSVEncoder` and `CSVDecoder` classes write and read sequences of values to and from CSV, respectively. For example:
 
 ```java
-var rows = listOf(
-    listOf("a", "b", "c"),
-    listOf("d", "e", "f")
-);
+var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
-var csvEncoder = new CSVEncoder();
-
-csvEncoder.writeAll(rows, System.out);
+csvEncoder.write(listOf(
+    mapOf(
+        entry("a", 1),
+        entry("b", 2),
+        entry("c", 3)
+    ),
+    mapOf(
+        entry("a", 4),
+        entry("b", 5),
+        entry("c", 6)
+    )
+), System.out);
 ```
 
 ```
 "a","b","c"
-"d","e","f"
+1,2,3
+4,5,6
 ```
 
 # TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy (known as a "data dictionary") into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. For example:
 
 ```java
-var map = mapOf(
+var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
+
+templateEncoder.write(mapOf(
     entry("a", "hello"),
     entry("b", 123),
     entry("c", true)
-);
-
-var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
-
-templateEncoder.write(map, System.out);
+), System.out);
 ```
 
 Given the following template as input:
@@ -922,12 +923,12 @@ The pipe is configured with a capacity of 4K elements and a timeout of 15s. Limi
 
 This implementation is slightly more verbose than the first one. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
 
-A consumer could process the response just as efficiently using the `readAll()` method of `JSONDecoder`:
+A consumer could process the response just as efficiently using the `iterate()` method of `JSONDecoder`:
 
 ```java
 var jsonDecoder = new JSONDecoder();
 
-return countOf(jsonDecoder.readAll(inputStream));
+return countOf(jsonDecoder.iterate(inputStream));
 ```
 
 For more information, see the [employee service](kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
