@@ -16,8 +16,10 @@ package org.httprpc.kilo.io;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +59,33 @@ public class CSVDecoderTest {
         assertEquals(listOf(
             mapOf(
                 entry("a", "A,B,\"C\",\r\nD,É")
+            )
+        ), rows);
+    }
+
+    @Test
+    public void testIterate() throws IOException {
+        var text = "\"a\",\"b\",\"c\"\r\n1,2,3\r\n4,5,6\r\n7,8,9\r\n";
+
+        var csvDecoder = new CSVDecoder();
+
+        var rows = csvDecoder.read(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(listOf(
+            mapOf(
+                entry("a", "1"),
+                entry("b", "2"),
+                entry("c", "3")
+            ),
+            mapOf(
+                entry("a", "4"),
+                entry("b", "5"),
+                entry("c", "6")
+            ),
+            mapOf(
+                entry("a", "7"),
+                entry("b", "8"),
+                entry("c", "9")
             )
         ), rows);
     }

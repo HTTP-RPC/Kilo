@@ -16,8 +16,10 @@ package org.httprpc.kilo.io;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -156,7 +158,7 @@ public class JSONDecoderTest {
 
         var jsonDecoder = new JSONDecoder();
 
-        var actual = listOf(jsonDecoder.iterate(new StringReader(text)));
+        var actual = listOf(jsonDecoder.iterate(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8))));
 
         assertEquals(expected, actual);
     }
