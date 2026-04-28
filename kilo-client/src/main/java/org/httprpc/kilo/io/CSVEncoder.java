@@ -138,11 +138,9 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
                     var value = map.get(key);
 
-                    if (value == null) {
-                        continue;
+                    if (value != null) {
+                        encode(value, writer);
                     }
-
-                    encode(value, writer);
 
                     i++;
                 }

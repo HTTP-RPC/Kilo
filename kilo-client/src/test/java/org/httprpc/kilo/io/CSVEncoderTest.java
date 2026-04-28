@@ -43,13 +43,42 @@ public class CSVEncoderTest {
             mapOf(
                 entry("a", "DEF"),
                 entry("b", 456),
-                entry("c", false),
-                entry("d", null),
-                entry("e", null)
+                entry("c", false)
             )
         ), writer);
 
         assertEquals("\"a\",\"b\",\"c\",\"d\",\"e\"\r\n\"ABC\",123,true,0,0\r\n\"DEF\",456,false,,\r\n", writer.toString());
+    }
+
+    @Test
+    public void testMissingKeys() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf());
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(
+            mapOf(
+                entry("a", 1),
+                entry("b", 2),
+                entry("c", 3)
+            )
+        ), writer);
+
+        assertEquals("\r\n\r\n", writer.toString());
+    }
+
+    @Test
+    public void testMissingValues() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(
+            mapOf(),
+            mapOf()
+        ), writer);
+
+        assertEquals("\"a\",\"b\",\"c\"\r\n,,\r\n,,\r\n", writer.toString());
     }
 
     @Test
