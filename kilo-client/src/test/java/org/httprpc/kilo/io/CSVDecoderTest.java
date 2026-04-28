@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        var text = "\"a\",\"b\",\"c\",\"d\"\r\n\"ABC\",123,true,0\r\n\"DEF\",,false,\r\n";
+        var text = "\"a\",\"b\",\"c\",\"d\"\r\n\"ABC\",123,true,0\r\n\"DEF\",,false,";
 
         var csvDecoder = new CSVDecoder();
 
@@ -50,13 +50,14 @@ public class CSVDecoderTest {
 
     @Test
     public void testMissingKeys() throws IOException {
-        var text = "\r\n\r\n";
+        var text = "\r\n1,2,3\r\n4,5,6\r\n";
 
         var csvDecoder = new CSVDecoder();
 
         var rows = csvDecoder.read(new StringReader(text));
 
         assertEquals(listOf(
+            mapOf(),
             mapOf()
         ), rows);
     }
