@@ -56,7 +56,9 @@ public class CSVDecoderTest {
 
         var rows = csvDecoder.read(new StringReader(text));
 
-        assertEquals(listOf(), rows);
+        assertEquals(listOf(
+            mapOf()
+        ), rows);
     }
 
     @Test

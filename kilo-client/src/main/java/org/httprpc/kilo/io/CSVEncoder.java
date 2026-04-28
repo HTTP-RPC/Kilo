@@ -109,6 +109,10 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             var i = 0;
 
             for (var key : keys) {
+                if (key == null) {
+                    continue;
+                }
+
                 if (i > 0) {
                     writer.write(',');
                 }
@@ -132,6 +136,10 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 i = 0;
 
                 for (var key : keys) {
+                    if (key == null) {
+                        continue;
+                    }
+
                     if (i > 0) {
                         writer.write(',');
                     }
