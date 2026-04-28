@@ -103,10 +103,44 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             throw new IllegalArgumentException();
         }
 
-        writer = new BufferedWriter(writer);
+        var bufferedWriter = new BufferedWriter(writer);
 
         try {
-            var i = 0;
+            encode(rows, bufferedWriter);
+        } finally {
+            bufferedWriter.flush();
+        }
+    }
+
+    private void encode(Iterable<?> rows, Writer writer) throws IOException {
+        var i = 0;
+
+        for (var key : keys) {
+            if (key == null) {
+                continue;
+            }
+
+            if (i > 0) {
+                writer.write(',');
+            }
+
+            if (resourceBundle != null) {
+                encode(resourceBundle.getObject(key.toString()), writer);
+            } else {
+                encode(key, writer);
+            }
+
+            i++;
+        }
+
+        writer.write("\r\n");
+
+        for (var row : rows) {
+            if (!(BeanAdapter.adapt(row) instanceof Map<?, ?> map)) {
+                throw new IllegalArgumentException("Invalid row type.");
+            }
+
+            i = 0;
 
             for (var key : keys) {
                 if (key == null) {
@@ -117,46 +151,16 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                     writer.write(',');
                 }
 
-                if (resourceBundle != null) {
-                    encode(resourceBundle.getObject(key.toString()), writer);
-                } else {
-                    encode(key, writer);
+                var value = map.get(key);
+
+                if (value != null) {
+                    encode(value, writer);
                 }
 
                 i++;
             }
 
             writer.write("\r\n");
-
-            for (var row : rows) {
-                if (!(BeanAdapter.adapt(row) instanceof Map<?, ?> map)) {
-                    throw new IllegalArgumentException("Invalid row type.");
-                }
-
-                i = 0;
-
-                for (var key : keys) {
-                    if (key == null) {
-                        continue;
-                    }
-
-                    if (i > 0) {
-                        writer.write(',');
-                    }
-
-                    var value = map.get(key);
-
-                    if (value != null) {
-                        encode(value, writer);
-                    }
-
-                    i++;
-                }
-
-                writer.write("\r\n");
-            }
-        } finally {
-            writer.flush();
         }
     }
 

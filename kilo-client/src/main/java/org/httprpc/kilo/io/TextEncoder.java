@@ -27,14 +27,14 @@ public class TextEncoder extends Encoder<CharSequence> {
             throw new IllegalArgumentException();
         }
 
-        writer = new BufferedWriter(writer);
+        var bufferedWriter = new BufferedWriter(writer);
 
         try {
             for (int i = 0, n = text.length(); i < n; i++) {
-                writer.write(text.charAt(i));
+                bufferedWriter.write(text.charAt(i));
             }
         } finally {
-            writer.flush();
+            bufferedWriter.flush();
         }
     }
 }
