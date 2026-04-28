@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        var text = "\"a\",\"b\",\"c\",\"d\"\r\n\"ABC\",123,true,0\r\n\"DEF\",,false,";
+        var text = "a,b,c\r\nA,B\r\nC,D,É\r\nF,G,H,I";
 
         var csvDecoder = new CSVDecoder();
 
@@ -35,36 +35,43 @@ public class CSVDecoderTest {
 
         assertEquals(listOf(
             mapOf(
-                entry("a", "ABC"),
-                entry("b", "123"),
-                entry("c", "true"),
-                entry("d", "0")
+                entry("a", "A"),
+                entry("b", "B")
             ),
             mapOf(
-                entry("a", "DEF"),
-                entry("b", ""),
-                entry("c", "false")
+                entry("a", "C"),
+                entry("b", "D"),
+                entry("c", "É")
+            ),
+            mapOf(
+                entry("a", "F"),
+                entry("b", "G"),
+                entry("c", "H")
             )
         ), rows);
     }
 
     @Test
     public void testMissingKeys() throws IOException {
-        var text = "\r\n1,2,3\r\n4,5,6\r\n";
+        var text = "\r\nA,B,C\r\nD,É,F\r\n";
 
         var csvDecoder = new CSVDecoder();
 
         var rows = csvDecoder.read(new StringReader(text));
 
         assertEquals(listOf(
-            mapOf(),
-            mapOf()
+            mapOf(
+                entry("", "A")
+            ),
+            mapOf(
+                entry("", "D")
+            )
         ), rows);
     }
 
     @Test
     public void testMissingValues() throws IOException {
-        var text = "\"a\",\"b\",\"c\"\r\n,,\r\n,,\r\n";
+        var text = "a,b,c\r\n,,\r\n,,\r\n";
 
         var csvDecoder = new CSVDecoder();
 
@@ -82,6 +89,28 @@ public class CSVDecoderTest {
                 entry("c", "")
             )
         ), rows);
+    }
+
+    @Test
+    public void testMissingRows() throws IOException {
+        var text = "a,b,c";
+
+        var csvDecoder = new CSVDecoder();
+
+        var rows = csvDecoder.read(new StringReader(text));
+
+        assertEquals(listOf(), rows);
+    }
+
+    @Test
+    public void testEmpty() throws IOException {
+        var text = "";
+
+        var csvDecoder = new CSVDecoder();
+
+        var rows = csvDecoder.read(new StringReader(text));
+
+        assertEquals(listOf(), rows);
     }
 
     @Test

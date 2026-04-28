@@ -82,6 +82,28 @@ public class CSVEncoderTest {
     }
 
     @Test
+    public void testMissingRows() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(), writer);
+
+        assertEquals("\"a\",\"b\",\"c\"\r\n", writer.toString());
+    }
+
+    @Test
+    public void testEmpty() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf());
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(), writer);
+
+        assertEquals("\r\n", writer.toString());
+    }
+
+    @Test
     public void testQuotes() throws IOException {
         var csvEncoder = new CSVEncoder(listOf("a"));
 

@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -34,33 +34,13 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
     private class RowIterator implements Iterator<Map<String, String>> {
         Reader reader;
 
-        Map<String, String> next = null;
-
         RowIterator(Reader reader) {
             this.reader = reader;
         }
 
         @Override
         public boolean hasNext() {
-            if (next == null) {
-                try {
-                    var row = readRow(reader);
-
-                    if (!row.isEmpty()) {
-                        next = new LinkedHashMap<>();
-
-                        var n = Math.min(keys.size(), row.size());
-
-                        for (var i = 0; i < n; i++) {
-                            next.put(keys.get(i), row.get(i));
-                        }
-                    }
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
-                }
-            }
-
-            return next != null;
+            return c != EOF;
         }
 
         @Override
@@ -69,17 +49,41 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
                 throw new NoSuchElementException();
             }
 
+            var next = new LinkedHashMap<String, String>();
+
             try {
-                return next;
-            } finally {
-                next = null;
+                var n = keys.size();
+
+                var i = 0;
+
+                while (c != EOF) {
+                    var value = readValue(reader);
+
+                    if (i < n) {
+                        next.put(keys.get(i), value);
+                    }
+
+                    if (c == '\n') {
+                        c = reader.read();
+
+                        break;
+                    }
+
+                    i++;
+
+                    c = reader.read();
+                }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
             }
+
+            return next;
         }
     }
 
-    private List<String> keys = null;
+    private List<String> keys = new LinkedList<>();
 
-    private int rowSize = 0;
+    private int c = EOF;
 
     private StringBuilder valueBuilder = new StringBuilder();
 
@@ -119,15 +123,27 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
             throw new IllegalArgumentException();
         }
 
-        keys = readRow(reader);
+        var bufferedReader = new BufferedReader(reader);
 
-        return () -> new RowIterator(new BufferedReader(reader));
+        c = bufferedReader.read();
+
+        while (c != EOF) {
+            keys.add(readValue(bufferedReader));
+
+            if (c == '\n') {
+                c = bufferedReader.read();
+
+                break;
+            }
+
+            c = bufferedReader.read();
+        }
+
+        return () -> new RowIterator(bufferedReader);
     }
 
-    private List<String> readRow(Reader reader) throws IOException {
-        var row = new ArrayList<String>(rowSize);
-
-        var c = reader.read();
+    private String readValue(Reader reader) throws IOException {
+        valueBuilder.setLength(0);
 
         var quoted = false;
 
@@ -142,31 +158,13 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
                 }
             }
 
-            if (!quoted) {
-                if (c == ',') {
-                    row.add(valueBuilder.toString());
-
-                    valueBuilder.setLength(0);
-
-                    c = reader.read();
-
-                    continue;
-                }
-
-                if (c == '\r' || c == '\n') {
-                    break;
-                }
+            if ((c == ',' || c == '\r' || c == '\n') && !quoted) {
+                break;
             }
 
             valueBuilder.append((char)c);
 
             c = reader.read();
-        }
-
-        if (!valueBuilder.isEmpty()) {
-            row.add(valueBuilder.toString());
-
-            valueBuilder.setLength(0);
         }
 
         if (quoted) {
@@ -177,12 +175,10 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
             c = reader.read();
 
             if (c != '\n') {
-                throw new IOException("Unterminated row.");
+                throw new IOException("Improperly terminated row.");
             }
         }
 
-        rowSize = Math.max(row.size(), rowSize);
-
-        return row;
+        return valueBuilder.toString();
     }
 }
