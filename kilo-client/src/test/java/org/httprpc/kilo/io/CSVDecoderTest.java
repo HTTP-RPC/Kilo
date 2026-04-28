@@ -49,6 +49,39 @@ public class CSVDecoderTest {
     }
 
     @Test
+    public void testMissingKeys() throws IOException {
+        var text = "\r\n\r\n";
+
+        var csvDecoder = new CSVDecoder();
+
+        var rows = csvDecoder.read(new StringReader(text));
+
+        assertEquals(listOf(), rows);
+    }
+
+    @Test
+    public void testMissingValues() throws IOException {
+        var text = "\"a\",\"b\",\"c\"\r\n,,\r\n,,\r\n";
+
+        var csvDecoder = new CSVDecoder();
+
+        var rows = csvDecoder.read(new StringReader(text));
+
+        assertEquals(listOf(
+            mapOf(
+                entry("a", ""),
+                entry("b", ""),
+                entry("c", "")
+            ),
+            mapOf(
+                entry("a", ""),
+                entry("b", ""),
+                entry("c", "")
+            )
+        ), rows);
+    }
+
+    @Test
     public void testQuotes() throws IOException {
         var text = "\"a\"\r\n\"A,B,\"\"C\"\",\r\nD,É\"\r\n";
 

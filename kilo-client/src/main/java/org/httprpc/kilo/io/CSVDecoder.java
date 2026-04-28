@@ -125,10 +125,6 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
 
         keys = readRow(reader);
 
-        if (keys.isEmpty()) {
-            throw new IOException("Missing header row.");
-        }
-
         return () -> new RowIterator(new BufferedReader(reader));
     }
 
