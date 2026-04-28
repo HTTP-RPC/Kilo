@@ -103,7 +103,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             throw new IllegalArgumentException();
         }
 
-        var bufferedWriter = new BufferedWriter(writer);
+        writer = new BufferedWriter(writer);
 
         try {
             var i = 0;
@@ -156,7 +156,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 writer.write("\r\n");
             }
         } finally {
-            bufferedWriter.flush();
+            writer.flush();
         }
     }
 

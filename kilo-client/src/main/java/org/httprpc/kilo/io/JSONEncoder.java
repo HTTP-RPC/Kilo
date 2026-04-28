@@ -54,12 +54,12 @@ public class JSONEncoder extends Encoder<Object> {
             throw new IllegalArgumentException();
         }
 
-        var bufferedWriter = new BufferedWriter(writer);
+        writer = new BufferedWriter(writer);
 
         try {
-            encode(BeanAdapter.adapt(value), bufferedWriter);
+            encode(BeanAdapter.adapt(value), writer);
         } finally {
-            bufferedWriter.flush();
+            writer.flush();
         }
     }
 
