@@ -494,7 +494,7 @@ Hello, World!
 ```
 
 # CSVEncoder and CSVDecoder
-The `CSVEncoder` and `CSVDecoder` classes write and read sequences of values to and from CSV, respectively. For example:
+The `CSVEncoder` and `CSVDecoder` classes write and read rows of data to and from CSV, respectively. For example:
 
 ```java
 var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));

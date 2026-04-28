@@ -85,10 +85,6 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
 
     @Override
     public List<Map<String, String>> read(Reader reader) throws IOException {
-        if (reader == null) {
-            throw new IllegalArgumentException();
-        }
-
         return listOf(iterate(reader));
     }
 
