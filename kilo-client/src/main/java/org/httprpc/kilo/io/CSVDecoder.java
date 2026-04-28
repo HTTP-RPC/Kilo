@@ -36,6 +36,24 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
 
         RowIterator(Reader reader) {
             this.reader = reader;
+
+            try {
+                c = reader.read();
+
+                while (c != EOF) {
+                    keys.add(readValue(reader));
+
+                    if (c == '\n') {
+                        c = reader.read();
+
+                        break;
+                    }
+
+                    c = reader.read();
+                }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
         }
 
         @Override
@@ -101,7 +119,7 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
      * @return
      * The decoded rows.
      */
-    public Iterable<Map<String, String>> iterate(InputStream inputStream) throws IOException {
+    public Iterable<Map<String, String>> iterate(InputStream inputStream) {
         if (inputStream == null) {
             throw new IllegalArgumentException();
         }
@@ -118,28 +136,12 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
      * @return
      * The decoded rows.
      */
-    public Iterable<Map<String, String>> iterate(Reader reader) throws IOException {
+    public Iterable<Map<String, String>> iterate(Reader reader) {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
 
-        var bufferedReader = new BufferedReader(reader);
-
-        c = bufferedReader.read();
-
-        while (c != EOF) {
-            keys.add(readValue(bufferedReader));
-
-            if (c == '\n') {
-                c = bufferedReader.read();
-
-                break;
-            }
-
-            c = bufferedReader.read();
-        }
-
-        return () -> new RowIterator(bufferedReader);
+        return () -> new RowIterator(new BufferedReader(reader));
     }
 
     private String readValue(Reader reader) throws IOException {
