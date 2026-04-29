@@ -67,11 +67,11 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
                 throw new NoSuchElementException();
             }
 
-            var next = new LinkedHashMap<String, String>();
+            var n = keys.size();
+
+            var next = new LinkedHashMap<String, String>(n);
 
             try {
-                var n = keys.size();
-
                 var i = 0;
 
                 while (c != EOF) {
