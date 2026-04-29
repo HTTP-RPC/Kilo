@@ -35,7 +35,6 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private ResourceBundle resourceBundle = null;
 
-    private Map<Object, Function<Object, Object>> transforms = new HashMap<>();
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
     /**
@@ -71,24 +70,6 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
      */
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
-    }
-
-    /**
-     * Associates a transform with a column.
-     *
-     * @param key
-     * The column key.
-     *
-     * @param transform
-     * The transform to apply to the column values.
-     */
-    @SuppressWarnings("unchecked")
-    public void map(Object key, Function<?, ?> transform) {
-        if (key == null || transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        transforms.put(key, (Function<Object, Object>)transform);
     }
 
     /**
@@ -171,12 +152,6 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 }
 
                 var value = map.get(key);
-
-                var transform = transforms.get(key);
-
-                if (transform != null) {
-                    value = transform.apply(value);
-                }
 
                 if (value != null) {
                     encode(value, writer);

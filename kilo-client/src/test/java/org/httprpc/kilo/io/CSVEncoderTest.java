@@ -138,23 +138,6 @@ public class CSVEncoderTest {
     }
 
     @Test
-    public void testMap() throws IOException {
-        var csvEncoder = new CSVEncoder(listOf("a"));
-
-        csvEncoder.map("a", value -> Instant.parse(value.toString()));
-
-        var writer = new StringWriter();
-
-        csvEncoder.write(listOf(
-            mapOf(
-                entry("a", Instant.ofEpochMilli(0).toString())
-            )
-        ), writer);
-
-        assertEquals("\"a\"\r\n0\r\n", writer.toString());
-    }
-
-    @Test
     public void testFormat() throws IOException {
         var csvEncoder = new CSVEncoder(listOf("a"));
 
