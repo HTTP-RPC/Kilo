@@ -366,7 +366,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
     @Override
     public void write(Object root, Writer writer) throws IOException {
-        if (root == null || writer == null) {
+        if (writer == null) {
             throw new IllegalArgumentException();
         }
 
