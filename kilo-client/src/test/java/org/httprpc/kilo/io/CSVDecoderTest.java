@@ -49,6 +49,14 @@ public class CSVDecoderTest {
                 entry("c", "H")
             )
         ), rows);
+
+        assertEquals(listOf(
+            mapOf(
+                entry("d", "1"),
+                entry("e", "2"),
+                entry("f", "3")
+            )
+        ), csvDecoder.read(new StringReader("d,e,f\r\n1,2,3")));
     }
 
     @Test

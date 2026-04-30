@@ -141,6 +141,8 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
             throw new IllegalArgumentException();
         }
 
+        keys.clear();
+
         return () -> new RowIterator(new BufferedReader(reader));
     }
 
