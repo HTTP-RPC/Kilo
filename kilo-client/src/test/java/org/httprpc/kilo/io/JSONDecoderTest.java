@@ -156,9 +156,11 @@ public class JSONDecoderTest {
 
         var text = "[\"abc\", 123, true, [1, 2.0, 3.0], {\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
 
+        var inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+
         var jsonDecoder = new JSONDecoder();
 
-        var actual = listOf(jsonDecoder.iterate(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8))));
+        var actual = listOf(jsonDecoder.iterate(inputStream));
 
         assertEquals(expected, actual);
     }

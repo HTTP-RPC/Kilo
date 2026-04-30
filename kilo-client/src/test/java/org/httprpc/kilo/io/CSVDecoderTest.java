@@ -27,11 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        var text = "a,b,c\r\nA,B\r\nC,D,É\r\nF,G,H,I";
-
         var csvDecoder = new CSVDecoder();
-
-        var rows = csvDecoder.read(new StringReader(text));
 
         assertEquals(listOf(
             mapOf(
@@ -48,24 +44,33 @@ public class CSVDecoderTest {
                 entry("b", "G"),
                 entry("c", "H")
             )
-        ), rows);
+        ), csvDecoder.read(new StringReader("a,b,c\r\nA,B\r\nC,D,É\r\nF,G,H,I")));
+    }
+
+    @Test
+    public void testReadMultiple() throws IOException {
+        var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(
             mapOf(
-                entry("d", "1"),
-                entry("e", "2"),
-                entry("f", "3")
+                entry("a", "A"),
+                entry("b", "B"),
+                entry("c", "C")
             )
-        ), csvDecoder.read(new StringReader("d,e,f\r\n1,2,3")));
+        ), csvDecoder.read(new StringReader("a,b,c\r\nA,B,C")));
+
+        assertEquals(listOf(
+            mapOf(
+                entry("d", "D"),
+                entry("e", "É"),
+                entry("f", "F")
+            )
+        ), csvDecoder.read(new StringReader("d,e,f\r\nD,É,F")));
     }
 
     @Test
     public void testMissingKeys() throws IOException {
-        var text = "\r\nA,B,C\r\nD,É,F\r\n";
-
         var csvDecoder = new CSVDecoder();
-
-        var rows = csvDecoder.read(new StringReader(text));
 
         assertEquals(listOf(
             mapOf(
@@ -74,16 +79,12 @@ public class CSVDecoderTest {
             mapOf(
                 entry("", "D")
             )
-        ), rows);
+        ), csvDecoder.read(new StringReader("\r\nA,B,C\r\nD,É,F\r\n")));
     }
 
     @Test
     public void testMissingValues() throws IOException {
-        var text = "a,b,c\r\n,,\r\n,,\r\n";
-
         var csvDecoder = new CSVDecoder();
-
-        var rows = csvDecoder.read(new StringReader(text));
 
         assertEquals(listOf(
             mapOf(
@@ -96,53 +97,41 @@ public class CSVDecoderTest {
                 entry("b", ""),
                 entry("c", "")
             )
-        ), rows);
+        ), csvDecoder.read(new StringReader("a,b,c\r\n,,\r\n,,\r\n")));
     }
 
     @Test
     public void testMissingRows() throws IOException {
-        var text = "a,b,c";
-
         var csvDecoder = new CSVDecoder();
 
-        var rows = csvDecoder.read(new StringReader(text));
-
-        assertEquals(listOf(), rows);
+        assertEquals(listOf(), csvDecoder.read(new StringReader("a,b,c")));
     }
 
     @Test
     public void testEmpty() throws IOException {
-        var text = "";
-
         var csvDecoder = new CSVDecoder();
 
-        var rows = csvDecoder.read(new StringReader(text));
-
-        assertEquals(listOf(), rows);
+        assertEquals(listOf(), csvDecoder.read(new StringReader("")));
     }
 
     @Test
     public void testQuotes() throws IOException {
-        var text = "\"a\"\r\n\"A,B,\"\"C\"\",\r\nD,É\"\r\n";
-
         var csvDecoder = new CSVDecoder();
-
-        var rows = csvDecoder.read(new StringReader(text));
 
         assertEquals(listOf(
             mapOf(
                 entry("a", "A,B,\"C\",\r\nD,É")
             )
-        ), rows);
+        ), csvDecoder.read(new StringReader("\"a\"\r\n\"A,B,\"\"C\"\",\r\nD,É\"\r\n")));
     }
 
     @Test
     public void testIterate() throws IOException {
         var text = "\"a\",\"b\",\"c\"\r\n1,2,3\r\n4,5,6\r\n7,8,9\r\n";
 
-        var csvDecoder = new CSVDecoder();
+        var inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
 
-        var rows = csvDecoder.read(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
+        var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(
             mapOf(
@@ -160,6 +149,6 @@ public class CSVDecoderTest {
                 entry("b", "8"),
                 entry("c", "9")
             )
-        ), rows);
+        ), csvDecoder.read(inputStream));
     }
 }
