@@ -173,7 +173,7 @@ public class JSONDecoder extends Decoder<Object> {
 
             skipWhitespace(reader);
 
-            while (c != ']') {
+            while (c != EOF && c != ']') {
                 list.add(readValue(reader));
 
                 skipWhitespace(reader);
@@ -199,7 +199,7 @@ public class JSONDecoder extends Decoder<Object> {
 
             skipWhitespace(reader);
 
-            while (c != '}') {
+            while (c != EOF && c != '}') {
                 if (c != '"') {
                     throw new IOException("Invalid key.");
                 }
