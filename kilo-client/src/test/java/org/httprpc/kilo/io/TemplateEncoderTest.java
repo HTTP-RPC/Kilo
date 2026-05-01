@@ -38,6 +38,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TemplateEncoderTest {
     @Test
+    public void testNull() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "null.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(null, writer);
+
+        assertEquals("{a=}", writer.toString());
+    }
+
+    @Test
     public void testMap() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "dictionary.txt");
 
