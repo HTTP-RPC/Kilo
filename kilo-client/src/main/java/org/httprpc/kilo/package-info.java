@@ -13,7 +13,6 @@
  */
 
 /**
- * Contains classes for creating and consuming RESTful and REST-like web
- * services.
+ * Contains classes for creating and consuming web APIs.
  */
 package org.httprpc.kilo;

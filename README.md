@@ -3,7 +3,7 @@
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
-Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It also includes a number of general-purpose developer productivity features.
+Kilo is an open-source framework for creating and consuming web APIs in Java. It also includes a number of general-purpose developer productivity features.
 
 The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
@@ -30,7 +30,7 @@ Classes provided by the Kilo framework include:
 Each is discussed in more detail below. Java 21 or later is required.
 
 # WebService
-`WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/6.1/).
+`WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, resource-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/6.1/).
 
 For example, the following service implements some simple mathematical operations:
 
