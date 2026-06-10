@@ -298,11 +298,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "select all" query.
-     * <p>
-     * This method is typically used with {@link #filterByExists(QueryBuilder)}
-     * or {@link #filterByNotExists(QueryBuilder)}. Aliases and transforms are
-     * not applied.
+     * Creates a "select" query.
      *
      * @param type
      * The type representing the table to select from.
@@ -310,7 +306,7 @@ public class QueryBuilder {
      * @return
      * A new {@link QueryBuilder} instance.
      */
-    public static QueryBuilder selectAll(Class<?> type) {
+    public static QueryBuilder selectIdentifier(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException();
         }
@@ -319,8 +315,21 @@ public class QueryBuilder {
 
         var tableName = getTableName(type);
 
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(".* from ");
+        var i = 0;
+
+        for (var indexColumnName : getIdentifierColumnNames(type)) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+            sqlBuilder.append(indexColumnName);
+
+            i++;
+        }
+
+        sqlBuilder.append(" from ");
         sqlBuilder.append(tableName);
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
@@ -334,7 +343,11 @@ public class QueryBuilder {
      *
      * @return
      * A new {@link QueryBuilder} instance.
+     *
+     * @deprecated
+     * Use {@link #selectIdentifier(Class)} instead.
      */
+    @Deprecated
     public static QueryBuilder selectDistinctIndex(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException();
@@ -359,6 +372,35 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append(" from ");
+        sqlBuilder.append(tableName);
+
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
+    }
+
+    /**
+     * Creates a "select all" query.
+     * <p>
+     * This method is typically used with {@link #filterByExists(QueryBuilder)}
+     * or {@link #filterByNotExists(QueryBuilder)}. Aliases and transforms are
+     * not applied.
+     *
+     * @param type
+     * The type representing the table to select from.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder selectAll(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var sqlBuilder = new StringBuilder("select ");
+
+        var tableName = getTableName(type);
+
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(".* from ");
         sqlBuilder.append(tableName);
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
