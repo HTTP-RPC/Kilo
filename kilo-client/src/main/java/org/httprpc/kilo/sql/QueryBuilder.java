@@ -298,6 +298,35 @@ public class QueryBuilder {
     }
 
     /**
+     * Creates a "select all" query.
+     * <p>
+     * This method is typically used with {@link #filterByExists(QueryBuilder)}
+     * or {@link #filterByNotExists(QueryBuilder)}. Aliases and transforms are
+     * not applied.
+     *
+     * @param type
+     * The type representing the table to select from.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder selectAll(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var sqlBuilder = new StringBuilder("select ");
+
+        var tableName = getTableName(type);
+
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(".* from ");
+        sqlBuilder.append(tableName);
+
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
+    }
+
+    /**
      * Creates a "select distinct" query.
      *
      * @param type
@@ -334,35 +363,6 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append(" from ");
-        sqlBuilder.append(tableName);
-
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
-    }
-
-    /**
-     * Creates a "select all" query.
-     * <p>
-     * This method is typically used with {@link #filterByExists(QueryBuilder)}
-     * or {@link #filterByNotExists(QueryBuilder)}. Aliases and transforms are
-     * not applied.
-     *
-     * @param type
-     * The type representing the table to select from.
-     *
-     * @return
-     * A new {@link QueryBuilder} instance.
-     */
-    public static QueryBuilder selectAll(Class<?> type) {
-        if (type == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder("select ");
-
-        var tableName = getTableName(type);
-
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(".* from ");
         sqlBuilder.append(tableName);
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
