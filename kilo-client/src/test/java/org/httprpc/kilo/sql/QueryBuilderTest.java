@@ -412,14 +412,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testSelectIdentifier() {
-        var queryBuilder = QueryBuilder.selectIdentifier(A.class);
-
-        assertEquals("select A.b, A.c from A", queryBuilder.toString());
-    }
-
-    @Test
-    public void testFilterByIdentifier() {
+    public void testIdentifier() {
         var queryBuilder = QueryBuilder.select(A.class).filterByIdentifier("b", "c");
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where A.b = ? and A.c = ?", queryBuilder.toString());

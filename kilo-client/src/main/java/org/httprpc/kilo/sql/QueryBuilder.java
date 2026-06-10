@@ -298,44 +298,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "select" query.
-     *
-     * @param type
-     * The type representing the table to select from.
-     *
-     * @return
-     * A new {@link QueryBuilder} instance.
-     */
-    public static QueryBuilder selectIdentifier(Class<?> type) {
-        if (type == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder("select ");
-
-        var tableName = getTableName(type);
-
-        var i = 0;
-
-        for (var indexColumnName : getIdentifierColumnNames(type)) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append(tableName);
-            sqlBuilder.append(".");
-            sqlBuilder.append(indexColumnName);
-
-            i++;
-        }
-
-        sqlBuilder.append(" from ");
-        sqlBuilder.append(tableName);
-
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
-    }
-
-    /**
      * Creates a "select distinct" query.
      *
      * @param type
@@ -345,7 +307,7 @@ public class QueryBuilder {
      * A new {@link QueryBuilder} instance.
      *
      * @deprecated
-     * Use {@link #selectIdentifier(Class)} instead.
+     * Use {@link #append(String)} or {@link #appendLine(String)} instead.
      */
     @Deprecated
     public static QueryBuilder selectDistinctIndex(Class<?> type) {
