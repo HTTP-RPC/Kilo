@@ -851,7 +851,7 @@ public abstract class WebService extends HttpServlet {
             throw new ServletException("Missing URL pattern.");
         }
 
-        if (!urlPattern.startsWith("/")) {
+        if (!(urlPattern.startsWith("/") && urlPattern.endsWith("/*"))) {
             throw new ServletException("Invalid URL pattern.");
         }
 
