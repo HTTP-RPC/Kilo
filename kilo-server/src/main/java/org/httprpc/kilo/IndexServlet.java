@@ -72,10 +72,7 @@ public class IndexServlet extends HttpServlet {
 
         var locale = request.getLocale();
 
-        templateEncoder.setResourceBundle(ResourceBundle.getBundle(String.format("%s.%s",
-            IndexServlet.class.getPackage().getName(), "index"),
-            locale));
-
+        templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), locale));
         templateEncoder.setLocale(locale);
 
         templateEncoder.write(mapOf(

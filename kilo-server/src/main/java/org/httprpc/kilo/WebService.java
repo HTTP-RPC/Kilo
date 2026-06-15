@@ -927,10 +927,7 @@ public abstract class WebService extends HttpServlet {
 
             var locale = request.getLocale();
 
-            templateEncoder.setResourceBundle(ResourceBundle.getBundle(String.format("%s.%s",
-                WebService.class.getPackage().getName(), "api"),
-                locale));
-
+            templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), locale));
             templateEncoder.setLocale(locale);
 
             templateEncoder.write(mapOf(
