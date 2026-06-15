@@ -79,7 +79,7 @@ public class DocumentationTest {
             expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("%s.html", name)));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("%s?api", name)));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var textDecoder = new TextDecoder();

@@ -21,7 +21,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -31,11 +30,9 @@ import static org.httprpc.kilo.util.Collections.*;
 /**
  * Generates API documentation.
  */
-@WebServlet(urlPatterns = {"", "*.html"}, loadOnStartup = Integer.MAX_VALUE)
+@WebServlet(urlPatterns = "", loadOnStartup = Integer.MAX_VALUE)
 public class IndexServlet extends HttpServlet {
     private Map<String, WebService.ServiceDescriptor> serviceDescriptors = new TreeMap<>();
-
-    private static final String HTML_EXTENSION = ".html";
 
     @Override
     public void init() {
@@ -71,47 +68,20 @@ public class IndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        if (request.getPathInfo() != null) {
-            var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
+        var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
-            var locale = request.getLocale();
+        var locale = request.getLocale();
 
-            templateEncoder.setResourceBundle(getResourceBundle("index", locale));
-            templateEncoder.setLocale(locale);
+        templateEncoder.setResourceBundle(ResourceBundle.getBundle(String.format("%s.%s",
+            IndexServlet.class.getPackage().getName(), "index"),
+            locale));
 
-            templateEncoder.write(mapOf(
-                entry("language", locale.getLanguage()),
-                entry("contextPath", request.getContextPath()),
-                entry("services", serviceDescriptors.values())
-            ), response.getOutputStream());
-        } else {
-            var servletPath = request.getServletPath();
+        templateEncoder.setLocale(locale);
 
-            var path = servletPath.substring(0, servletPath.length() - HTML_EXTENSION.length());
-
-            var serviceDescriptor = serviceDescriptors.get(path);
-
-            if (serviceDescriptor == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-
-            var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
-
-            var locale = request.getLocale();
-
-            templateEncoder.setResourceBundle(getResourceBundle("api", locale));
-            templateEncoder.setLocale(locale);
-
-            templateEncoder.write(mapOf(
-                entry("language", locale.getLanguage()),
-                entry("contextPath", request.getContextPath()),
-                entry("service", serviceDescriptor)
-            ), response.getOutputStream());
-        }
-    }
-
-    private static ResourceBundle getResourceBundle(String name, Locale locale) {
-        return ResourceBundle.getBundle(String.format("%s.%s", IndexServlet.class.getPackage().getName(), name), locale);
+        templateEncoder.write(mapOf(
+            entry("language", locale.getLanguage()),
+            entry("contextPath", request.getContextPath()),
+            entry("services", serviceDescriptors.values())
+        ), response.getOutputStream());
     }
 }
