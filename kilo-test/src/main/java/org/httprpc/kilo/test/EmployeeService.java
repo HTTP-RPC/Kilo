@@ -17,11 +17,11 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,12 +31,12 @@ import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = "/employees/*", loadOnStartup = 0)
-public class EmployeeService extends WebService {
+public class EmployeeService extends AbstractDatabaseService {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
-    protected String getDataSourceName() {
-        return "java:comp/env/jdbc/EmployeeDB";
+    protected Connection openConnection() throws SQLException {
+        return openConnection("jdbc/EmployeeDB");
     }
 
     @RequestMethod("GET")

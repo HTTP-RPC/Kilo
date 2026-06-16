@@ -18,10 +18,10 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -31,10 +31,10 @@ import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = "/films/*", loadOnStartup = 0)
 @Description("Film service.")
-public class FilmService extends WebService {
+public class FilmService extends AbstractDatabaseService {
     @Override
-    protected String getDataSourceName() {
-        return "java:comp/env/jdbc/SakilaDB";
+    protected Connection openConnection() throws SQLException {
+        return openConnection("jdbc/SakilaDB");
     }
 
     @RequestMethod("GET")

@@ -16,9 +16,27 @@ package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebService;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public abstract class AbstractDatabaseService extends WebService {
-    @Override
-    protected String getDataSourceName() {
-        return "java:comp/env/jdbc/DemoDB";
+    protected Connection openConnection(String dataSourceName) throws SQLException {
+        try {
+            return getDataSource(dataSourceName).getConnection();
+        } catch (NamingException exception) {
+            throw new IllegalStateException(exception);
+        }
+    }
+
+    private DataSource getDataSource(String name) throws NamingException {
+        var initialContext = new InitialContext();
+
+        var environmentContext = (Context)initialContext.lookup("java:comp/env");
+
+        return (DataSource)environmentContext.lookup(name);
     }
 }

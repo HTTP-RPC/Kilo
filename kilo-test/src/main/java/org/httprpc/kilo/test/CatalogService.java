@@ -21,6 +21,7 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
@@ -32,6 +33,11 @@ import static org.httprpc.kilo.util.Optionals.*;
 @WebServlet(urlPatterns = "/catalog/*", loadOnStartup = 0)
 @Description("Catalog service.")
 public class CatalogService extends AbstractDatabaseService {
+    @Override
+    protected Connection openConnection() throws SQLException {
+        return openConnection("jdbc/DemoDB");
+    }
+
     @RequestMethod("GET")
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")

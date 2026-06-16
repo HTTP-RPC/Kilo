@@ -28,9 +28,6 @@ import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -961,32 +958,6 @@ public abstract class WebService extends HttpServlet {
      * database connection.
      */
     protected Connection openConnection() throws SQLException {
-        var dataSourceName = getDataSourceName();
-
-        if (dataSourceName != null) {
-            DataSource dataSource;
-            try {
-                var initialContext = new InitialContext();
-
-                dataSource = (DataSource)initialContext.lookup(dataSourceName);
-            } catch (NamingException exception) {
-                throw new IllegalStateException(exception);
-            }
-
-            return dataSource.getConnection();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the data source name.
-     *
-     * @return
-     * The data source name, or {@code null} if the service does not require a
-     * data source.
-     */
-    protected String getDataSourceName() {
         return null;
     }
 

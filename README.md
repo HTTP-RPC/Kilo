@@ -215,7 +215,7 @@ For services that require database connectivity, the following method can be use
 protected static Connection getConnection() { ... }
 ```
 
-The connection is opened via a data source identified by `getDataSourceName()`, which returns `null` by default. Service classes must override this method to provide the name of a valid data source.
+The connection is established via the `openConnection()` method, which returns `null` by default. Service classes must override this method to provide a valid connection instance.
 
 Auto-commit is disabled so an entire request will be processed within a single transaction. If the request completes successfully, the transaction is committed. Otherwise, it is rolled back.
 
@@ -223,8 +223,8 @@ Auto-commit is disabled so an entire request will be processed within a single t
 The following methods provide access to the request and response objects associated with the current invocation:
 
 ```java
-protected HttpServletRequest getRequest() { ... }
-protected HttpServletResponse getResponse() { ... }
+protected static HttpServletRequest getRequest() { ... }
+protected static HttpServletResponse getResponse() { ... }
 ```
 
 For example, a service might use the request to read directly from the input stream, or use the response to return a custom header.

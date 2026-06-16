@@ -17,10 +17,10 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -28,10 +28,10 @@ import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = "/salaries/*", loadOnStartup = 0)
-public class SalaryService extends WebService {
+public class SalaryService extends AbstractDatabaseService {
     @Override
-    protected String getDataSourceName() {
-        return "java:comp/env/jdbc/EmployeeDB";
+    protected Connection openConnection() throws SQLException {
+        return openConnection("jdbc/EmployeeDB");
     }
 
     @RequestMethod("GET")

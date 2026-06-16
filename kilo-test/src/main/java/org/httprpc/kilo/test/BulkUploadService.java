@@ -23,11 +23,17 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @WebServlet(urlPatterns = "/bulk-upload/*", loadOnStartup = 0)
 public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 5000;
+
+    @Override
+    protected Connection openConnection() throws SQLException {
+        return openConnection("jdbc/DemoDB");
+    }
 
     @RequestMethod("POST")
     @ResourcePath("json")

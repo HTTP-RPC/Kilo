@@ -24,6 +24,7 @@ import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -33,6 +34,11 @@ import static org.httprpc.kilo.util.Iterables.*;
 
 @WebServlet(urlPatterns = "/pets/*", loadOnStartup = 0)
 public class PetService extends AbstractDatabaseService {
+    @Override
+    protected Connection openConnection() throws SQLException {
+        return openConnection("jdbc/DemoDB");
+    }
+
     @RequestMethod("GET")
     public List<Pet> getPets(@Required String owner) throws SQLException {
         var queryBuilder = new QueryBuilder();

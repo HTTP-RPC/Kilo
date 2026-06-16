@@ -29,6 +29,8 @@ import org.w3c.dom.Document;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -177,6 +179,11 @@ public class TestService extends AbstractDatabaseService {
     }
 
     private @Instance MathService mathService = null;
+
+    @Override
+    protected Connection openConnection() throws SQLException {
+        return openConnection("jdbc/DemoDB");
+    }
 
     @RequestMethod("GET")
     public Response testGet(@Required String string, List<String> strings,
