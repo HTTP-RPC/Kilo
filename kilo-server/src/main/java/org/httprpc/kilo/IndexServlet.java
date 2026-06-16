@@ -69,7 +69,6 @@ public class IndexServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         var locale = request.getLocale();
-
         var resourceBundle = ResourceBundle.getBundle(IndexServlet.class.getName(), locale);
 
         var servletContext = getServletContext();
@@ -77,8 +76,8 @@ public class IndexServlet extends HttpServlet {
         if (request.getPathInfo() != null) {
             var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
-            templateEncoder.setResourceBundle(resourceBundle);
             templateEncoder.setLocale(locale);
+            templateEncoder.setResourceBundle(resourceBundle);
 
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
@@ -100,8 +99,8 @@ public class IndexServlet extends HttpServlet {
 
             var templateEncoder = new TemplateEncoder(IndexServlet.class, "api.html");
 
-            templateEncoder.setResourceBundle(resourceBundle);
             templateEncoder.setLocale(locale);
+            templateEncoder.setResourceBundle(resourceBundle);
 
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
