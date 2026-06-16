@@ -921,7 +921,17 @@ public abstract class WebService extends HttpServlet {
             setConnection(connection);
 
             try {
-                process(request, response);
+                try {
+                    process(request, response);
+                } catch (Exception exception) {
+                    if (connection != null) {
+                        connection.rollback();
+                    }
+
+                    log(exception.getMessage(), exception);
+
+                    throw exception;
+                }
 
                 if (connection != null) {
                     if (response.getStatus() / 100 == 2) {
@@ -930,23 +940,15 @@ public abstract class WebService extends HttpServlet {
                         connection.rollback();
                     }
                 }
-            } catch (Exception exception) {
-                if (connection != null) {
-                    connection.rollback();
-                }
-
-                log(exception.getMessage(), exception);
-
-                throw exception;
             } finally {
                 if (connection != null) {
                     connection.setAutoCommit(true);
                 }
-
-                setConnection(null);
             }
         } catch (SQLException exception) {
             throw new ServletException(exception);
+        } finally {
+            setConnection(null);
         }
     }
 
