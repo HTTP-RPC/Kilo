@@ -1304,7 +1304,7 @@ public abstract class WebService extends HttpServlet {
      * The decoded body.
      *
      * @throws IOException
-     * If an error occurs while decoding the content.
+     * If an error occurs while decoding the body.
      */
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
         if (type == Document.class) {
