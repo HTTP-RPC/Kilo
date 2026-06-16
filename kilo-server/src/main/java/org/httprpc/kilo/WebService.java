@@ -973,7 +973,7 @@ public abstract class WebService extends HttpServlet {
      * The servlet response.
      *
      * @throws IOException
-     * If an error occurs while decoding the request or encoding the response.
+     * If an error occurs while reading the request or writing the response.
      */
     protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var verb = Verb.valueOf(request.getMethod().toUpperCase());
@@ -1224,7 +1224,8 @@ public abstract class WebService extends HttpServlet {
      * Returns the database connection.
      *
      * @return
-     * The database connection.
+     * The database connection, or {@code null} if a database connection has
+     * not been established.
      */
     protected static Connection getConnection() {
         return connection.get();
