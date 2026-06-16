@@ -23,7 +23,6 @@ import jakarta.servlet.http.Part;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
-import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextEncoder;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
@@ -70,7 +69,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -918,26 +916,6 @@ public abstract class WebService extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getMethod().equalsIgnoreCase("GET")
-            && request.getPathInfo() == null
-            && request.getParameter("api") != null) {
-            response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_HTML, StandardCharsets.UTF_8));
-
-            var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
-
-            var locale = request.getLocale();
-
-            templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), locale));
-            templateEncoder.setLocale(locale);
-
-            templateEncoder.write(mapOf(
-                entry("language", locale.getLanguage()),
-                entry("contextPath", request.getContextPath()),
-                entry("service", serviceDescriptor)
-            ), response.getOutputStream());
-            return;
-        }
-
         try (var connection = openConnection()) {
             if (connection != null) {
                 connection.setAutoCommit(false);
