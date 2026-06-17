@@ -28,11 +28,6 @@ import java.sql.SQLException;
  */
 public abstract class PageServlet<P> extends HttpServlet {
     @Override
-    public void init() throws ServletException {
-        // TODO Validate path
-    }
-
-    @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try (var connection = openConnection()) {
             if (connection != null) {
@@ -60,19 +55,14 @@ public abstract class PageServlet<P> extends HttpServlet {
         return null;
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO
-    }
-
     /**
-     * Executes a page request.
-     *
-     * @param parameters
-     * The page parameters.
+     * Returns the database connection.
      *
      * @return
-     * The page result.
+     * The database connection, or {@code null} if a database connection has
+     * not been established.
      */
-    protected abstract Object execute(P parameters);
+    protected static Connection getConnection() {
+        return WebService.getConnection();
+    }
 }
