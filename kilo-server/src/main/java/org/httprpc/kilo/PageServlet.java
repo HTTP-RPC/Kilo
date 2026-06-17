@@ -43,6 +43,10 @@ public abstract class PageServlet extends HttpServlet {
 
             try {
                 process(request, response);
+            } catch (Exception exception) {
+                log(exception.getMessage(), exception);
+
+                throw exception;
             } finally {
                 if (connection != null) {
                     connection.setReadOnly(false);
