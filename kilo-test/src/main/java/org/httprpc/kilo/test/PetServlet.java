@@ -58,7 +58,7 @@ public class PetServlet extends PageServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var accept = map(request.getHeader("Accept"), String::toLowerCase);
 
         if (accept == null) {
@@ -105,7 +105,7 @@ public class PetServlet extends PageServlet {
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             }
         } catch (SQLException exception) {
-            throw new ServletException(exception);
+            throw new RuntimeException(exception);
         }
     }
 }

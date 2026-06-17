@@ -29,6 +29,11 @@ import java.sql.SQLException;
 public abstract class PageServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!request.getMethod().equalsIgnoreCase("GET")) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
         try (var connection = openConnection()) {
             if (connection != null) {
                 connection.setReadOnly(true);
@@ -36,7 +41,13 @@ public abstract class PageServlet extends HttpServlet {
 
             WebService.setConnection(connection);
 
-            super.service(request, response);
+            try {
+                process(request, response);
+            } finally {
+                if (connection != null) {
+                    connection.setReadOnly(false);
+                }
+            }
         } catch (SQLException exception) {
             throw new ServletException(exception);
         } finally {
@@ -54,6 +65,20 @@ public abstract class PageServlet extends HttpServlet {
     protected Connection openConnection() throws SQLException {
         return null;
     }
+
+    /**
+     * Processes a page request.
+     *
+     * @param request
+     * The servlet request.
+     *
+     * @param response
+     * The servlet response.
+     *
+     * @throws IOException
+     * If an I/O error occurs while processing the request.
+     */
+    protected abstract void process(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     /**
      * Returns the database connection.

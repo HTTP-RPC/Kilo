@@ -973,7 +973,7 @@ public abstract class WebService extends HttpServlet {
      * The servlet response.
      *
      * @throws IOException
-     * If an error occurs while reading the request or writing the response.
+     * If an I/O error occurs while processing the request.
      */
     protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var verb = Verb.valueOf(request.getMethod().toUpperCase());
