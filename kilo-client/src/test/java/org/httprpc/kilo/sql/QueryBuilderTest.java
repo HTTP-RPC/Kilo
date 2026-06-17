@@ -396,6 +396,13 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectDistinctIndex() {
+        var queryBuilder = QueryBuilder.selectDistinctIndex(I.class);
+
+        assertEquals("select distinct I.t, I.u from I", queryBuilder.toString());
+    }
+
+    @Test
     public void testInvalidJoin() {
         assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class, A.class));
         assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(C.class, String.class));
