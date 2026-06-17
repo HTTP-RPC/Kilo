@@ -326,7 +326,6 @@ public class QueryBuilder {
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
     }
 
-
     /**
      * Creates a "select distinct" query.
      *
