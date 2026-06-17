@@ -20,7 +20,6 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -30,8 +29,8 @@ import static org.httprpc.kilo.util.Optionals.*;
 @WebServlet(urlPatterns = "/salaries/*", loadOnStartup = 0)
 public class SalaryService extends AbstractDatabaseService {
     @Override
-    protected Connection openConnection() throws SQLException {
-        return openConnection("jdbc/EmployeeDB");
+    protected String getDataSourceName() {
+        return EMPLOYEE_DB;
     }
 
     @RequestMethod("GET")

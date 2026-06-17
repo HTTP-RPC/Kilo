@@ -21,7 +21,6 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,8 +34,8 @@ public class EmployeeService extends AbstractDatabaseService {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
-    protected Connection openConnection() throws SQLException {
-        return openConnection("jdbc/EmployeeDB");
+    protected String getDataSourceName() {
+        return EMPLOYEE_DB;
     }
 
     @RequestMethod("GET")

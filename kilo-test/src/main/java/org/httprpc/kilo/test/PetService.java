@@ -17,17 +17,11 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.CSVEncoder;
-import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -35,8 +29,8 @@ import static org.httprpc.kilo.util.Iterables.*;
 @WebServlet(urlPatterns = "/pets/*", loadOnStartup = 0)
 public class PetService extends AbstractDatabaseService {
     @Override
-    protected Connection openConnection() throws SQLException {
-        return openConnection("jdbc/DemoDB");
+    protected String getDataSourceName() {
+        return DEMO_DB;
     }
 
     @RequestMethod("GET")
@@ -50,53 +44,6 @@ public class PetService extends AbstractDatabaseService {
                 entry("owner", owner)
             ))) {
             return listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
-        }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("stream")
-    public void getPetsStream(@Required String owner) throws IOException, SQLException {
-        var response = getResponse();
-
-        var accept = getRequest().getHeader("Accept");
-
-        if (accept == null) {
-            throw new UnsupportedOperationException();
-        }
-
-        var queryBuilder = QueryBuilder.select(Pet.class)
-            .filterByForeignKey(Owner.class, "owner")
-            .ordered(true);
-
-        try (var statement = queryBuilder.prepare(getConnection());
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("owner", owner)
-            ))) {
-            if (accept.equalsIgnoreCase(TEXT_XML)) {
-                response.setContentType(TEXT_XML);
-
-                var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
-
-                templateEncoder.write(results, response.getWriter());
-            } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
-                response.setContentType(TEXT_HTML);
-
-                var templateEncoder = new TemplateEncoder(getClass(), "pets.html");
-
-                templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
-
-                templateEncoder.write(results, response.getWriter());
-            } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
-                response.setContentType(TEXT_CSV);
-
-                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
-
-                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
-
-                csvEncoder.write(results, response.getWriter());
-            } else {
-                throw new UnsupportedOperationException();
-            }
         }
     }
 }

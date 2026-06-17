@@ -26,7 +26,7 @@ import java.sql.SQLException;
 /**
  * Abstract base class for page servlets.
  */
-public abstract class PageServlet<P> extends HttpServlet {
+public abstract class PageServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try (var connection = openConnection()) {

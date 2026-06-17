@@ -21,7 +21,6 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -33,8 +32,8 @@ import static org.httprpc.kilo.util.Optionals.*;
 @Description("Film service.")
 public class FilmService extends AbstractDatabaseService {
     @Override
-    protected Connection openConnection() throws SQLException {
-        return openConnection("jdbc/SakilaDB");
+    protected String getDataSourceName() {
+        return SAKILA_DB;
     }
 
     @RequestMethod("GET")

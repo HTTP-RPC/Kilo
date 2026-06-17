@@ -50,13 +50,13 @@ public class PetServiceTest {
     }
 
     @Test
-    public void testPetsHTML() throws IOException {
-        testPetsStream("pets.html", "text/html");
+    public void testPetsXML() throws IOException {
+        testPetsStream("pets.xml", "text/xml");
     }
 
     @Test
-    public void testPetsXML() throws IOException {
-        testPetsStream("pets.xml", "text/xml");
+    public void testPetsHTML() throws IOException {
+        testPetsStream("pets.html", "text/html");
     }
 
     @Test

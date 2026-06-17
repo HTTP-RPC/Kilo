@@ -21,7 +21,6 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
@@ -34,8 +33,8 @@ import static org.httprpc.kilo.util.Optionals.*;
 @Description("Catalog service.")
 public class CatalogService extends AbstractDatabaseService {
     @Override
-    protected Connection openConnection() throws SQLException {
-        return openConnection("jdbc/DemoDB");
+    protected String getDataSourceName() {
+        return DEMO_DB;
     }
 
     @RequestMethod("GET")
