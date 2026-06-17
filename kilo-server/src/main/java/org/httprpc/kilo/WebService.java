@@ -1151,7 +1151,12 @@ public abstract class WebService extends HttpServlet {
 
             Object result;
             try {
-                result = handler.invoke(this, arguments);
+                try {
+                    result = handler.invoke(this, arguments);
+                } finally {
+                    WebService.request.remove();
+                    WebService.response.remove();
+                }
             } catch (IllegalAccessException | InvocationTargetException exception) {
                 var cause = exception.getCause();
 
@@ -1179,9 +1184,6 @@ public abstract class WebService extends HttpServlet {
                 reportError(response, cause);
 
                 return;
-            } finally {
-                WebService.request.remove();
-                WebService.response.remove();
             }
 
             if (response.isCommitted()) {
