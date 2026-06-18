@@ -241,7 +241,7 @@ private @Instance MathService mathService = null;
 ```
 
 ## Content Generation
-The `PageServlet` class can be used to facilitate generation of human-readable content such as invoices or reports. This class supports read-only database access and shares a connection instance with `WebService`.
+The `PageServlet` class can be used to facilitate generation of document-oriented content such as invoices or reports. This class supports read-only database access and shares a connection instance with `WebService`.
 
 ## API Documentation
 An index of all active services can be found at the application's context root:
