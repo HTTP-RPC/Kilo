@@ -28,6 +28,27 @@ import java.sql.SQLException;
  */
 public abstract class PageServlet extends HttpServlet {
     @Override
+    public void init() throws ServletException {
+        var fields = getClass().getDeclaredFields();
+
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+
+            var fieldType = field.getType();
+
+            if (WebService.class.isAssignableFrom(fieldType) && field.getAnnotation(WebService.Instance.class) != null) {
+                field.setAccessible(true);
+
+                try {
+                    field.set(this, WebService.instances.get(fieldType));
+                } catch (IllegalAccessException exception) {
+                    throw new UnsupportedOperationException(exception);
+                }
+            }
+        }
+    }
+
+    @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!request.getMethod().equalsIgnoreCase("GET")) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);

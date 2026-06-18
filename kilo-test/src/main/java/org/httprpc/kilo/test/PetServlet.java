@@ -42,6 +42,8 @@ public class PetServlet extends PageServlet {
 
     @Override
     public void init() throws ServletException {
+        super.init();
+
         try {
             var initialContext = new InitialContext();
             var environmentContext = (Context)initialContext.lookup("java:comp/env");

@@ -767,6 +767,33 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testMathExample() throws IOException {
+        String expected;
+        try (var inputStream = getClass().getResourceAsStream("math-example.html")) {
+            var textDecoder = new TextDecoder();
+
+            expected = textDecoder.read(inputStream);
+        }
+
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/example"));
+
+        webServiceProxy.setArguments(mapOf(
+            entry("a", 4),
+            entry("b", 2)
+        ));
+
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
+            var textDecoder = new TextDecoder();
+
+            return textDecoder.read(inputStream);
+        });
+
+        var actual = webServiceProxy.invoke();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testMembersProxy() throws IOException {
         var memberServiceProxy = WebServiceProxy.of(MemberServiceProxy.class, baseURI);
 
