@@ -81,18 +81,14 @@ public class PetServlet extends PageServlet {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             ))) {
-            if (accept.startsWith(WebService.TEXT_XML)) {
-                response.setContentType(WebService.TEXT_XML);
-
-                var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
-
-                templateEncoder.write(results, response.getWriter());
-            } else if (accept.startsWith(WebService.TEXT_HTML)) {
+            if (accept.startsWith(WebService.TEXT_HTML)) {
                 response.setContentType(WebService.TEXT_HTML);
 
-                var templateEncoder = new TemplateEncoder(getClass(), "pets.html");
+                var type = getClass();
 
-                templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), request.getLocale()));
+                var templateEncoder = new TemplateEncoder(type, String.format("%s.html", type.getSimpleName()));
+
+                templateEncoder.setResourceBundle(ResourceBundle.getBundle(type.getName(), request.getLocale()));
 
                 templateEncoder.write(results, response.getWriter());
             } else if (accept.startsWith(WebService.TEXT_CSV)) {

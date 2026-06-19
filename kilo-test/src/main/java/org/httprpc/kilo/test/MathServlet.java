@@ -37,7 +37,9 @@ public class MathServlet extends PageServlet {
 
         var sum = mathService.getSum(a, b);
 
-        var templateEncoder = new TemplateEncoder(getClass(), "math-example.html");
+        var type = getClass();
+
+        var templateEncoder = new TemplateEncoder(type, String.format("%s.html", type.getSimpleName()));
 
         templateEncoder.write(mapOf(
             entry("a", a),
