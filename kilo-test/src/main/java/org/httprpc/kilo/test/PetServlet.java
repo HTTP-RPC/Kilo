@@ -24,7 +24,6 @@ import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
-import org.httprpc.kilo.util.concurrent.Pipe;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -34,14 +33,12 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-@WebServlet("/pets/stream")
+@WebServlet("/pets/example")
 public class PetServlet extends PageServlet {
     private interface Parameters {
         @Required
@@ -49,8 +46,6 @@ public class PetServlet extends PageServlet {
     }
 
     private DataSource dataSource = null;
-
-    private static ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
     public void init() throws ServletException {
@@ -77,26 +72,18 @@ public class PetServlet extends PageServlet {
 
         var owner = parameters.getOwner();
 
-        var pipe = new Pipe<Pet>();
+        var queryBuilder = QueryBuilder.select(Pet.class)
+            .filterByForeignKey(Owner.class, "owner")
+            .ordered(true);
 
-        var connection = getConnection();
-
-        executorService.submit(() -> {
-            var queryBuilder = QueryBuilder.select(Pet.class)
-                .filterByForeignKey(Owner.class, "owner")
-                .ordered(true);
-
-            try (var statement = queryBuilder.prepare(connection);
-                var results = queryBuilder.executeQuery(statement, mapOf(
-                    entry("owner", owner)
-                ))) {
-                pipe.submit(mapAll(results, BeanAdapter.toType(Pet.class)));
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
-        });
-
-        return pipe;
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("owner", owner)
+            ))) {
+            return listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     @Override

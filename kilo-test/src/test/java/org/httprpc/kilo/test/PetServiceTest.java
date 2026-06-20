@@ -67,7 +67,7 @@ public class PetServiceTest {
             expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/example"));
 
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
