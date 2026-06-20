@@ -51,15 +51,15 @@ public class PetServiceTest {
 
     @Test
     public void testPetsHTML() throws IOException {
-        testPetsStream("pets.html", "text/html");
+        testPetServlet("pets.html", "text/html");
     }
 
     @Test
     public void testPetsCSV() throws IOException {
-        testPetsStream("pets.csv", "text/csv");
+        testPetServlet("pets.csv", "text/csv");
     }
 
-    private void testPetsStream(String name, String mimeType) throws IOException {
+    private void testPetServlet(String name, String mimeType) throws IOException {
         String expected;
         try (var inputStream = getClass().getResourceAsStream(name)) {
             var textDecoder = new TextDecoder();

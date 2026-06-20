@@ -767,7 +767,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testMathExample() throws IOException {
+    public void testMathServlet() throws IOException {
         String expected;
         try (var inputStream = getClass().getResourceAsStream("math.html")) {
             var textDecoder = new TextDecoder();
