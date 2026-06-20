@@ -28,7 +28,8 @@ import java.util.concurrent.TimeUnit;
  * The element type.
  */
 public class Pipe<E> implements Iterable<E> {
-    private BlockingQueue<Object> queue;
+    private volatile BlockingQueue<Object> queue;
+
     private int timeout;
 
     private static final Object TERMINATOR = new Object();
@@ -81,6 +82,10 @@ public class Pipe<E> implements Iterable<E> {
             throw new IllegalArgumentException();
         }
 
+        if (queue == null) {
+            throw new IllegalStateException();
+        }
+
         for (var element : elements) {
             submit(element);
         }
@@ -112,6 +117,10 @@ public class Pipe<E> implements Iterable<E> {
             @Override
             @SuppressWarnings("unchecked")
             public boolean hasNext() {
+                if (queue == null) {
+                    return false;
+                }
+
                 if (next == null) {
                     Object value;
                     try {
@@ -130,6 +139,8 @@ public class Pipe<E> implements Iterable<E> {
 
                     if (value != TERMINATOR) {
                         next = (E)value;
+                    } else {
+                        queue = null;
                     }
                 }
 
