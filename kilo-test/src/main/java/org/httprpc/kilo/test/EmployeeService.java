@@ -55,12 +55,11 @@ public class EmployeeService extends AbstractDatabaseService {
     private Iterable<Employee> getEmployeesStream() {
         var pipe = new Pipe<Employee>(4096, 15000);
 
-        var connection = getConnection();
-
         executorService.submit(() -> {
             var queryBuilder = QueryBuilder.select(Employee.class);
 
-            try (var statement = queryBuilder.prepare(connection);
+            try (var connection = openConnection();
+                var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
                 pipe.submit(mapAll(results, BeanAdapter.toType(Employee.class)));
             } catch (SQLException exception) {
