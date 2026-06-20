@@ -19,10 +19,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.PageServlet;
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.WebService;
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
-import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.kilo.util.concurrent.Pipe;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -32,13 +34,23 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet("/pets/stream")
 public class PetServlet extends PageServlet {
+    private interface Parameters {
+        @Required
+        String getOwner();
+    }
+
     private DataSource dataSource = null;
+
+    private static ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
     public void init() throws ServletException {
@@ -60,50 +72,47 @@ public class PetServlet extends PageServlet {
     }
 
     @Override
-    protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected Object execute() {
+        var parameters = getParameters(Parameters.class);
+
+        var owner = parameters.getOwner();
+
+        var pipe = new Pipe<Pet>();
+
+        var connection = getConnection();
+
+        executorService.submit(() -> {
+            var queryBuilder = QueryBuilder.select(Pet.class)
+                .filterByForeignKey(Owner.class, "owner")
+                .ordered(true);
+
+            try (var statement = queryBuilder.prepare(connection);
+                var results = queryBuilder.executeQuery(statement, mapOf(
+                    entry("owner", owner)
+                ))) {
+                pipe.submit(mapAll(results, BeanAdapter.toType(Pet.class)));
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+        });
+
+        return pipe;
+    }
+
+    @Override
+    protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         var accept = map(request.getHeader("Accept"), String::toLowerCase);
 
-        if (accept == null) {
-            return;
-        }
+        if (accept != null && accept.equals(WebService.TEXT_CSV)) {
+            response.setContentType(WebService.TEXT_CSV);
 
-        var owner = request.getParameter("owner");
+            var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
-        if (owner == null) {
-            return;
-        }
+            csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), request.getLocale()));
 
-        var queryBuilder = QueryBuilder.select(Pet.class)
-            .filterByForeignKey(Owner.class, "owner")
-            .ordered(true);
-
-        try (var statement = queryBuilder.prepare(getConnection());
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("owner", owner)
-            ))) {
-            if (accept.startsWith(WebService.TEXT_HTML)) {
-                response.setContentType(WebService.TEXT_HTML);
-
-                var type = getClass();
-
-                var templateEncoder = new TemplateEncoder(type, String.format("%s.html", type.getSimpleName()));
-
-                templateEncoder.setResourceBundle(ResourceBundle.getBundle(type.getName(), request.getLocale()));
-
-                templateEncoder.write(results, response.getWriter());
-            } else if (accept.startsWith(WebService.TEXT_CSV)) {
-                response.setContentType(WebService.TEXT_CSV);
-
-                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
-
-                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), request.getLocale()));
-
-                csvEncoder.write(results, response.getWriter());
-            } else {
-                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            }
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
+            csvEncoder.write((Iterable<?>)result, response.getWriter());
+        } else {
+            super.encodeResult(request, response, result);
         }
     }
 }
