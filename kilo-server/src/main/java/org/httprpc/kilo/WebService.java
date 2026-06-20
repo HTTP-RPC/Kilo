@@ -805,8 +805,6 @@ public abstract class WebService extends HttpServlet {
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
-    private static final String CONTENT_TYPE_FORMAT = "%s;charset=%s";
-
     private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
 
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
@@ -1106,7 +1104,7 @@ public abstract class WebService extends HttpServlet {
                         var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
                         var type = parameter.getType();
 
-                        var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(Object.class));
+                        var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(String.class));
 
                         Object argument;
                         if (type.isArray()) {
@@ -1308,14 +1306,14 @@ public abstract class WebService extends HttpServlet {
      * The servlet response.
      *
      * @param result
-     * The operation result.
+     * The value to encode.
      *
      * @throws IOException
      * If an error occurs while encoding the result.
      */
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         if (result instanceof Document document) {
-            response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_XML, StandardCharsets.UTF_8));
+            response.setContentType(TEXT_XML);
 
             var transformer = ElementAdapter.newTransformer();
 
@@ -1325,7 +1323,7 @@ public abstract class WebService extends HttpServlet {
                 throw new IOException(exception);
             }
         } else {
-            response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
+            response.setContentType(APPLICATION_JSON);
 
             var jsonEncoder = new JSONEncoder(isCompact());
 
@@ -1355,7 +1353,7 @@ public abstract class WebService extends HttpServlet {
         var message = map(cause, Throwable::getMessage);
 
         if (message != null) {
-            response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_PLAIN, StandardCharsets.UTF_8));
+            response.setContentType(TEXT_PLAIN);
 
             var textEncoder = new TextEncoder();
 

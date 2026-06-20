@@ -18,15 +18,30 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
+
+import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 /**
  * Abstract base class for page servlets.
  */
 public abstract class PageServlet extends HttpServlet {
+    private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
+    private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
+
     @Override
     public void init() throws ServletException {
         var fields = getClass().getDeclaredFields();
@@ -103,7 +118,39 @@ public abstract class PageServlet extends HttpServlet {
      * @throws IOException
      * If an I/O error occurs while processing the request.
      */
-    protected abstract void process(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        PageServlet.request.set(request);
+        PageServlet.response.set(response);
+
+        Object result;
+        try {
+            result = execute();
+        } finally {
+            PageServlet.request.remove();
+            PageServlet.response.remove();
+        }
+
+        if (response.isCommitted()) {
+            return;
+        }
+
+        if (result == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        encodeResult(request, response, result);
+    }
+
+    /**
+     * Executes a page request.
+     *
+     * @return
+     * The the result of executing the page request.
+     */
+    protected Object execute() {
+        return null;
+    }
 
     /**
      * Returns the database connection.
@@ -114,5 +161,127 @@ public abstract class PageServlet extends HttpServlet {
      */
     protected static Connection getConnection() {
         return WebService.getConnection();
+    }
+
+    /**
+     * Returns the servlet request.
+     *
+     * @return
+     * The servlet request.
+     */
+    protected static HttpServletRequest getRequest() {
+        return request.get();
+    }
+
+    /**
+     * Returns the servlet response.
+     *
+     * @return
+     * The servlet response.
+     */
+    protected static HttpServletResponse getResponse() {
+        return response.get();
+    }
+
+    /**
+     * Returns the request parameters.
+     *
+     * @param <P>
+     * The type representing the parameters.
+     *
+     * @param type
+     * The type representing the parameters.
+     *
+     * @return
+     * The request parameters.
+     */
+    protected static <P> P getParameters(Class<P> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var parameterMap = getRequest().getParameterMap();
+
+        return BeanAdapter.coerce(mapOf(mapAll(BeanAdapter.getProperties(type).entrySet(), entry -> {
+            var name = entry.getKey();
+            var accessor = entry.getValue().getAccessor();
+
+            var values = coalesce(map(parameterMap.get(name), Arrays::asList), () -> emptyListOf(String.class));
+
+            Object value;
+            if (Collection.class.isAssignableFrom(accessor.getReturnType())) {
+                value = values;
+            } else {
+                value = firstOf(values);
+            }
+
+            return entry(name, value);
+        })), type);
+    }
+
+    /**
+     * Encodes the result of a page request.
+     *
+     * @param request
+     * The servlet request.
+     *
+     * @param response
+     * The servlet response.
+     *
+     * @param result
+     * The value to encode.
+     *
+     * @throws IOException
+     * If an error occurs while encoding the result.
+     */
+    protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
+        response.setContentType(WebService.TEXT_HTML);
+
+        var type = getClass();
+
+        var templateEncoder = new TemplateEncoder(type, String.format("%s.html", type.getSimpleName()));
+
+        var locale = getLocale(request);
+        var timeZone = getTimeZone(request);
+
+        templateEncoder.setLocale(locale);
+        templateEncoder.setTimeZone(timeZone);
+
+        ResourceBundle resourceBundle;
+        try {
+            resourceBundle = ResourceBundle.getBundle(type.getName(), locale);
+        } catch (MissingResourceException exception) {
+            resourceBundle = null;
+        }
+
+        templateEncoder.setResourceBundle(resourceBundle);
+
+        templateEncoder.write(result, response.getWriter());
+    }
+
+    /**
+     * Returns the locale associated with the reqeust.
+     *
+     * @param request
+     * The servlet request.
+     *
+     * @return
+     * The locale associated with the request.
+     */
+    protected Locale getLocale(HttpServletRequest request) {
+        return request.getLocale();
+    }
+
+    /**
+     * Returns the time zone associated with the reqeust.
+     *
+     * @param request
+     * The servlet request.
+     *
+     * @return
+     * The time zone associated with the request.
+     */
+    protected TimeZone getTimeZone(HttpServletRequest request) {
+        return TimeZone.getTimeZone("GMT");
     }
 }

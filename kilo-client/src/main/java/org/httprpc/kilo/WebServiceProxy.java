@@ -983,6 +983,6 @@ public class WebServiceProxy {
             }
         }
 
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURI, headers)));
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(baseURI, headers)));
     }
 }
