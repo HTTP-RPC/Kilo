@@ -18,6 +18,8 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.PageServlet;
 import org.httprpc.kilo.WebService;
 
+import java.util.List;
+
 import static org.httprpc.kilo.util.Collections.*;
 
 @WebServlet("/math/example")
@@ -25,6 +27,8 @@ public class MathServlet extends PageServlet {
     private interface Parameters {
         double getA();
         double getB();
+
+        List<Double> getValues();
     }
 
     private @WebService.Instance MathService mathService = null;
@@ -36,11 +40,11 @@ public class MathServlet extends PageServlet {
         var a = parameters.getA();
         var b = parameters.getB();
 
-        var sum = mathService.getSum(a, b);
+        var values = parameters.getValues();
+
+        var sum = mathService.getSum(a, b) + mathService.getSum(values);
 
         return mapOf(
-            entry("a", a),
-            entry("b", b),
             entry("sum", sum)
         );
     }

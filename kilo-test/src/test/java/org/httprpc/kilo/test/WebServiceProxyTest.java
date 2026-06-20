@@ -778,8 +778,9 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/example"));
 
         webServiceProxy.setArguments(mapOf(
-            entry("a", 4),
-            entry("b", 2)
+            entry("a", 1),
+            entry("b", 2),
+            entry("values", listOf(3, 4, 5))
         ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
