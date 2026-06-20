@@ -124,18 +124,24 @@ public abstract class PageServlet extends HttpServlet {
 
         Object result;
         try {
-            result = execute();
-        } finally {
-            PageServlet.request.remove();
-            PageServlet.response.remove();
-        }
+            try {
+                result = execute();
+            } catch (IllegalArgumentException | UnsupportedOperationException exception) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            } finally {
+                PageServlet.request.remove();
+                PageServlet.response.remove();
+            }
+        } catch (Exception exception) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        if (response.isCommitted()) {
+            log(exception.getMessage(), exception);
+
             return;
         }
 
-        if (result == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        if (response.isCommitted()) {
             return;
         }
 
@@ -148,9 +154,7 @@ public abstract class PageServlet extends HttpServlet {
      * @return
      * The the result of executing the page request.
      */
-    protected Object execute() {
-        return null;
-    }
+    protected abstract Object execute() throws Exception;
 
     /**
      * Returns the database connection.
