@@ -40,34 +40,29 @@ public class EmployeeService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     public Iterable<Employee> getEmployees(boolean stream) throws SQLException {
-        return stream ? getEmployeesStream() : getEmployeesList();
-    }
-
-    private Iterable<Employee> getEmployeesList() throws SQLException {
         var queryBuilder = QueryBuilder.select(Employee.class);
 
-        try (var statement = queryBuilder.prepare(getConnection());
-            var results = queryBuilder.executeQuery(statement)) {
-            return listOf(mapAll(results, BeanAdapter.toType(Employee.class)));
-        }
-    }
+        var connection = getConnection();
 
-    private Iterable<Employee> getEmployeesStream() {
-        var pipe = new Pipe<Employee>(4096, 15000);
+        if (stream) {
+            var pipe = new Pipe<Employee>(4096, 15000);
 
-        executorService.submit(() -> {
-            var queryBuilder = QueryBuilder.select(Employee.class);
+            executorService.submit(() -> {
+                try (var statement = queryBuilder.prepare(connection);
+                    var results = queryBuilder.executeQuery(statement)) {
+                    pipe.submit(mapAll(results, BeanAdapter.toType(Employee.class)));
+                }
 
-            try (var connection = openConnection();
-                var statement = queryBuilder.prepare(connection);
+                return null;
+            });
+
+            return pipe;
+        } else {
+            try (var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
-                pipe.submit(mapAll(results, BeanAdapter.toType(Employee.class)));
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
+                return listOf(mapAll(results, BeanAdapter.toType(Employee.class)));
             }
-        });
-
-        return pipe;
+        }
     }
 
     @RequestMethod("GET")

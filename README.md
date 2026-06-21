@@ -897,7 +897,9 @@ public interface Employee {
 ```java
 var queryBuilder = QueryBuilder.select(Employee.class);
 
-try (var statement = queryBuilder.prepare(getConnection());
+var connection = getConnection();
+
+try (var statement = queryBuilder.prepare(connection);
     var results = queryBuilder.executeQuery(statement)) {
     return listOf(mapAll(results, BeanAdapter.toType(Employee.class)));
 }
@@ -909,15 +911,12 @@ All of the rows are read and added to the list before anything is returned to th
 var pipe = new Pipe<Employee>(4096, 15000);
 
 executorService.submit(() -> {
-    var queryBuilder = QueryBuilder.select(Employee.class);
-
-    try (var connection = openConnection();
-        var statement = queryBuilder.prepare(connection);
+    try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
         pipe.submit(mapAll(results, BeanAdapter.toType(Employee.class)));
-    } catch (SQLException exception) {
-        throw new RuntimeException(exception);
     }
+
+    return null;
 });
 
 return pipe;
