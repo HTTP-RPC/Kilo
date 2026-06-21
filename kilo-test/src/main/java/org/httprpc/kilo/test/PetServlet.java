@@ -16,8 +16,6 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.PageServlet;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.WebService;
@@ -32,6 +30,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -67,7 +66,7 @@ public class PetServlet extends PageServlet {
     }
 
     @Override
-    protected Object execute() {
+    protected Object execute() throws IOException, SQLException {
         var parameters = getParameters(Parameters.class);
 
         var owner = parameters.getOwner();
@@ -76,30 +75,32 @@ public class PetServlet extends PageServlet {
             .filterByForeignKey(Owner.class, "owner")
             .ordered(true);
 
+        List<Pet> pets;
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             ))) {
-            return listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
+            pets = listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
         }
-    }
 
-    @Override
-    protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
+        var request = getRequest();
+
         var accept = map(request.getHeader("Accept"), String::toLowerCase);
 
         if (accept != null && accept.equals(WebService.TEXT_CSV)) {
+            var response = getResponse();
+
             response.setContentType(WebService.TEXT_CSV);
 
             var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
             csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), request.getLocale()));
 
-            csvEncoder.write((Iterable<?>)result, response.getWriter());
-        } else {
-            super.encodeResult(request, response, result);
+            csvEncoder.write(pets, response.getWriter());
+
+            return null;
         }
+
+        return pets;
     }
 }
