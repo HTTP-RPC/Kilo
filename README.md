@@ -905,7 +905,7 @@ try (var statement = queryBuilder.prepare(connection);
 }
 ```
 
-All of the rows are read and added to the list before anything is returned to the caller. For small result sets, the latency and memory implications associated with this approach might be acceptable. However, for larger data volumes the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
+All of the rows are read and added to a list before anything is returned to the caller. For small result sets, the latency and memory implications associated with this approach might be acceptable. However, for larger data volumes the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
 
 ```java
 var pipe = new Pipe<Employee>(4096, 15000);
@@ -925,14 +925,6 @@ return pipe;
 The pipe is configured with a capacity of 4K elements and a timeout of 15s. Limiting the capacity ensures that the producer does not do more work than necessary if the consumer fails to retrieve all of the data. Similarly, specifying a timeout ensures that the consumer does not wait indefinitely if the producer stops submitting data.
 
 This implementation is slightly more verbose than the first one. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
-
-A consumer could process the response just as efficiently using the `iterate()` method of `JSONDecoder`:
-
-```java
-var jsonDecoder = new JSONDecoder();
-
-return countOf(jsonDecoder.iterate(inputStream));
-```
 
 For more information, see the [employee service](kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
