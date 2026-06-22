@@ -35,7 +35,6 @@ import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet("/pets/example")
 public class PetServlet extends PageServlet {
@@ -85,9 +84,9 @@ public class PetServlet extends PageServlet {
 
         var request = getRequest();
 
-        var accept = map(request.getHeader("Accept"), String::toLowerCase);
+        var accept = request.getHeader("Accept");
 
-        if (accept != null && accept.equals(WebService.TEXT_CSV)) {
+        if (accept != null && accept.equalsIgnoreCase(WebService.TEXT_CSV)) {
             var response = getResponse();
 
             response.setContentType(WebService.TEXT_CSV);
