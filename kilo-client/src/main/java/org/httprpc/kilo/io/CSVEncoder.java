@@ -37,6 +37,8 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
+    private static final char NNBSP = 0x202f;
+
     /**
      * Constructs a new CSV encoder.
      *
@@ -189,6 +191,8 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
             if (c == '"') {
                 writer.append("\"\"");
+            } else if (c == NNBSP) {
+                writer.append(' ');
             } else {
                 writer.append(c);
             }

@@ -119,6 +119,21 @@ public class CSVEncoderTest {
     }
 
     @Test
+    public void testNNBSP() throws IOException {
+        var csvEncoder = new CSVEncoder(listOf("a"));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(listOf(
+            mapOf(
+                entry("a", "a\u202fb\u202fc\u202f")
+            )
+        ), writer);
+
+        assertEquals("\"a\"\r\n\"a b c \"\r\n", writer.toString());
+    }
+
+    @Test
     public void testResourceBundle() throws IOException {
         var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
