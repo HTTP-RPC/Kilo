@@ -243,7 +243,7 @@ private @Instance MathService mathService = null;
 ## Content Generation
 The `PageServlet` class can be used to facilitate generation of document-oriented content such as invoices or reports. This class supports read-only database access and shares a connection instance with `WebService`.
 
-The abstract `execute()` method is called to produce the page content. An HTML [template](template-reference.md) with the same name as the implementing class will be automatically applied to the value returned by this method. However, if the method commits the response by writing to the output stream directly, the template will not be applied.
+The abstract `execute()` method is called to produce the page content. An HTML [template](template-reference.md) with the same name as the implementing class will be automatically applied to the value returned by this method, unless the method commits the response by writing to the output stream directly. This allows an implementation to support alternate representations such as CSV.
 
 As with `WebService`, service instances are automatically injected into annotated fields. See [MathServlet](kilo-test/src/main/java/org/httprpc/kilo/test/MathServlet.java) or [PetServlet](kilo-test/src/main/java/org/httprpc/kilo/test/PetServlet.java) for more information.
 
