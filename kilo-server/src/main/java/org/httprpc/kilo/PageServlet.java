@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -245,11 +244,13 @@ public abstract class PageServlet extends HttpServlet {
 
         var templateEncoder = new TemplateEncoder(type, String.format("%s.html", type.getSimpleName()));
 
-        var locale = getLocale(request);
-        var timeZone = getTimeZone(request);
+        var locale = request.getLocale();
 
         templateEncoder.setLocale(locale);
-        templateEncoder.setTimeZone(timeZone);
+
+        var timeZoneID = coalesce(request.getHeader("Time-Zone"), () -> "GMT");
+
+        templateEncoder.setTimeZone(TimeZone.getTimeZone(timeZoneID));
 
         ResourceBundle resourceBundle;
         try {
@@ -261,31 +262,5 @@ public abstract class PageServlet extends HttpServlet {
         templateEncoder.setResourceBundle(resourceBundle);
 
         templateEncoder.write(result, response.getWriter());
-    }
-
-    /**
-     * Returns the locale associated with the reqeust.
-     *
-     * @param request
-     * The servlet request.
-     *
-     * @return
-     * The locale associated with the request.
-     */
-    protected Locale getLocale(HttpServletRequest request) {
-        return request.getLocale();
-    }
-
-    /**
-     * Returns the time zone associated with the reqeust.
-     *
-     * @param request
-     * The servlet request.
-     *
-     * @return
-     * The time zone associated with the request.
-     */
-    protected TimeZone getTimeZone(HttpServletRequest request) {
-        return TimeZone.getTimeZone("GMT");
     }
 }
