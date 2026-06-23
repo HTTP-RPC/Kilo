@@ -42,10 +42,10 @@ public class EmployeeService extends AbstractDatabaseService {
     public Iterable<Employee> getEmployees(boolean stream) throws SQLException {
         var queryBuilder = QueryBuilder.select(Employee.class);
 
-        var connection = getConnection();
-
         if (stream) {
             var pipe = new Pipe<Employee>(4096, 15000);
+
+            var connection = getConnection();
 
             executorService.submit(() -> {
                 try (var statement = queryBuilder.prepare(connection);
@@ -58,7 +58,7 @@ public class EmployeeService extends AbstractDatabaseService {
 
             return pipe;
         } else {
-            try (var statement = queryBuilder.prepare(connection);
+            try (var statement = queryBuilder.prepare(getConnection());
                 var results = queryBuilder.executeQuery(statement)) {
                 return listOf(mapAll(results, BeanAdapter.toType(Employee.class)));
             }

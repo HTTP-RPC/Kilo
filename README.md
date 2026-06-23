@@ -243,7 +243,7 @@ private @Instance MathService mathService = null;
 ## Content Generation
 The `PageServlet` class facilitates generation of document-oriented content such as invoices or reports. It supports read-only database access and shares a connection instance with `WebService`.
 
-The abstract `execute()` method is called to produce the page content. An HTML [template](template-reference.md) with the same name as the implementing class will be automatically applied to the value returned by this method, unless the method commits the response by writing to the output stream directly. This allows an implementation to support alternate representations such as CSV.
+The abstract `execute()` method is called to produce the page data. An HTML [template](template-reference.md) with the same name as the implementing class will be automatically applied to the value returned by this method, unless the method commits the response by writing to the output stream directly. This allows an implementation to support alternate representations such as CSV.
 
 As with `WebService`, service instances are automatically injected into annotated fields. See [MathServlet](kilo-test/src/main/java/org/httprpc/kilo/test/MathServlet.java) or [PetServlet](kilo-test/src/main/java/org/httprpc/kilo/test/PetServlet.java) for more information.
 
@@ -897,9 +897,7 @@ public interface Employee {
 ```java
 var queryBuilder = QueryBuilder.select(Employee.class);
 
-var connection = getConnection();
-
-try (var statement = queryBuilder.prepare(connection);
+try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
     return listOf(mapAll(results, BeanAdapter.toType(Employee.class)));
 }
@@ -909,6 +907,8 @@ All of the rows are read and added to a list before anything is returned to the 
 
 ```java
 var pipe = new Pipe<Employee>(4096, 15000);
+
+var connection = getConnection();
 
 executorService.submit(() -> {
     try (var statement = queryBuilder.prepare(connection);
