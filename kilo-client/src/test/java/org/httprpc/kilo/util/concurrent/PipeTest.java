@@ -46,11 +46,26 @@ public class PipeTest {
     }
 
     private void testPipe(Pipe<Integer> pipe) {
-        var expectedValues = listOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89);
+        var values = listOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89);
 
-        executorService.submit(() -> pipe.submit(expectedValues));
+        executorService.submit(() -> pipe.submit(values));
 
-        assertEquals(expectedValues, listOf(pipe));
+        assertEquals(values, listOf(pipe));
+    }
+
+    @Test
+    public void testIterator() {
+        var pipe = new Pipe<Integer>();
+
+        executorService.submit(() -> pipe.submit(listOf(1, 2, 3)));
+
+        var iterator = pipe.iterator();
+
+        while (iterator.hasNext()) {
+            iterator.next();
+        }
+
+        assertFalse(iterator.hasNext());
     }
 
     @Test
