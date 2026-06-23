@@ -213,15 +213,19 @@ public class BeanAdapterTest {
     public void testPrimitiveCoercion() {
         assertEquals((byte)0, BeanAdapter.coerce(null, Byte.TYPE));
         assertEquals((byte)1, BeanAdapter.coerce("1", Byte.TYPE));
+        assertEquals((byte)1, BeanAdapter.coerce("1.0", Byte.TYPE));
 
         assertEquals((short)0, BeanAdapter.coerce(null, Short.TYPE));
         assertEquals((short)2, BeanAdapter.coerce("2", Short.TYPE));
+        assertEquals((short)2, BeanAdapter.coerce("2.0", Short.TYPE));
 
         assertEquals(0, BeanAdapter.coerce(null, Integer.TYPE));
         assertEquals(3, BeanAdapter.coerce("3", Integer.TYPE));
+        assertEquals(3, BeanAdapter.coerce("3.0", Integer.TYPE));
 
         assertEquals(0L, BeanAdapter.coerce(null, Long.TYPE));
         assertEquals(4L, BeanAdapter.coerce("4", Long.TYPE));
+        assertEquals(4L, BeanAdapter.coerce("4.0", Long.TYPE));
 
         assertEquals(0.0f, BeanAdapter.coerce(null, Float.TYPE));
         assertEquals(5.0f, BeanAdapter.coerce("5.0", Float.TYPE));

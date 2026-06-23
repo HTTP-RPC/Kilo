@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -764,50 +765,38 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
                 return (type == Byte.TYPE) ? (byte)0 : null;
-            } else if (value instanceof Number number) {
-                return number.byteValue();
             } else {
-                return Byte.parseByte(value.toString());
+                return coalesce(cast(value, Number.class), () -> new BigDecimal(value.toString())).byteValue();
             }
         } else if (type == Short.TYPE || type == Short.class) {
             if (value == null) {
                 return (type == Short.TYPE) ? (short)0 : null;
-            } else if (value instanceof Number number) {
-                return number.shortValue();
             } else {
-                return Short.parseShort(value.toString());
+                return coalesce(cast(value, Number.class), () -> new BigDecimal(value.toString())).shortValue();
             }
         } else if (type == Integer.TYPE || type == Integer.class) {
             if (value == null) {
                 return (type == Integer.TYPE) ? 0 : null;
-            } else if (value instanceof Number number) {
-                return number.intValue();
             } else {
-                return Integer.parseInt(value.toString());
+                return coalesce(cast(value, Number.class), () -> new BigDecimal(value.toString())).intValue();
             }
         } else if (type == Long.TYPE || type == Long.class) {
             if (value == null) {
                 return (type == Long.TYPE) ? 0L : null;
-            } else if (value instanceof Number number) {
-                return number.longValue();
             } else {
-                return Long.parseLong(value.toString());
+                return coalesce(cast(value, Number.class), () -> new BigDecimal(value.toString())).longValue();
             }
         } else if (type == Float.TYPE || type == Float.class) {
             if (value == null) {
                 return (type == Float.TYPE) ? 0.0f : null;
-            } else if (value instanceof Number number) {
-                return number.floatValue();
             } else {
-                return Float.parseFloat(value.toString());
+                return coalesce(cast(value, Number.class), () -> new BigDecimal(value.toString())).floatValue();
             }
         } else if (type == Double.TYPE || type == Double.class) {
             if (value == null) {
                 return (type == Double.TYPE) ? 0.0 : null;
-            } else if (value instanceof Number number) {
-                return number.doubleValue();
             } else {
-                return Double.parseDouble(value.toString());
+                return coalesce(cast(value, Number.class), () -> new BigDecimal(value.toString())).doubleValue();
             }
         } else if (type == Boolean.TYPE || type == Boolean.class) {
             if (value == null) {
