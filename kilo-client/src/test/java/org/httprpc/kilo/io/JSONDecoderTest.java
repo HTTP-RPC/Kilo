@@ -95,14 +95,39 @@ public class JSONDecoderTest {
 
     @Test
     public void testNumber() throws IOException {
+        assertEquals(123, decode(String.valueOf(123)));
+        assertEquals(-123, decode(String.valueOf(-123)));
+
+        assertEquals(456.789, decode(String.valueOf(456.789)));
+        assertEquals(-456.789, decode(String.valueOf(-456.789)));
+
+        assertEquals(1, decode("0001"));
+        assertEquals(-1, decode("-0001"));
+
+        assertEquals(1.0, decode("1.000"));
+        assertEquals(-1.0, decode("-1.000"));
+
+        assertEquals(1.2345e10, decode("1.2345e10"));
+        assertEquals(1.2345e10, decode("1.2345e+10"));
+        assertEquals(1.2345e-10, decode("1.2345e-10"));
+
+        assertEquals(0, decode("-"));
+
+        assertEquals(1.0, decode("1."));
+        assertEquals(-1.0, decode("-1."));
+
+        assertEquals(1.2345, decode("1.2345e"));
+        assertEquals(1.2345, decode("1.2345e+"));
+        assertEquals(1.2345, decode("1.2345e-"));
+
         assertEquals(Integer.MIN_VALUE, decode(String.valueOf(Integer.MIN_VALUE)));
         assertEquals(Integer.MAX_VALUE, decode(String.valueOf(Integer.MAX_VALUE)));
 
         assertEquals(Long.MIN_VALUE, decode(String.valueOf(Long.MIN_VALUE)));
         assertEquals(Long.MAX_VALUE, decode(String.valueOf(Long.MAX_VALUE)));
 
-        assertEquals(Double.MIN_VALUE, decode(String.valueOf(Double.MIN_VALUE)));
-        assertEquals(Double.MAX_VALUE, decode(String.valueOf(Double.MAX_VALUE)));
+        assertThrows(IOException.class, () -> decode("1..0"));
+        assertThrows(IOException.class, () -> decode("1ee0"));
     }
 
     @Test

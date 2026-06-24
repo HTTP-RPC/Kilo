@@ -302,32 +302,79 @@ public class JSONDecoder extends Decoder<Object> {
     }
 
     private Number readNumber(Reader reader) throws IOException {
-        valueBuilder.setLength(0);
+        var valueSign = 1;
 
-        var decimal = false;
-
-        while (c != EOF && (Character.isDigit(c) || c == '.' || c == 'e' || c == 'E' || c == '-')) {
-            valueBuilder.append((char)c);
-
-            decimal |= (c == '.');
+        if (c == '-') {
+            valueSign = -1;
 
             c = reader.read();
         }
 
-        Number number;
-        if (decimal) {
-            number = Double.parseDouble(valueBuilder.toString());
-        } else {
-            var value = Long.parseLong(valueBuilder.toString());
+        var value = 0L;
 
-            if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-                number = value;
+        var scale = 0;
+        var fraction = 0.0;
+
+        var scientificNotation = false;
+
+        var exponentSign = 1;
+        var exponent = 0;
+
+        while (c != EOF) {
+            if (c >= '0' && c <= '9') {
+                var n = c - '0';
+
+                if (scientificNotation) {
+                    exponent = exponent * 10 + n;
+                } else if (scale > 0) {
+                    fraction += n * Math.pow(10, -scale);
+
+                    scale++;
+                } else {
+                    value = value * 10 + n;
+                }
+            } else if (c == '.') {
+                if (scale > 0) {
+                    throw new IOException("Multiple decimal points.");
+                }
+
+                scale++;
+            } else if (c == 'E' || c == 'e') {
+                if (scientificNotation) {
+                    throw new IOException("Multiple exponents.");
+                }
+
+                scientificNotation = true;
+
+                c = reader.read();
+
+                if (c == '+' || c == '-') {
+                    if (c == '-') {
+                        exponentSign = -1;
+                    }
+
+                    c = reader.read();
+                }
+
+                continue;
             } else {
-                number = (int)value;
+                break;
             }
+
+            c = reader.read();
         }
 
-        return number;
+        value *= valueSign;
+
+        if (scale > 0 || scientificNotation) {
+            fraction *= valueSign;
+
+            return (value + fraction) * Math.pow(10, exponentSign * exponent);
+        } else if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
+            return (int)value;
+        } else {
+            return value;
+        }
     }
 
     private void readLiteral(Reader reader, String literal) throws IOException {
