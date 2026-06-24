@@ -150,49 +150,7 @@ public class JSONDecoder extends Decoder<Object> {
             throw new IOException("Unexpected end of stream.");
         }
 
-        if (c == '"') {
-            return readString(reader);
-        } else if (c == '-' || Character.isDigit(c)) {
-            return readNumber(reader);
-        } else if (c == TRUE.charAt(0)) {
-            readLiteral(reader, TRUE);
-
-            return Boolean.TRUE;
-        } else if (c == FALSE.charAt(0)) {
-            readLiteral(reader, FALSE);
-
-            return Boolean.FALSE;
-        } else if (c == NULL.charAt(0)) {
-            readLiteral(reader, NULL);
-
-            return null;
-        } else if (c == '[') {
-            var list = new ArrayList<>();
-
-            c = reader.read();
-
-            skipWhitespace(reader);
-
-            while (c != EOF && c != ']') {
-                list.add(readValue(reader));
-
-                skipWhitespace(reader);
-
-                if (c == ',') {
-                    c = reader.read();
-
-                    skipWhitespace(reader);
-                }
-            }
-
-            if (c != ']') {
-                throw new IOException("Unterminated array.");
-            }
-
-            c = reader.read();
-
-            return list;
-        } else if (c == '{') {
+        if (c == '{') {
             var map = new LinkedHashMap<String, Object>();
 
             c = reader.read();
@@ -234,6 +192,48 @@ public class JSONDecoder extends Decoder<Object> {
             c = reader.read();
 
             return map;
+        } else if (c == '[') {
+            var list = new ArrayList<>();
+
+            c = reader.read();
+
+            skipWhitespace(reader);
+
+            while (c != EOF && c != ']') {
+                list.add(readValue(reader));
+
+                skipWhitespace(reader);
+
+                if (c == ',') {
+                    c = reader.read();
+
+                    skipWhitespace(reader);
+                }
+            }
+
+            if (c != ']') {
+                throw new IOException("Unterminated array.");
+            }
+
+            c = reader.read();
+
+            return list;
+        } else if (c == '"') {
+            return readString(reader);
+        } else if (c == '-' || Character.isDigit(c)) {
+            return readNumber(reader);
+        } else if (c == TRUE.charAt(0)) {
+            readLiteral(reader, TRUE);
+
+            return Boolean.TRUE;
+        } else if (c == FALSE.charAt(0)) {
+            readLiteral(reader, FALSE);
+
+            return Boolean.FALSE;
+        } else if (c == NULL.charAt(0)) {
+            readLiteral(reader, NULL);
+
+            return null;
         } else {
             throw new IOException(String.format("Unexpected character (0x%04X).", c));
         }

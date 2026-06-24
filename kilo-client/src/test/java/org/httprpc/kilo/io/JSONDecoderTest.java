@@ -26,6 +26,62 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONDecoderTest {
     @Test
+    public void testObject() throws IOException {
+        var expected = mapOf(
+            entry("a", "abc"),
+            entry("b", 123),
+            entry("c", true),
+            entry("d", listOf(1, 2.0, 3.0)),
+            entry("e", mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0)))
+        );
+
+        var text = "{\"a\": \"abc\", \"b\":\t123, \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}";
+
+        var actual = decode(text);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testEmptyObject() throws IOException {
+        assertEquals(mapOf(), decode("{\n}"));
+    }
+
+    @Test
+    public void testUnterminatedObject() {
+        assertThrows(IOException.class, () -> decode("{\"a\": 1, \"b\": 2, \"c\": 3"));
+        assertThrows(IOException.class, () -> decode("{\"a\": 1, \"b\": 2, \"c\": 3, "));
+    }
+
+    @Test
+    public void testArray() throws IOException {
+        var expected = listOf(
+            "abc",
+            123,
+            true,
+            listOf(1, 2.0, 3.0),
+            mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
+        );
+
+        var text = "[\"abc\",\t123,\ttrue,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
+
+        var actual = decode(text);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testEmptyArray() throws IOException {
+        assertEquals(listOf(), decode("[\n]"));
+    }
+
+    @Test
+    public void testUnterminatedArray() {
+        assertThrows(IOException.class, () -> decode("[1, 2, 3"));
+        assertThrows(IOException.class, () -> decode("[1, 2, 3, "));
+    }
+
+    @Test
     public void testString() throws IOException {
         assertEquals("abcdéfg", decode("\"abcdéfg\""));
         assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\""));
@@ -63,62 +119,6 @@ public class JSONDecoderTest {
         assertNull(decode(String.valueOf((String)null)));
 
         assertThrows(IOException.class, () -> decode("n123"));
-    }
-
-    @Test
-    public void testArray() throws IOException {
-        var expected = listOf(
-            "abc",
-            123,
-            true,
-            listOf(1, 2.0, 3.0),
-            mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
-        );
-
-        var text = "[\"abc\",\t123,\ttrue,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
-
-        var actual = decode(text);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testEmptyArray() throws IOException {
-        assertEquals(listOf(), decode("[\n]"));
-    }
-
-    @Test
-    public void testUnterminatedArray() {
-        assertThrows(IOException.class, () -> decode("[1, 2, 3"));
-        assertThrows(IOException.class, () -> decode("[1, 2, 3, "));
-    }
-
-    @Test
-    public void testObject() throws IOException {
-        var expected = mapOf(
-            entry("a", "abc"),
-            entry("b", 123),
-            entry("c", true),
-            entry("d", listOf(1, 2.0, 3.0)),
-            entry("e", mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0)))
-        );
-
-        var text = "{\"a\": \"abc\", \"b\":\t123, \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}";
-
-        var actual = decode(text);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testEmptyObject() throws IOException {
-        assertEquals(mapOf(), decode("{\n}"));
-    }
-
-    @Test
-    public void testUnterminatedObject() {
-        assertThrows(IOException.class, () -> decode("{\"a\": 1, \"b\": 2, \"c\": 3"));
-        assertThrows(IOException.class, () -> decode("{\"a\": 1, \"b\": 2, \"c\": 3, "));
     }
 
     @Test
