@@ -98,7 +98,11 @@ public class JSONDecoderTest {
         assertEquals(123, decode(String.valueOf(123)));
         assertEquals(-123, decode(String.valueOf(-123)));
 
+        assertEquals(456.7, decode(String.valueOf(456.7)));
+        assertEquals(456.78, decode(String.valueOf(456.78)));
         assertEquals(456.789, decode(String.valueOf(456.789)));
+        assertEquals(-456.7, decode(String.valueOf(-456.7)));
+        assertEquals(-456.78, decode(String.valueOf(-456.78)));
         assertEquals(-456.789, decode(String.valueOf(-456.789)));
 
         assertEquals(1, decode("0001"));

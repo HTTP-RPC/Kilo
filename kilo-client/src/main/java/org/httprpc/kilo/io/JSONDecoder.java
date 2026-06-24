@@ -302,11 +302,9 @@ public class JSONDecoder extends Decoder<Object> {
     }
 
     private Number readNumber(Reader reader) throws IOException {
-        var valueSign = 1;
+        var valueSign = (c == '-') ? -1 : 1;
 
-        if (c == '-') {
-            valueSign = -1;
-
+        if (valueSign == -1) {
             c = reader.read();
         }
 
@@ -315,16 +313,14 @@ public class JSONDecoder extends Decoder<Object> {
         var scale = 0;
         var fraction = 0.0;
 
-        var scientificNotation = false;
-
-        var exponentSign = 1;
+        var exponentSign = 0;
         var exponent = 0;
 
         while (c != EOF) {
             if (c >= '0' && c <= '9') {
                 var n = c - '0';
 
-                if (scientificNotation) {
+                if (exponentSign != 0) {
                     exponent = exponent * 10 + n;
                 } else if (scale > 0) {
                     fraction += n * Math.pow(10, -scale);
@@ -340,19 +336,15 @@ public class JSONDecoder extends Decoder<Object> {
 
                 scale++;
             } else if (c == 'E' || c == 'e') {
-                if (scientificNotation) {
+                if (exponentSign != 0) {
                     throw new IOException("Multiple exponents.");
                 }
 
-                scientificNotation = true;
-
                 c = reader.read();
 
-                if (c == '+' || c == '-') {
-                    if (c == '-') {
-                        exponentSign = -1;
-                    }
+                exponentSign = (c == '-') ? -1 : 1;
 
+                if (c == '+' || c == '-') {
                     c = reader.read();
                 }
 
@@ -366,10 +358,8 @@ public class JSONDecoder extends Decoder<Object> {
 
         value *= valueSign;
 
-        if (scale > 0 || scientificNotation) {
-            fraction *= valueSign;
-
-            return (value + fraction) * Math.pow(10, exponentSign * exponent);
+        if (scale > 0 || exponentSign != 0) {
+            return (value + (fraction * valueSign)) * Math.pow(10, exponentSign * exponent);
         } else if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
             return (int)value;
         } else {
