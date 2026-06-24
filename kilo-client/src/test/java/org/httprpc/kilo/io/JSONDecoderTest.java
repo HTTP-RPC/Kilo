@@ -111,6 +111,8 @@ public class JSONDecoderTest {
         assertEquals(1.0, decode("1.000"));
         assertEquals(-1.0, decode("-1.000"));
 
+        assertEquals(1.0, decode("1e0"));
+
         assertEquals(1.2345e10, decode("1.2345e10"));
         assertEquals(1.2345e10, decode("1.2345e+10"));
         assertEquals(1.2345e-10, decode("1.2345e-10"));
