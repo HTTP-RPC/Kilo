@@ -39,13 +39,14 @@ public class JSONDecoderTest {
 
     @Test
     public void testNumber() throws IOException {
-        assertEquals(Integer.MAX_VALUE, decode(String.valueOf(Integer.MAX_VALUE)));
-        assertEquals(Long.MAX_VALUE, decode(String.valueOf(Long.MAX_VALUE)));
-        assertEquals(Double.MAX_VALUE, decode(String.valueOf(Double.MAX_VALUE)));
-
         assertEquals(Integer.MIN_VALUE, decode(String.valueOf(Integer.MIN_VALUE)));
+        assertEquals(Integer.MAX_VALUE, decode(String.valueOf(Integer.MAX_VALUE)));
+
         assertEquals(Long.MIN_VALUE, decode(String.valueOf(Long.MIN_VALUE)));
+        assertEquals(Long.MAX_VALUE, decode(String.valueOf(Long.MAX_VALUE)));
+
         assertEquals(Double.MIN_VALUE, decode(String.valueOf(Double.MIN_VALUE)));
+        assertEquals(Double.MAX_VALUE, decode(String.valueOf(Double.MAX_VALUE)));
     }
 
     @Test

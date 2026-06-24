@@ -38,6 +38,31 @@ public class JSONEncoderTest {
     }
 
     @Test
+    public void testBoolean() throws IOException {
+        assertEquals("true", encode(true));
+        assertEquals("false", encode(false));
+    }
+
+    @Test
+    public void testNumber() throws IOException {
+        assertEquals("123", encode(123));
+        assertEquals("456.789", encode(456.789));
+
+        assertEquals("97", encode('a'));
+
+        assertEquals("0", encode(new Date(0)));
+        assertEquals("0", encode(Instant.ofEpochMilli(0)));
+
+        assertThrows(IllegalArgumentException.class, () -> encode(Float.NaN));
+        assertThrows(IllegalArgumentException.class, () -> encode(Float.POSITIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> encode(Float.NEGATIVE_INFINITY));
+
+        assertThrows(IllegalArgumentException.class, () -> encode(Double.NaN));
+        assertThrows(IllegalArgumentException.class, () -> encode(Double.POSITIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> encode(Double.NEGATIVE_INFINITY));
+    }
+
+    @Test
     public void testString() throws IOException {
         assertEquals("\"abcdéfg\"", encode("abcdéfg"));
         assertEquals("\"\\\"\"", encode("\""));
@@ -48,43 +73,19 @@ public class JSONEncoderTest {
         assertEquals("\"\\n\"", encode("\n"));
         assertEquals("\"\\t\"", encode("\t"));
         assertEquals("\"\\u0000\"", encode("\0"));
-    }
 
-    @Test
-    public void testNumber() throws IOException {
-        assertEquals("42", encode(42L));
-        assertEquals("42.5", encode(42.5));
+        assertEquals("\"MONDAY\"", encode(DayOfWeek.MONDAY));
 
-        assertEquals("-789", encode(-789));
-        assertEquals("-789.1", encode(-789.10));
+        assertEquals("\"2018-06-28\"", encode(LocalDate.parse("2018-06-28")));
+        assertEquals("\"10:45\"", encode(LocalTime.parse("10:45")));
+        assertEquals("\"2018-06-28T10:45\"", encode(LocalDateTime.parse("2018-06-28T10:45")));
 
-        assertThrows(IllegalArgumentException.class, () -> encode(Float.NaN));
-        assertThrows(IllegalArgumentException.class, () -> encode(Float.POSITIVE_INFINITY));
-        assertThrows(IllegalArgumentException.class, () -> encode(Float.NEGATIVE_INFINITY));
-        assertThrows(IllegalArgumentException.class, () -> encode(Double.NaN));
-        assertThrows(IllegalArgumentException.class, () -> encode(Double.POSITIVE_INFINITY));
-        assertThrows(IllegalArgumentException.class, () -> encode(Double.NEGATIVE_INFINITY));
-    }
+        assertEquals("\"PT2H30M\"", encode(Duration.parse("PT2H30M")));
+        assertEquals("\"P3Y2M\"", encode(Period.parse("P3Y2M")));
 
-    @Test
-    public void testBoolean() throws IOException {
-        assertEquals("true", encode(true));
-        assertEquals("false", encode(false));
-    }
+        var uuid = UUID.randomUUID();
 
-    @Test
-    public void testCharacter() throws IOException {
-        assertEquals("97", encode('a'));
-    }
-
-    @Test
-    public void testDate() throws IOException {
-        assertEquals("0", encode(new Date(0)));
-    }
-
-    @Test
-    public void testInstant() throws IOException {
-        assertEquals("0", encode(Instant.ofEpochMilli(0)));
+        assertEquals(String.format("\"%s\"", uuid), encode(uuid));
     }
 
     @Test
@@ -147,31 +148,6 @@ public class JSONEncoderTest {
         var actual = encode(map);
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testEnum() throws IOException {
-        assertEquals("\"MONDAY\"", encode(DayOfWeek.MONDAY));
-    }
-
-    @Test
-    public void testTemporalAccessors() throws IOException {
-        assertEquals("\"2018-06-28\"", encode(LocalDate.parse("2018-06-28")));
-        assertEquals("\"10:45\"", encode(LocalTime.parse("10:45")));
-        assertEquals("\"2018-06-28T10:45\"", encode(LocalDateTime.parse("2018-06-28T10:45")));
-    }
-
-    @Test
-    public void testTemporalAmounts() throws IOException {
-        assertEquals("\"PT2H30M\"", encode(Duration.parse("PT2H30M")));
-        assertEquals("\"P3Y2M\"", encode(Period.parse("P3Y2M")));
-    }
-
-    @Test
-    public void testUUID() throws IOException {
-        var uuid = UUID.randomUUID();
-
-        assertEquals(String.format("\"%s\"", uuid), encode(uuid));
     }
 
     @Test

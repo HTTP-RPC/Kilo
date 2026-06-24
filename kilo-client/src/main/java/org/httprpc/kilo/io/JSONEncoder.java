@@ -66,7 +66,7 @@ public class JSONEncoder extends Encoder<Object> {
     private void encode(Object value, Writer writer) throws IOException {
         switch (value) {
             case null -> writer.append(null);
-            case CharSequence text -> encode(text, writer);
+            case Boolean flag -> encode(flag, writer);
             case Float number -> {
                 if (number.isNaN() || number.isInfinite()) {
                     throw new IllegalArgumentException("Invalid float value.");
@@ -85,11 +85,19 @@ public class JSONEncoder extends Encoder<Object> {
             case Character character -> encode((int)character, writer);
             case Date date -> encode(date.getTime(), writer);
             case Instant instant -> encode(instant.toEpochMilli(), writer);
-            case Boolean flag -> encode(flag, writer);
+            case CharSequence text -> encode(text, writer);
             case Iterable<?> iterable -> encode(iterable, writer);
             case Map<?, ?> map -> encode(map, writer);
             default -> encode(value.toString(), writer);
         }
+    }
+
+    private void encode(Boolean flag, Writer writer) throws IOException {
+        writer.write(flag.toString());
+    }
+
+    private void encode(Number number, Writer writer) throws IOException {
+        writer.write(number.toString());
     }
 
     private void encode(CharSequence text, Writer writer) throws IOException {
@@ -120,14 +128,6 @@ public class JSONEncoder extends Encoder<Object> {
         }
 
         writer.write("\"");
-    }
-
-    private void encode(Number number, Writer writer) throws IOException {
-        writer.write(number.toString());
-    }
-
-    private void encode(Boolean flag, Writer writer) throws IOException {
-        writer.write(flag.toString());
     }
 
     private void encode(Iterable<?> iterable, Writer writer) throws IOException {
