@@ -310,8 +310,8 @@ public class JSONDecoder extends Decoder<Object> {
 
         var value = 0L;
 
-        var scale = 0;
-        var fraction = 0.0;
+        var scale = -1;
+        var fraction = 0L;
 
         var exponentSign = 0;
         var exponent = 0;
@@ -322,15 +322,15 @@ public class JSONDecoder extends Decoder<Object> {
 
                 if (exponentSign != 0) {
                     exponent = exponent * 10 + n;
-                } else if (scale > 0) {
-                    fraction += n * Math.pow(10, -scale);
+                } else if (scale >= 0) {
+                    fraction = fraction * 10 + n;
 
                     scale++;
                 } else {
                     value = value * 10 + n;
                 }
             } else if (c == '.') {
-                if (scale > 0) {
+                if (scale >= 0) {
                     throw new IOException("Multiple decimal points.");
                 }
 
@@ -358,8 +358,8 @@ public class JSONDecoder extends Decoder<Object> {
 
         value *= valueSign;
 
-        if (scale > 0 || exponentSign != 0) {
-            return (value + (fraction * valueSign)) * Math.pow(10, exponentSign * exponent);
+        if (scale >= 0 || exponentSign != 0) {
+            return (value + (fraction * valueSign / Math.pow(10, scale))) * Math.pow(10, exponentSign * exponent);
         } else if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
             return (int)value;
         } else {
