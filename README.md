@@ -186,8 +186,8 @@ A body parameter of type `Void` indicates that a handler either does not accept 
 ## Return Values
 Return values are converted to JSON as follows:
 
-* `Number`/numeric primitive: number
 * `Boolean`/`boolean`: boolean
+* `Number`/numeric primitive: number
 * `CharSequence`: string
 * `Iterable`: array
 * `java.util.Map`, bean, or record type: object
