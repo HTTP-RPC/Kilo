@@ -667,19 +667,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
-
-```java
-return listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
-```
-
-```java
-var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
-
-templateEncoder.write(results, response.getOutputStream());
-```
-
-Temporal values (such as "birth" and "death" above) are automatically converted to and from their `java.time` equivalents:
+The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. Temporal values (such as "birth" and "death" above) are automatically converted to and from their `java.time` equivalents:
 
 * `java.sql.Date`/`LocalDate`
 * `java.sql.Time`/`LocalTime`
