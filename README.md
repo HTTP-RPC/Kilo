@@ -751,7 +751,7 @@ where film_actor.film_id = :filmID
 order by last_name asc, first_name asc
 ```
 
-Insert, update, and delete operations are also supported. See the [pet](kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.
+Insert, update, and delete operations are also supported. See the [pet](kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [film](kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java), and [catalog](kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 # ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
