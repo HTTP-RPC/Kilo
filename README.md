@@ -924,7 +924,7 @@ return pipe;
 
 The pipe is configured with a capacity of 4K elements and a timeout of 15s. Limiting the capacity ensures that the producer does not do more work than necessary if the consumer fails to retrieve all of the data. Similarly, specifying a timeout ensures that the consumer does not wait indefinitely if the producer stops submitting data.
 
-This implementation is slightly more verbose than the first one. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
+This implementation is slightly more verbose than the first one. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU/memory load is reduced.
 
 For more information, see the [employee service](kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
