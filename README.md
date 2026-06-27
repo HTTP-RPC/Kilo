@@ -719,7 +719,19 @@ var queryBuilder = QueryBuilder.select(Pet.class)
     .ordered(true);
 ```
 
-The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. Both are used to create the "select" statement in the preceding example. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used to construct the "where" clause. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used to construct the "order by" clause.
+The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. Both are used to create the "select" statement in the preceding example. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used to construct the "where" clause. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used to construct the "order by" clause. 
+
+Query results could be coerced to a list of `Pet` instances as shown below:
+
+```java
+List<Pet> pets;
+try (var statement = queryBuilder.prepare(getConnection());
+    var results = queryBuilder.executeQuery(statement, mapOf(
+        entry("owner", owner)
+    ))) {
+    pets = listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
+}
+```
 
 This code creates a query that selects all actors appearing in a particular film, identified by the "filmID" parameter. Primary and foreign key annotations associated with the [`Actor`](kilo-test/src/main/java/org/httprpc/kilo/test/Actor.java), [`Film`](kilo-test/src/main/java/org/httprpc/kilo/test/Film.java), and [`FilmActor`](kilo-test/src/main/java/org/httprpc/kilo/test/FilmActor.java) types are used to construct the "join" clause:
 
