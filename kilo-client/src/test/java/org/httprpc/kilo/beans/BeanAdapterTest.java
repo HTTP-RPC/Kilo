@@ -281,8 +281,8 @@ public class BeanAdapterTest {
 
     @Test
     public void testArrayCoercion() {
-        assertArrayEquals(new int[] {1, 2, 3}, (int[]) BeanAdapter.coerce(new String[] {"1", "2", "3"}, Integer.TYPE.arrayType()));
-        assertArrayEquals(new int[] {1, 2, 3}, (int[]) BeanAdapter.coerce(listOf("1", "2", "3"), Integer.TYPE.arrayType()));
+        assertArrayEquals(new int[] {1, 2, 3}, (int[])BeanAdapter.coerce(new String[] {"1", "2", "3"}, Integer.TYPE.arrayType()));
+        assertArrayEquals(new int[] {1, 2, 3}, (int[])BeanAdapter.coerce(listOf("1", "2", "3"), Integer.TYPE.arrayType()));
     }
 
     @Test
