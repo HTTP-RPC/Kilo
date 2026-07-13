@@ -36,8 +36,8 @@ publishing {
     repositories {
         maven {
             credentials {
-                username = project.properties['centralPortalUsername'] ?: ''
-                password = project.properties['centralPortalPassword'] ?: ''
+                username = project.findProperty('centralPortalUsername') ?: ''
+                password = project.findProperty('centralPortalPassword') ?: ''
             }
         }
     }
