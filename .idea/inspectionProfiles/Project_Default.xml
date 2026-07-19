@@ -205,6 +205,7 @@
     <inspection_tool class="JavaFxResourcePropertyValue" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JavaFxUnresolvedFxIdReference" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JavaFxUnusedImports" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="JavaPrintToLogpoint" enabled="false" level="DEBUGGER_SUGGESTION" enabled_by_default="false" />
     <inspection_tool class="JavaStylePropertiesInvocation" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="JavadocBlankLines" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="Json5StandardCompliance" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -216,6 +217,7 @@
     <inspection_tool class="JsonSchemaDeprecation" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonSchemaRefReference" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonStandardCompliance" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="KotlinPrintToLogpoint" enabled="false" level="DEBUGGER_SUGGESTION" enabled_by_default="false" />
     <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="Lombok" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="LossyEncoding" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -230,7 +232,6 @@
         <value />
       </option>
     </inspection_tool>
-    <inspection_tool class="MissingDeprecatedAnnotation" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MissingOverrideAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="ignoreObjectMethods" value="true" />
       <option name="ignoreAnonymousClassMethods" value="false" />
