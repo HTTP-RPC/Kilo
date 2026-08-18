@@ -22,11 +22,11 @@ subprojects {
 }
 
 configure(subprojects) {
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         useJUnitPlatform()
     }
 
-    tasks.withType(Jar) {
+    tasks.withType(Jar).configureEach {
         manifest {
             attributes (
                 'Implementation-Title': project.name,
@@ -35,7 +35,7 @@ configure(subprojects) {
         }
     }
 
-    tasks.withType(Javadoc) {
+    tasks.withType(Javadoc).configureEach {
         (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:none", true)
     }
 }
