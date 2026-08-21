@@ -900,7 +900,7 @@ public class Iterables {
      * The source array.
      *
      * @return
-     * The iterable array contents.
+     * The array contents.
      */
     public static <T> Iterable<T> iterableOf(T[] array) {
         return iterableOf(array, 0);
@@ -919,7 +919,7 @@ public class Iterables {
      * The index of the first element to include.
      *
      * @return
-     * The iterable array contents.
+     * The array contents.
      */
     public static <T> Iterable<T> iterableOf(T[] array, int start) {
         if (array == null || start < 0 || start > array.length) {
@@ -941,6 +941,45 @@ public class Iterables {
                 }
 
                 return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates an iterable of a repeating value.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param value
+     * The value to repeat.
+     *
+     * @param count
+     * The number of times to repeat the value.
+     *
+     * @return
+     * The repeated value.
+     */
+    public static <T> Iterable<T> iterableOf(T value, int count) {
+        return () -> new Iterator<>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < count;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                try {
+                    return value;
+                } finally {
+                    i++;
+                }
             }
         };
     }
