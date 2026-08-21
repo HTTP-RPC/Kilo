@@ -1154,3 +1154,28 @@ var values = listOf("a", "b", "c", "d", "e");
 
 var result = minimumOf(values); // a
 ```
+
+These methods support creation of an iterable from an array:
+
+```java
+public static <T> Iterable<T> iterableOf(T[] array) { ... }
+public static <T> Iterable<T> iterableOf(T[] array, int start) { ... }
+```
+
+```java
+var values = iterableOf(new Integer[] {1, 2, 3});
+
+var result = maximumOf(values); // 3
+```
+
+This method creates an iterable of a repeating value:
+
+```java
+public static <T> Iterable<T> iterableOf(T value, int count) { ... }
+```
+
+```java
+var values = iterableOf(0, 3);
+
+var result = listOf(values); // 0, 0, 0
+```
