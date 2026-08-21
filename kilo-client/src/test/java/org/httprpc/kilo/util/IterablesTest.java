@@ -403,6 +403,15 @@ public class IterablesTest {
     }
 
     @Test
+    public void testIterableOfGeneratedValues() {
+        var values = limit(iterableOf(i -> i + 1), 3);
+
+        var result = listOf(values); // 1, 2, 3
+
+        assertEquals(listOf(1, 2, 3), result);
+    }
+
+    @Test
     public void testIterableOfRepeatingValue() {
         var values = iterableOf(0, 3);
 

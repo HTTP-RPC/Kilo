@@ -1168,7 +1168,19 @@ var values = iterableOf(new Integer[] {1, 2, 3});
 var result = maximumOf(values); // 3
 ```
 
-This method creates an iterable of a repeating value:
+This method creates an unbounded iterable of generated values:
+
+```java
+public static <T> Iterable<T> iterableOf(Function<Integer, ? extends T> generator) { ... }
+```
+
+```java
+var values = limit(iterableOf(i -> i + 1), 3);
+
+var result = listOf(values); // 1, 2, 3
+```
+
+This version creates an iterable of a repeating value:
 
 ```java
 public static <T> Iterable<T> iterableOf(T value, int count) { ... }

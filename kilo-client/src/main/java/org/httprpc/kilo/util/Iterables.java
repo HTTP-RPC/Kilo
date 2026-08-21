@@ -946,6 +946,38 @@ public class Iterables {
     }
 
     /**
+     * Creates an unbounded iterable of generated values.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param generator
+     * The value generator.
+     *
+     * @return
+     * The generated values.
+     */
+    public static <T> Iterable<T> iterableOf(Function<Integer, ? extends T> generator) {
+        if (generator == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new Iterator<>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                return generator.apply(i++);
+            }
+        };
+    }
+
+    /**
      * Creates an iterable of a repeating value.
      *
      * @param <T>
@@ -961,26 +993,6 @@ public class Iterables {
      * The repeated value.
      */
     public static <T> Iterable<T> iterableOf(T value, int count) {
-        return () -> new Iterator<>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < count;
-            }
-
-            @Override
-            public T next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-
-                try {
-                    return value;
-                } finally {
-                    i++;
-                }
-            }
-        };
+        return limit(iterableOf(i -> value), count);
     }
 }
