@@ -1056,7 +1056,7 @@ public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super 
 public static <T> Iterable<T> limit(Iterable<? extends T> iterable, int count) { ... }
 
 public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier) { ... }
-public static <T, V> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) { ... }
+public static <T> List<T> sortBy(Iterable<? extends T> iterable, Comparator<? super T> comparator) { ... }
 
 public static <T, K> Map<K, List<T>> groupBy(Iterable<? extends T> iterable, Function<? super T, ? extends K> classifier) { ... }
 

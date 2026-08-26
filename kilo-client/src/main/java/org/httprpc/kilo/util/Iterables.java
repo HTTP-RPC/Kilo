@@ -263,7 +263,7 @@ public class Iterables {
      * The sorted contents.
      */
     public static <T, V extends Comparable<? super V>> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier) {
-        return sortBy(iterable, identifier, Comparator.naturalOrder());
+        return sortBy(iterable, Comparator.comparing(identifier));
     }
 
     /**
@@ -272,14 +272,8 @@ public class Iterables {
      * @param <T>
      * The element type.
      *
-     * @param <V>
-     * The value type.
-     *
      * @param iterable
      * The iterable to sort.
-     *
-     * @param identifier
-     * The identification function.
      *
      * @param comparator
      * The comparator.
@@ -287,8 +281,8 @@ public class Iterables {
      * @return
      * The sorted contents.
      */
-    public static <T, V> List<T> sortBy(Iterable<? extends T> iterable, Function<? super T, ? extends V> identifier, Comparator<? super V> comparator) {
-        if (iterable == null || identifier == null || comparator == null) {
+    public static <T> List<T> sortBy(Iterable<? extends T> iterable, Comparator<? super T> comparator) {
+        if (iterable == null || comparator == null) {
             throw new IllegalArgumentException();
         }
 
@@ -298,7 +292,7 @@ public class Iterables {
             list.add(element);
         }
 
-        list.sort((t1, t2) -> comparator.compare(identifier.apply(t1), identifier.apply(t2)));
+        list.sort(comparator);
 
         return list;
     }
