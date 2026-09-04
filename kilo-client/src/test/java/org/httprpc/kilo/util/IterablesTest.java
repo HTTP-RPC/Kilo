@@ -392,6 +392,15 @@ public class IterablesTest {
     }
 
     @Test
+    public void testIterableOfStream() {
+        var values = listOf(1, 2, 3);
+
+        var result = listOf(iterableOf(values.stream())); // 1, 2, 3
+
+        assertEquals(listOf(1, 2, 3), result);
+    }
+
+    @Test
     public void testIterableOfArray() {
         var values = iterableOf(new Integer[] {1, 2, 3});
 

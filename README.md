@@ -1155,6 +1155,18 @@ var values = listOf("a", "b", "c", "d", "e");
 var result = minimumOf(values); // a
 ```
 
+This method can be used to adapt a stream for use as an iterable:
+
+```java
+public static <T> Iterable<T> iterableOf(Stream<T> stream) { ... }
+```
+
+```java
+var values = listOf(1, 2, 3);
+
+var result = listOf(iterableOf(values.stream())); // 1, 2, 3
+```
+
 These methods support creation of an iterable from an array:
 
 ```java
@@ -1168,7 +1180,7 @@ var values = iterableOf(new Integer[] {1, 2, 3});
 var result = maximumOf(values); // 3
 ```
 
-This method creates an unbounded iterable of generated values:
+The following method creates an unbounded iterable of generated values:
 
 ```java
 public static <T> Iterable<T> iterableOf(Function<Integer, ? extends T> generator) { ... }
