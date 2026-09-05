@@ -382,13 +382,14 @@ public class IterablesTest {
 
     @Test
     public void testCountOf() {
-        var values = listOf("a", "b", "c", "d", "e");
-
-        var result = countOf(values); // 5
-
-        assertEquals(5, result);
-
         assertEquals(0, countOf(emptyListOf(String.class)));
+        assertEquals(3, countOf(listOf("a", "b", "c")));
+    }
+
+    @Test
+    public void testIsEmpty() {
+        assertTrue(isEmpty(emptyListOf(String.class)));
+        assertFalse(isEmpty(listOf("a", "b", "c")));
     }
 
     @Test

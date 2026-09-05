@@ -886,6 +886,23 @@ public class Iterables {
     }
 
     /**
+     * Determines if an iterable is empty (contains no elements).
+     *
+     * @param iterable
+     * The iterable to test.
+     *
+     * @return
+     * {@code true} if the iterable is empty; {@code false}, otherwise.
+     */
+    public static boolean isEmpty(Iterable<?> iterable) {
+        if (iterable == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return firstOf(iterable) == null;
+    }
+
+    /**
      * Creates an iterable from a stream.
      *
      * @param <T>

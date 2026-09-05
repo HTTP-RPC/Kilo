@@ -1139,6 +1139,7 @@ public static <T> T minimumOf(Iterable<? extends T> iterable, Comparator<? super
 public static <T> T maximumOf(Iterable<? extends T> iterable, Comparator<? super T> comparator) { ... }
 
 public static int countOf(Iterable<?> iterable) { ... }
+public static boolean isEmpty(Iterable<?> iterable) { ... }
 ```
 
 For example:
