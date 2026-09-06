@@ -619,6 +619,81 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends an "on conflict do update" clause.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder onConflictDoUpdate() {
+        var first = types.getFirst();
+
+        var properties = BeanAdapter.getProperties(first);
+
+        sqlBuilder.append(" on conflict (");
+
+        var i = 0;
+
+        for (var entry : properties.entrySet()) {
+            var accessor = entry.getValue().getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
+                continue;
+            }
+
+            if (accessor.getAnnotation(Identifier.class) == null) {
+                continue;
+            }
+
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(column.value());
+
+            i++;
+        }
+
+        sqlBuilder.append(") do update set ");
+
+        var j = 0;
+
+        for (var entry : properties.entrySet()) {
+            var accessor = entry.getValue().getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
+                continue;
+            }
+
+            if (accessor.getAnnotation(PrimaryKey.class) != null || accessor.getAnnotation(Final.class) != null) {
+                continue;
+            }
+
+            if (j > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            var columnName = column.value();
+
+            sqlBuilder.append(columnName);
+            sqlBuilder.append(" = ?");
+
+            parameters.add(columnName);
+
+            j++;
+        }
+
+        if (j == 0) {
+            throw new UnsupportedOperationException("Table does not define any updatable columns.");
+        }
+
+        return this;
+    }
+
+    /**
      * Creates an "update" query.
      *
      * @param type

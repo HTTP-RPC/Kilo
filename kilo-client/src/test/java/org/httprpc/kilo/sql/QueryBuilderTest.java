@@ -507,6 +507,14 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testOnConflictDoUpdate() {
+        var queryBuilder = QueryBuilder.insert(A.class).onConflictDoUpdate();
+
+        assertEquals("insert into A (b, c, d) values (?, ?, ?) on conflict (b, c) do update set b = ?, c = ?", queryBuilder.toString());
+        assertEquals(listOf("b", "c", "x", "b", "c"), getParameters(queryBuilder));
+    }
+
+    @Test
     public void testUpdate() {
         var queryBuilder = QueryBuilder.update(A.class).filterByPrimaryKey("a");
 
