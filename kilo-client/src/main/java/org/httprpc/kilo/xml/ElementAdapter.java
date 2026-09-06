@@ -38,7 +38,6 @@ import java.util.Set;
  * elements. All other keys represent individual elements.
  */
 public class ElementAdapter extends AbstractMap<String, Object> {
-    // Node list adapter
     private static class NodeListAdapter extends AbstractList<ElementAdapter> {
         NodeList nodeList;
 
@@ -101,7 +100,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <li>If the key refers to multiple elements, a {@link List}
      * implementation that recursively adapts all matching sub-elements will be
      * returned.</li>
-     * <li>Otherwise, an adapter for the last matching sub-element (if any)
+     * <li>Otherwise, an adapter for the first matching sub-element (if any)
      * will be returned.</li>
      * </ul>
      */
@@ -133,7 +132,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             var n = nodeList.getLength();
 
             if (n > 0) {
-                return new ElementAdapter((Element)nodeList.item(n - 1));
+                return new ElementAdapter((Element)nodeList.item(0));
             } else {
                 return null;
             }
@@ -253,9 +252,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    /**
-     * Determines if the source element contains a given key.
-     */
     @Override
     public boolean containsKey(Object key) {
         if (key == null) {
@@ -275,17 +271,11 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    /**
-     * Throws {@link UnsupportedOperationException}.
-     */
     @Override
     public Set<Entry<String, Object>> entrySet() {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns the text content of the element.
-     */
     @Override
     public String toString() {
         return element.getTextContent();

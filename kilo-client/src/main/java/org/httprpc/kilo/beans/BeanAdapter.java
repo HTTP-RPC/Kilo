@@ -104,7 +104,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // Array adapter
     private static class ArrayAdapter extends AbstractList<Object> {
         Object array;
         int length;
@@ -143,7 +142,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // Iterable adapter
     private static class IterableAdapter extends AbstractList<Object> {
         Iterable<?> iterable;
 
@@ -187,7 +185,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
         Map<?, ?> map;
 
@@ -255,7 +252,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // Typed invocation handler
     private static class TypedInvocationHandler implements InvocationHandler {
         Map<?, ?> map;
         Class<?> type;
@@ -375,14 +371,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // Undefined value exception
     private static class UndefinedValueException extends UnsupportedOperationException {
         UndefinedValueException(String name, Class<?> type) {
             super(String.format("Value for \"%s\" in instance of %s is not defined.", name, type.getSimpleName()));
         }
     }
 
-    // Required value exception
     private static class RequiredValueException extends IllegalArgumentException {
         RequiredValueException(String name, Class<?> type) {
             super(String.format("Value for \"%s\" defined by %s is required.", name, type.getSimpleName()));

@@ -780,7 +780,6 @@ public class WebServiceProxy {
     public Object invoke() throws IOException {
         var uri = this.uri;
 
-        // Append query
         if (!arguments.isEmpty()) {
             if (uri.getRawQuery() != null || uri.getRawFragment() != null) {
                 throw new IllegalStateException("Query or fragment is already defined.");
@@ -793,7 +792,6 @@ public class WebServiceProxy {
             }
         }
 
-        // Open connection
         var connection = (HttpURLConnection)uri.toURL().openConnection();
 
         connection.setRequestMethod(method);
@@ -807,7 +805,6 @@ public class WebServiceProxy {
             locale.getLanguage().toLowerCase(),
             locale.getCountry().toLowerCase()));
 
-        // Apply headers
         for (Map.Entry<String, ?> entry : headers.entrySet()) {
             var key = entry.getKey();
             var value = entry.getValue();
@@ -819,7 +816,6 @@ public class WebServiceProxy {
             connection.setRequestProperty(key, value.toString());
         }
 
-        // Write request body
         if (body != null) {
             connection.setDoOutput(true);
 
@@ -834,7 +830,6 @@ public class WebServiceProxy {
             }
         }
 
-        // Read response
         statusCode = connection.getResponseCode();
 
         var contentType = connection.getContentType();

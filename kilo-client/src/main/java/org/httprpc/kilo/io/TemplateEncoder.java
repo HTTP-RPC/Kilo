@@ -76,7 +76,6 @@ public class TemplateEncoder extends Encoder<Object> {
         Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
     }
 
-    // Markup modifier
     private static class MarkupModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
@@ -106,7 +105,6 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // Format modifier
     private static class FormatModifier implements Modifier {
         enum DateTimeType {
             DATE,
@@ -202,7 +200,6 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // Marker type enumeration
     private enum MarkerType {
         VARIABLE,
         REPEATING_SECTION_START,

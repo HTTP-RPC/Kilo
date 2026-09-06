@@ -190,7 +190,7 @@ public class ElementAdapterTest {
 
         elementAdapter.put("item*", listOf(1, 2, 3));
 
-        assertEquals("3", elementAdapter.get("item").toString());
+        assertEquals("1", elementAdapter.get("item").toString());
     }
 
     @Test
