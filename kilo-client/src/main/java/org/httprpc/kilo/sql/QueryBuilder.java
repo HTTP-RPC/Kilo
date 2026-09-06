@@ -629,9 +629,7 @@ public class QueryBuilder {
 
         var properties = BeanAdapter.getProperties(first);
 
-        sqlBuilder.append(" on conflict (");
-
-        var i = 0;
+        var identifiers = new LinkedList<String>();
 
         for (var entry : properties.entrySet()) {
             var accessor = entry.getValue().getAccessor();
@@ -646,11 +644,23 @@ public class QueryBuilder {
                 continue;
             }
 
+            identifiers.add(column.value());
+        }
+
+        if (identifiers.isEmpty()) {
+            throw new UnsupportedOperationException("Table does not define any identifiers.");
+        }
+
+        sqlBuilder.append(" on conflict (");
+
+        var i = 0;
+
+        for (var identifier : identifiers) {
             if (i > 0) {
                 sqlBuilder.append(", ");
             }
 
-            sqlBuilder.append(column.value());
+            sqlBuilder.append(identifier);
 
             i++;
         }
