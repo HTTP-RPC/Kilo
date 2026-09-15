@@ -21,6 +21,7 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextEncoder;
+import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -36,7 +37,7 @@ import java.util.ResourceBundle;
 import static org.httprpc.kilo.util.Collections.*;
 
 public class Examples {
-    public interface Example {
+    private interface Example {
         void execute() throws Exception;
     }
 
@@ -63,6 +64,9 @@ public class Examples {
         execute("Coerce Bean", Examples::coerceBean);
         execute("Interface Proxy", Examples::interfaceProxy);
 
+        execute("Query Builder 1", Examples::queryBuilder1);
+        execute("Query Builder 2", Examples::queryBuilder2);
+
         execute("Element Adapter", Examples::elementAdapter);
 
         execute("Collections", Examples::collections);
@@ -80,7 +84,7 @@ public class Examples {
         System.out.println();
     }
 
-    public static void mathService1() throws IOException {
+    private static void mathService1() throws IOException {
         // GET /math/sum?a=2&b=4
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/sum"));
 
@@ -92,7 +96,7 @@ public class Examples {
         System.out.println(webServiceProxy.invoke()); // 6.0
     }
 
-    public static void mathService2() throws IOException {
+    private static void mathService2() throws IOException {
         // GET /math/sum?values=1&values=2&values=3
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/sum"));
 
@@ -103,7 +107,7 @@ public class Examples {
         System.out.println(webServiceProxy.invoke()); // 6.0
     }
 
-    public static void jsonEncoder() throws IOException {
+    private static void jsonEncoder() throws IOException {
         var jsonEncoder = new JSONEncoder();
 
         jsonEncoder.write(mapOf(
@@ -122,7 +126,7 @@ public class Examples {
         System.out.println();
     }
 
-    public static void textEncoder() throws IOException {
+    private static void textEncoder() throws IOException {
         var textEncoder = new TextEncoder();
 
         textEncoder.write("Hello, World!", System.out);
@@ -130,7 +134,7 @@ public class Examples {
         System.out.println();
     }
 
-    public static void csvEncoder() throws IOException {
+    private static void csvEncoder() throws IOException {
         var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
         csvEncoder.write(listOf(
@@ -147,7 +151,7 @@ public class Examples {
         ), System.out);
     }
 
-    public static void templateEncoder() throws Exception {
+    private static void templateEncoder() throws Exception {
         var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
 
         templateEncoder.write(mapOf(
@@ -157,31 +161,31 @@ public class Examples {
         ), System.out);
     }
 
-    public static void variables() throws IOException {
+    private static void variables() throws IOException {
         templateExample("variables");
     }
 
-    public static void repeatingSections() throws IOException {
+    private static void repeatingSections() throws IOException {
         templateExample("repeating-sections");
     }
 
-    public static void conditionalSections() throws IOException {
+    private static void conditionalSections() throws IOException {
         templateExample("conditional-sections");
     }
 
-    public static void invertedSections() throws IOException {
+    private static void invertedSections() throws IOException {
         templateExample("inverted-sections");
     }
 
-    public static void resources() throws IOException {
+    private static void resources() throws IOException {
         templateExample("resources");
     }
 
-    public static void includes() throws IOException {
+    private static void includes() throws IOException {
         templateExample("includes");
     }
 
-    public static void comments() throws IOException {
+    private static void comments() throws IOException {
         templateExample("comments");
     }
 
@@ -206,7 +210,7 @@ public class Examples {
         templateEncoder.write(dictionary, System.out);
     }
 
-    public static void adaptBean() {
+    private static void adaptBean() {
         var course = new Course();
 
         course.setName("CS 101");
@@ -220,7 +224,7 @@ public class Examples {
         System.out.println(map.get("roomNumber")); // 210
     }
 
-    public static void coerceBean() {
+    private static void coerceBean() {
         var map = mapOf(
             entry("name", "CS 101"),
             entry("building", "Technology Lab"),
@@ -234,7 +238,7 @@ public class Examples {
         System.out.println(course.getRoomNumber()); // 210
     }
 
-    public static void interfaceProxy() {
+    private static void interfaceProxy() {
         var map = mapOf(
             entry("date", "2024-04-08"),
             entry("conditions", "cloudy"),
@@ -250,8 +254,20 @@ public class Examples {
         System.out.println(weather.getLow()); // 43.5
     }
 
+    private static void queryBuilder1() {
+        var queryBuilder = QueryBuilder.insert(User.class).onDuplicateKeyUpdate();
+
+        System.out.println(queryBuilder.toString());
+    }
+
+    private static void queryBuilder2() {
+        var queryBuilder = QueryBuilder.insert(User.class).onConflictDoUpdate();
+
+        System.out.println(queryBuilder.toString());
+    }
+
     @SuppressWarnings("unchecked")
-    public static void elementAdapter() throws SAXException, IOException {
+    private static void elementAdapter() throws SAXException, IOException {
         var documentBuilder = ElementAdapter.newDocumentBuilder();
 
         Document document;
@@ -287,7 +303,7 @@ public class Examples {
         templateEncoder.write(account, System.out);
     }
 
-    public static void collections() {
+    private static void collections() {
         var list = listOf(1, 2, 3);
 
         System.out.println(list.getFirst()); // 1
