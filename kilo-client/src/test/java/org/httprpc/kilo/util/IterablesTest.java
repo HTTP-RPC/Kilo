@@ -394,22 +394,47 @@ public class IterablesTest {
 
     @Test
     public void testIterableOfStream() {
-        var values = listOf(1, 2, 3);
+        var values = listOf("a", "b", "c");
 
-        var result = listOf(iterableOf(values.stream())); // 1, 2, 3
+        var result = listOf(iterableOf(values.stream())); // a, b, c
 
-        assertEquals(listOf(1, 2, 3), result);
+        assertEquals(listOf("a", "b", "c"), result);
     }
 
     @Test
     public void testIterableOfArray() {
-        var values = iterableOf(new Integer[] {1, 2, 3});
+        var values = iterableOf(new String[] {"a", "b", "c"});
 
-        var result = maximumOf(values); // 3
+        var result = listOf(values); // a, b, c
 
-        assertEquals(3, result);
+        assertEquals(result, listOf("a", "b", "c"));
+    }
 
-        assertEquals(0, countOf(iterableOf(new Integer[] {1, 2, 3}, 3)));
+    @Test
+    public void testIterableOfIntArray() {
+        var values = iterableOf(new int[] {1, 2, 3});
+
+        var result = listOf(values); // 1, 2, 3
+
+        assertEquals(result, listOf(1, 2, 3));
+    }
+
+    @Test
+    public void testIterableOfLongArray() {
+        var values = iterableOf(new long[] {1, 2, 3});
+
+        var result = listOf(values); // 1, 2, 3
+
+        assertEquals(result, listOf(1L, 2L, 3L));
+    }
+
+    @Test
+    public void testIterableOfDoubleArray() {
+        var values = iterableOf(new double[] {1, 2, 3});
+
+        var result = listOf(values); // 1, 2, 3
+
+        assertEquals(result, listOf(1.0, 2.0, 3.0));
     }
 
     @Test

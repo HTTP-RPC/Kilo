@@ -47,8 +47,8 @@ public interface TestInterface {
     }
 
     @Name("i")
-    int getInteger();
-    void setInteger(int i);
+    int getInt();
+    void setInt(int i);
 
     @Required
     long getLong();

@@ -87,12 +87,12 @@ public class TestBean implements TestInterface {
 
     @Name("i")
     @Override
-    public int getInteger() {
+    public int getInt() {
         return i;
     }
 
     @Override
-    public void setInteger(int i) {
+    public void setInt(int i) {
         this.i = i;
     }
 

@@ -978,6 +978,153 @@ public class Iterables {
     }
 
     /**
+     * Creates an iterable from an array.
+     *
+     * @param array
+     * The source array.
+     *
+     * @return
+     * The array contents.
+     */
+    public static Iterable<Integer> iterableOf(int[] array) {
+        return iterableOf(array, 0);
+    }
+
+    /**
+     * Creates an iterable from an array.
+     *
+     * @param array
+     * The source array.
+     *
+     * @param start
+     * The index of the first element to include.
+     *
+     * @return
+     * The array contents.
+     */
+    public static Iterable<Integer> iterableOf(int[] array, int start) {
+        if (array == null || start < 0 || start > array.length) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new Iterator<>() {
+            int i = start;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Integer next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates an iterable from an array.
+     *
+     * @param array
+     * The source array.
+     *
+     * @return
+     * The array contents.
+     */
+    public static Iterable<Long> iterableOf(long[] array) {
+        return iterableOf(array, 0);
+    }
+
+    /**
+     * Creates an iterable from an array.
+     *
+     * @param array
+     * The source array.
+     *
+     * @param start
+     * The index of the first element to include.
+     *
+     * @return
+     * The array contents.
+     */
+    public static Iterable<Long> iterableOf(long[] array, int start) {
+        if (array == null || start < 0 || start > array.length) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new Iterator<>() {
+            int i = start;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Long next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                return array[i++];
+            }
+        };
+    }
+
+    /**
+     * Creates an iterable from an array.
+     *
+     * @param array
+     * The source array.
+     *
+     * @return
+     * The array contents.
+     */
+    public static Iterable<Double> iterableOf(double[] array) {
+        return iterableOf(array, 0);
+    }
+
+    /**
+     * Creates an iterable from an array.
+     *
+     * @param array
+     * The source array.
+     *
+     * @param start
+     * The index of the first element to include.
+     *
+     * @return
+     * The array contents.
+     */
+    public static Iterable<Double> iterableOf(double[] array, int start) {
+        if (array == null || start < 0 || start > array.length) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new Iterator<>() {
+            int i = start;
+
+            @Override
+            public boolean hasNext() {
+                return i < array.length;
+            }
+
+            @Override
+            public Double next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                return array[i++];
+            }
+        };
+    }
+
+    /**
      * Creates an unbounded iterable of generated values.
      *
      * @param <T>

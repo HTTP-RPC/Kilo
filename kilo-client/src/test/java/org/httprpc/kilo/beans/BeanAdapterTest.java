@@ -188,7 +188,7 @@ public class BeanAdapterTest {
 
         var testInterface = BeanAdapter.coerce(map, TestInterface.class);
 
-        testInterface.setInteger(150);
+        testInterface.setInt(150);
 
         assertEquals(150, map.get("i"));
 
