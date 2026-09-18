@@ -19,8 +19,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.SequencedMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
@@ -294,7 +294,7 @@ public class Iterables {
      * @return
      * The grouped contents.
      */
-    public static <T, K> Map<K, List<T>> groupBy(Iterable<? extends T> iterable, Function<? super T, ? extends K> classifier) {
+    public static <T, K> SequencedMap<K, List<T>> groupBy(Iterable<? extends T> iterable, Function<? super T, ? extends K> classifier) {
         if (iterable == null || classifier == null) {
             throw new IllegalArgumentException();
         }
