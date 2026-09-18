@@ -158,7 +158,7 @@ public class JSONDecoderTest {
 
         var actual = decode("[1, 2, 3]\n");
 
-        assertEquals(actual, expected);
+        assertEquals(expected, actual);
     }
 
     @Test

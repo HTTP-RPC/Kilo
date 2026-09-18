@@ -38,7 +38,7 @@ public class IterablesTest {
 
         assertEquals(1, result);
 
-        assertEquals(result, values.stream().findFirst().orElse(null));
+        assertEquals(values.stream().findFirst().orElse(null), result);
 
         assertNull(firstOf(listOf()));
     }
@@ -54,7 +54,7 @@ public class IterablesTest {
         assertEquals(1, result.getFirst());
         assertEquals(2, result.getLast());
 
-        assertEquals(result, values.stream().filter(value -> value < 3).collect(Collectors.toList()));
+        assertEquals(values.stream().filter(value -> value < 3).collect(Collectors.toList()), result);
 
         assertEquals(listOf(), listOf(filter(values, value -> value > 3)));
     }
@@ -67,7 +67,7 @@ public class IterablesTest {
 
         assertEquals(listOf(1, 2, 3), result);
 
-        assertEquals(result, values.stream().map(String::length).collect(Collectors.toList()));
+        assertEquals(values.stream().map(String::length).collect(Collectors.toList()), result);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class IterablesTest {
 
         assertEquals(0, i);
 
-        assertEquals(result, values.stream().collect(Collectors.toMap(value -> value, Enum::ordinal)));
+        assertEquals(values.stream().collect(Collectors.toMap(value -> value, Enum::ordinal)), result);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class IterablesTest {
 
         assertEquals(listOf(1, 1, 2, 1, 2, 3), result);
 
-        assertEquals(result, values.stream().flatMap(value -> value.get().stream()).collect(Collectors.toList()));
+        assertEquals(values.stream().flatMap(value -> value.get().stream()).collect(Collectors.toList()), result);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class IterablesTest {
 
         assertEquals(listOf(1, 2, 3), result);
 
-        assertEquals(result, values.stream().limit(3).collect(Collectors.toList()));
+        assertEquals(values.stream().limit(3).collect(Collectors.toList()), result);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class IterablesTest {
 
         assertEquals(listOf("a", "ab", "abc"), result);
 
-        assertEquals(result, values.stream().sorted(Comparator.comparing(String::length)).collect(Collectors.toList()));
+        assertEquals(values.stream().sorted(Comparator.comparing(String::length)).collect(Collectors.toList()), result);
     }
 
     @Test
@@ -137,11 +137,10 @@ public class IterablesTest {
             entry(3, 1)
         ), result);
 
-        assertEquals(result, values.stream()
-            .collect(Collectors.groupingBy(String::length)).entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size(), (v1, v2) -> {
-                    throw new IllegalStateException();
-                }, TreeMap::new)));
+        assertEquals(values.stream().collect(Collectors.groupingBy(String::length)).entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size(), (v1, v2) -> {
+                throw new IllegalStateException();
+            }, TreeMap::new)), result);
     }
 
     @Test
@@ -152,7 +151,7 @@ public class IterablesTest {
 
         assertTrue(result);
 
-        assertEquals(result, values.stream().anyMatch(value -> value < 3));
+        assertEquals(values.stream().anyMatch(value -> value < 3), result);
 
         assertFalse(exists(values, value -> value > 3));
     }
@@ -284,7 +283,7 @@ public class IterablesTest {
 
         assertEquals(15, result);
 
-        assertEquals(result, values.stream().mapToInt(Integer::intValue).sum());
+        assertEquals(values.stream().mapToInt(Integer::intValue).sum(), result);
 
         assertEquals(0, sumOf(emptyListOf(Integer.class), Integer::intValue));
     }
@@ -297,7 +296,7 @@ public class IterablesTest {
 
         assertEquals(15L, result);
 
-        assertEquals(result, values.stream().mapToLong(Integer::longValue).sum());
+        assertEquals(values.stream().mapToLong(Integer::longValue).sum(), result);
 
         assertEquals(0L, sumOf(emptyListOf(Integer.class), Integer::longValue));
     }
@@ -310,7 +309,7 @@ public class IterablesTest {
 
         assertEquals(15.0, result);
 
-        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).sum());
+        assertEquals(values.stream().mapToDouble(Integer::doubleValue).sum(), result);
 
         assertEquals(0.0, sumOf(emptyListOf(Integer.class), Integer::doubleValue));
     }
@@ -323,7 +322,7 @@ public class IterablesTest {
 
         assertEquals(3.0, result);
 
-        assertEquals(result, values.stream().mapToDouble(Integer::longValue).average().orElseThrow());
+        assertEquals(values.stream().mapToDouble(Integer::longValue).average().orElseThrow(), result);
 
         assertEquals(Double.NaN, averageOf(emptyListOf(Integer.class), Integer::doubleValue));
     }
@@ -336,7 +335,7 @@ public class IterablesTest {
 
         assertEquals(1.0, result);
 
-        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).min().orElseThrow());
+        assertEquals(values.stream().mapToDouble(Integer::doubleValue).min().orElseThrow(), result);
 
         assertEquals(Double.POSITIVE_INFINITY, minimumOf(emptyListOf(Integer.class), Integer::doubleValue));
     }
@@ -349,7 +348,7 @@ public class IterablesTest {
 
         assertEquals(5.0, result);
 
-        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).max().orElseThrow());
+        assertEquals(values.stream().mapToDouble(Integer::doubleValue).max().orElseThrow(), result);
 
         assertEquals(Double.NEGATIVE_INFINITY, maximumOf(emptyListOf(Integer.class), Integer::doubleValue));
     }
@@ -362,7 +361,7 @@ public class IterablesTest {
 
         assertEquals("a", result);
 
-        assertEquals(result, values.stream().min(String::compareTo).orElse(null));
+        assertEquals(values.stream().min(String::compareTo).orElse(null), result);
 
         assertNull(minimumOf(emptyListOf(String.class)));
     }
@@ -375,7 +374,7 @@ public class IterablesTest {
 
         assertEquals("e", result);
 
-        assertEquals(result, values.stream().max(String::compareTo).orElse(null));
+        assertEquals(values.stream().max(String::compareTo).orElse(null), result);
 
         assertNull(maximumOf(emptyListOf(String.class)));
     }
@@ -407,7 +406,7 @@ public class IterablesTest {
 
         var result = listOf(values); // a, b, c
 
-        assertEquals(result, listOf("a", "b", "c"));
+        assertEquals(listOf("a", "b", "c"), result);
     }
 
     @Test
@@ -416,7 +415,7 @@ public class IterablesTest {
 
         var result = listOf(values); // 1, 2, 3
 
-        assertEquals(result, listOf(1, 2, 3));
+        assertEquals(listOf(1, 2, 3), result);
     }
 
     @Test
@@ -425,7 +424,7 @@ public class IterablesTest {
 
         var result = listOf(values); // 1, 2, 3
 
-        assertEquals(result, listOf(1L, 2L, 3L));
+        assertEquals(listOf(1L, 2L, 3L), result);
     }
 
     @Test
@@ -434,7 +433,7 @@ public class IterablesTest {
 
         var result = listOf(values); // 1, 2, 3
 
-        assertEquals(result, listOf(1.0, 2.0, 3.0));
+        assertEquals(listOf(1.0, 2.0, 3.0), result);
     }
 
     @Test

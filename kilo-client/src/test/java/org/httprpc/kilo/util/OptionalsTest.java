@@ -28,7 +28,7 @@ public class OptionalsTest {
 
         assertEquals(123, result);
 
-        assertEquals(result, Optional.ofNullable(null).orElse(123));
+        assertEquals(Optional.ofNullable(null).orElse(123), result);
 
         assertNull(coalesce(null, () -> null));
     }
@@ -39,7 +39,7 @@ public class OptionalsTest {
 
         assertEquals(5, result);
 
-        assertEquals(result, Optional.ofNullable("hello").map(String::length).orElse(null));
+        assertEquals(Optional.ofNullable("hello").map(String::length).orElse(null), result);
 
         assertNull(map(null, String::length));
     }
