@@ -58,6 +58,49 @@ public class Iterables {
     }
 
     /**
+     * Skips iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable.
+     *
+     * @param count
+     * The number of elements to skip.
+     *
+     * @return
+     * The remaining elements.
+     */
+    public static <T> Iterable<T> skip(Iterable<? extends T> iterable, int count) {
+        if (iterable == null || count < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        var iterator = iterable.iterator();
+
+        var i = 0;
+
+        while (iterator.hasNext() && i < count) {
+            iterator.next();
+
+            i++;
+        }
+
+        return () -> new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return iterator.next();
+            }
+        };
+    }
+
+    /**
      * Filters iterable contents.
      *
      * @param <T>
@@ -207,7 +250,7 @@ public class Iterables {
      * The element type.
      *
      * @param iterable
-     * The iterable to filter.
+     * The iterable to limit.
      *
      * @param count
      * The limit count.
@@ -935,31 +978,12 @@ public class Iterables {
      * The array contents.
      */
     public static <T> Iterable<T> iterableOf(T[] array) {
-        return iterableOf(array, 0);
-    }
-
-    /**
-     * Creates an iterable from an array.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param array
-     * The source array.
-     *
-     * @param start
-     * The index of the first element to include.
-     *
-     * @return
-     * The array contents.
-     */
-    public static <T> Iterable<T> iterableOf(T[] array, int start) {
-        if (array == null || start < 0 || start > array.length) {
+        if (array == null) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            int i = start;
+            int i = 0;
 
             @Override
             public boolean hasNext() {
@@ -987,28 +1011,12 @@ public class Iterables {
      * The array contents.
      */
     public static Iterable<Integer> iterableOf(int[] array) {
-        return iterableOf(array, 0);
-    }
-
-    /**
-     * Creates an iterable from an array.
-     *
-     * @param array
-     * The source array.
-     *
-     * @param start
-     * The index of the first element to include.
-     *
-     * @return
-     * The array contents.
-     */
-    public static Iterable<Integer> iterableOf(int[] array, int start) {
-        if (array == null || start < 0 || start > array.length) {
+        if (array == null) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            int i = start;
+            int i = 0;
 
             @Override
             public boolean hasNext() {
@@ -1036,28 +1044,12 @@ public class Iterables {
      * The array contents.
      */
     public static Iterable<Long> iterableOf(long[] array) {
-        return iterableOf(array, 0);
-    }
-
-    /**
-     * Creates an iterable from an array.
-     *
-     * @param array
-     * The source array.
-     *
-     * @param start
-     * The index of the first element to include.
-     *
-     * @return
-     * The array contents.
-     */
-    public static Iterable<Long> iterableOf(long[] array, int start) {
-        if (array == null || start < 0 || start > array.length) {
+        if (array == null) {
             throw new IllegalArgumentException();
         }
 
         return () -> new Iterator<>() {
-            int i = start;
+            int i = 0;
 
             @Override
             public boolean hasNext() {

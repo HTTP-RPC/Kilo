@@ -1049,6 +1049,7 @@ The `Iterables` class contains methods for processing a sequence of values:
 
 ```java
 public static <T> T firstOf(Iterable<? extends T> iterable) { ... }
+public static <T> Iterable<T> skip(Iterable<? extends T> iterable, int count) { ... }
 
 public static <T> Iterable<T> filter(Iterable<? extends T> iterable, Predicate<? super T> predicate) { ... }
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
@@ -1172,16 +1173,10 @@ These methods support creation of an iterable from an array:
 
 ```java
 public static <T> Iterable<T> iterableOf(T[] array) { ... }
-public static <T> Iterable<T> iterableOf(T[] array, int start) { ... }
 
 public static Iterable<Integer> iterableOf(int[] array) { ... }
-public static Iterable<Integer> iterableOf(int[] array, int start) { ... }
-
 public static Iterable<Long> iterableOf(long[] array) { ... }
-public static Iterable<Long> iterableOf(long[] array, int start) { ... }
-
 public static Iterable<Double> iterableOf(double[] array) { ... }
-public static Iterable<Double> iterableOf(double[] array, int start) { ... }
 ```
 
 ```java

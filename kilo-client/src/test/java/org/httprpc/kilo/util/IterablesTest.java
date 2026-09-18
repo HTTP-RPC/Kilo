@@ -44,6 +44,17 @@ public class IterablesTest {
     }
 
     @Test
+    public void testSkip() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = listOf(skip(values, 3)); // 4, 5
+
+        assertEquals(listOf(4, 5), result);
+
+        assertEquals(values.stream().skip(3).collect(Collectors.toList()), result);
+    }
+
+    @Test
     public void testFilter() {
         var values = listOf(1, 2, 3);
 

@@ -1032,7 +1032,7 @@ public abstract class WebService extends HttpServlet {
             if (formData) {
                 return parameters[n].getType() != Void.class;
             } else {
-                var parameterNames = setOf(limit(mapAll(iterableOf(parameters, keyCount),
+                var parameterNames = setOf(limit(mapAll(skip(iterableOf(parameters), keyCount),
                     parameter -> coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName)),
                     n - keyCount
                 ));
