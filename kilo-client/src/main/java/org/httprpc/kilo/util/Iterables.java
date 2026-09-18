@@ -36,71 +36,6 @@ public class Iterables {
     }
 
     /**
-     * Retrieves the first element from an iterable.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param iterable
-     * The iterable.
-     *
-     * @return
-     * The iterable's first element, or {@code null} if the iterable is empty.
-     */
-    public static <T> T firstOf(Iterable<? extends T> iterable) {
-        if (iterable == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var iterator = iterable.iterator();
-
-        return iterator.hasNext() ? iterator.next() : null;
-    }
-
-    /**
-     * Skips iterable contents.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param iterable
-     * The iterable.
-     *
-     * @param count
-     * The number of elements to skip.
-     *
-     * @return
-     * The remaining elements.
-     */
-    public static <T> Iterable<T> skip(Iterable<? extends T> iterable, int count) {
-        if (iterable == null || count < 0) {
-            throw new IllegalArgumentException();
-        }
-
-        var iterator = iterable.iterator();
-
-        var i = 0;
-
-        while (iterator.hasNext() && i < count) {
-            iterator.next();
-
-            i++;
-        }
-
-        return () -> new Iterator<>() {
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            @Override
-            public T next() {
-                return iterator.next();
-            }
-        };
-    }
-
-    /**
      * Filters iterable contents.
      *
      * @param <T>
@@ -374,22 +309,68 @@ public class Iterables {
     }
 
     /**
-     * Determines if any element matches a given predicate.
+     * Retrieves the first element from an iterable.
      *
      * @param <T>
      * The element type.
      *
      * @param iterable
-     * The iterable to search.
-     *
-     * @param predicate
-     * The filter predicate.
+     * The iterable.
      *
      * @return
-     * {@code true} if a matching element is found; {@code false}, otherwise.
+     * The iterable's first element, or {@code null} if the iterable is empty.
      */
-    public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) {
-        return firstOf(filter(iterable, predicate)) != null;
+    public static <T> T firstOf(Iterable<? extends T> iterable) {
+        if (iterable == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var iterator = iterable.iterator();
+
+        return iterator.hasNext() ? iterator.next() : null;
+    }
+
+    /**
+     * Skips iterable elements.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable.
+     *
+     * @param count
+     * The number of elements to skip.
+     *
+     * @return
+     * The remaining elements.
+     */
+    public static <T> Iterable<T> skip(Iterable<? extends T> iterable, int count) {
+        if (iterable == null || count < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        var iterator = iterable.iterator();
+
+        var i = 0;
+
+        while (iterator.hasNext() && i < count) {
+            iterator.next();
+
+            i++;
+        }
+
+        return () -> new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return iterator.next();
+            }
+        };
     }
 
     /**
@@ -628,6 +609,25 @@ public class Iterables {
         }
 
         return element -> transform.apply(element) != null;
+    }
+
+    /**
+     * Determines if any element matches a given predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to search.
+     *
+     * @param predicate
+     * The filter predicate.
+     *
+     * @return
+     * {@code true} if a matching element is found; {@code false}, otherwise.
+     */
+    public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) {
+        return firstOf(filter(iterable, predicate)) != null;
     }
 
     /**

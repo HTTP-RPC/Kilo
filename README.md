@@ -1048,9 +1048,6 @@ public static boolean isNotNull(Object value) { ... }
 The `Iterables` class contains methods for processing a sequence of values:
 
 ```java
-public static <T> T firstOf(Iterable<? extends T> iterable) { ... }
-public static <T> Iterable<T> skip(Iterable<? extends T> iterable, int count) { ... }
-
 public static <T> Iterable<T> filter(Iterable<? extends T> iterable, Predicate<? super T> predicate) { ... }
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
 public static <T, R> Iterable<R> flatten(Iterable<T> iterable, Function<? super T, ? extends Iterable<? extends R>> transform) { ... }
@@ -1061,16 +1058,11 @@ public static <T> List<T> sortBy(Iterable<? extends T> iterable, Comparator<? su
 
 public static <T, K> Map<K, List<T>> groupBy(Iterable<? extends T> iterable, Function<? super T, ? extends K> classifier) { ... }
 
-public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
+public static <T> T firstOf(Iterable<? extends T> iterable) { ... }
+public static <T> Iterable<T> skip(Iterable<? extends T> iterable, int count) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
-
-```java
-var values = listOf(1, 2, 3);
-
-var result = firstOf(values); // 1
-```
 
 ```java
 var values = listOf(1, 2, 3);
@@ -1082,14 +1074,6 @@ var result = listOf(filter(values, value -> value < 3)); // 1, 2
 var values = listOf("a", "ab", "abc");
 
 var result = listOf(mapAll(values, String::length)); // 1, 2, 3
-```
-
-```java
-var values = Arrays.asList(DayOfWeek.values());
-
-var result = mapOf(mapAll(values, value -> entry(value, value.ordinal())));
-
-var i = result.get(DayOfWeek.MONDAY); // 0
 ```
 
 The following methods can be used to facilitate SQL-like filtering of an iterable:
@@ -1109,6 +1093,8 @@ public static <T> Predicate<T> whereFalse(Function<? super T, Boolean> transform
 
 public static <T> Predicate<T> whereNull(Function<? super T, ?> transform) { ... }
 public static <T> Predicate<T> whereNotNull(Function<? super T, ?> transform) { ... }
+
+public static <T> boolean exists(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 ```
 
 For example:
@@ -1180,9 +1166,9 @@ public static Iterable<Double> iterableOf(double[] array) { ... }
 ```
 
 ```java
-var values = iterableOf(new Integer[] {1, 2, 3});
+var values = iterableOf(new String[] {"a", "b", "c"});
 
-var result = maximumOf(values); // 3
+var result = maximumOf(values); // c
 ```
 
 The following method creates an unbounded iterable of generated values:

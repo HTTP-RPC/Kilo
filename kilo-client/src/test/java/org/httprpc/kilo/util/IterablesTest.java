@@ -31,30 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class IterablesTest {
     @Test
-    public void testFirstOf() {
-        var values = listOf(1, 2, 3);
-
-        var result = firstOf(values); // 1
-
-        assertEquals(1, result);
-
-        assertEquals(values.stream().findFirst().orElse(null), result);
-
-        assertNull(firstOf(listOf()));
-    }
-
-    @Test
-    public void testSkip() {
-        var values = listOf(1, 2, 3, 4, 5);
-
-        var result = listOf(skip(values, 3)); // 4, 5
-
-        assertEquals(listOf(4, 5), result);
-
-        assertEquals(values.stream().skip(3).collect(Collectors.toList()), result);
-    }
-
-    @Test
     public void testFilter() {
         var values = listOf(1, 2, 3);
 
@@ -155,16 +131,27 @@ public class IterablesTest {
     }
 
     @Test
-    public void testExists() {
+    public void testFirstOf() {
         var values = listOf(1, 2, 3);
 
-        var result = exists(values, value -> value < 3); // true
+        var result = firstOf(values); // 1
 
-        assertTrue(result);
+        assertEquals(1, result);
 
-        assertEquals(values.stream().anyMatch(value -> value < 3), result);
+        assertEquals(values.stream().findFirst().orElse(null), result);
 
-        assertFalse(exists(values, value -> value > 3));
+        assertNull(firstOf(listOf()));
+    }
+
+    @Test
+    public void testSkip() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = listOf(skip(values, 3)); // 4, 5
+
+        assertEquals(listOf(4, 5), result);
+
+        assertEquals(values.stream().skip(3).collect(Collectors.toList()), result);
     }
 
     @Test
@@ -284,6 +271,19 @@ public class IterablesTest {
             .or(whereLessThan(Integer::intValue, 2)))); // 1, 5
 
         assertEquals(listOf(1, 5), result);
+    }
+
+    @Test
+    public void testExists() {
+        var values = listOf(1, 2, 3);
+
+        var result = exists(values, value -> value < 3); // true
+
+        assertTrue(result);
+
+        assertEquals(values.stream().anyMatch(value -> value < 3), result);
+
+        assertFalse(exists(values, value -> value > 3));
     }
 
     @Test
@@ -415,9 +415,9 @@ public class IterablesTest {
     public void testIterableOfArray() {
         var values = iterableOf(new String[] {"a", "b", "c"});
 
-        var result = listOf(values); // a, b, c
+        var result = maximumOf(values); // c
 
-        assertEquals(listOf("a", "b", "c"), result);
+        assertEquals("c", result);
     }
 
     @Test
