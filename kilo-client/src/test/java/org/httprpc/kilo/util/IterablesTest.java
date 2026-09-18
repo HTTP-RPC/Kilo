@@ -397,7 +397,7 @@ public class IterablesTest {
 
         var result = listOf(iterableOf(values.stream())); // a, b, c
 
-        assertEquals(listOf("a", "b", "c"), result);
+        assertEquals(values, result);
     }
 
     @Test
