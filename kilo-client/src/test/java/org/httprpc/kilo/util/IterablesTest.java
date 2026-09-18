@@ -138,8 +138,6 @@ public class IterablesTest {
 
         assertEquals(1, result);
 
-        assertEquals(values.stream().findFirst().orElse(null), result);
-
         assertNull(firstOf(listOf()));
     }
 
@@ -151,7 +149,7 @@ public class IterablesTest {
 
         assertEquals(listOf(4, 5), result);
 
-        assertEquals(values.stream().skip(3).collect(Collectors.toList()), result);
+        assertTrue(isEmpty(skip(values, 10)));
     }
 
     @Test
