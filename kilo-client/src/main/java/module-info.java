@@ -13,8 +13,8 @@
  */
 
 module org.httprpc.kilo.client {
-    requires java.sql;
-    requires java.xml;
+    requires transitive java.sql;
+    requires transitive java.xml;
 
     exports org.httprpc.kilo;
     exports org.httprpc.kilo.beans;
