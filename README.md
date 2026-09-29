@@ -1137,12 +1137,6 @@ var values = listOf(1, 2, 3, 4, 5);
 var result = sumOf(values, Integer::intValue); // 15
 ```
 
-```java
-var values = listOf("a", "b", "c", "d", "e");
-
-var result = minimumOf(values); // a
-```
-
 This method can be used to adapt a stream for use as an iterable:
 
 ```java
