@@ -35,12 +35,10 @@ public class IndexServlet extends HttpServlet {
     private Map<String, WebService.ServiceDescriptor> serviceDescriptors = new TreeMap<>();
 
     @Override
+    @SuppressWarnings("unchecked")
     public void init() {
-        for (var entry : WebService.instances.entrySet()) {
-            var type = entry.getKey();
-            var instance = entry.getValue();
-
-            var fields = type.getDeclaredFields();
+        for (var instance : WebService.getAll()) {
+            var fields = instance.getClass().getDeclaredFields();
 
             for (var i = 0; i < fields.length; i++) {
                 var field = fields[i];
@@ -51,7 +49,7 @@ public class IndexServlet extends HttpServlet {
                     field.setAccessible(true);
 
                     try {
-                        field.set(instance, WebService.instances.get(fieldType));
+                        field.set(instance, WebService.getInstance((Class<? extends WebService>)fieldType));
                     } catch (IllegalAccessException exception) {
                         throw new UnsupportedOperationException(exception);
                     }

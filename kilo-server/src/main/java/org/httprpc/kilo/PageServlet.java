@@ -42,6 +42,7 @@ public abstract class PageServlet extends HttpServlet {
     private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
     @Override
+    @SuppressWarnings("unchecked")
     public void init() throws ServletException {
         var fields = getClass().getDeclaredFields();
 
@@ -54,7 +55,7 @@ public abstract class PageServlet extends HttpServlet {
                 field.setAccessible(true);
 
                 try {
-                    field.set(this, WebService.instances.get(fieldType));
+                    field.set(this, WebService.getInstance((Class<? extends WebService>)fieldType));
                 } catch (IllegalAccessException exception) {
                     throw new UnsupportedOperationException(exception);
                 }

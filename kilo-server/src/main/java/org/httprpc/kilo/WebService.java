@@ -810,7 +810,7 @@ public abstract class WebService extends HttpServlet {
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
-    static final Map<Class<? extends WebService>, WebService> instances = synchronizedMapOf(new HashMap<>());
+    private static final Map<Class<? extends WebService>, WebService> instances = synchronizedMapOf(new HashMap<>());
 
     /**
      * Returns a service instance.
@@ -828,6 +828,16 @@ public abstract class WebService extends HttpServlet {
     @SuppressWarnings("unchecked")
     public static <T extends WebService> T getInstance(Class<T> type) {
         return (T)instances.get(type);
+    }
+
+    /**
+     * Returns all active service instances.
+     *
+     * @return
+     * All active service instances.
+     */
+    public static Collection<WebService> getAll() {
+        return immutableMapOf(instances).values();
     }
 
     @Override
