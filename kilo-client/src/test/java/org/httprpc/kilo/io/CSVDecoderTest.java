@@ -17,7 +17,6 @@ package org.httprpc.kilo.io;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
@@ -26,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CSVDecoderTest {
     @Test
-    public void testRead() throws IOException {
+    public void testRead() {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(
@@ -48,7 +47,7 @@ public class CSVDecoderTest {
     }
 
     @Test
-    public void testReadMultiple() throws IOException {
+    public void testReadMultiple() {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(
@@ -69,7 +68,7 @@ public class CSVDecoderTest {
     }
 
     @Test
-    public void testMissingKeys() throws IOException {
+    public void testMissingKeys() {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(
@@ -83,7 +82,7 @@ public class CSVDecoderTest {
     }
 
     @Test
-    public void testMissingValues() throws IOException {
+    public void testMissingValues() {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(
@@ -101,21 +100,21 @@ public class CSVDecoderTest {
     }
 
     @Test
-    public void testMissingRows() throws IOException {
+    public void testMissingRows() {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(), csvDecoder.read(new StringReader("a,b,c")));
     }
 
     @Test
-    public void testEmpty() throws IOException {
+    public void testEmpty() {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(), csvDecoder.read(new StringReader("")));
     }
 
     @Test
-    public void testQuotes() throws IOException {
+    public void testQuotes() {
         var csvDecoder = new CSVDecoder();
 
         assertEquals(listOf(
@@ -126,7 +125,7 @@ public class CSVDecoderTest {
     }
 
     @Test
-    public void testIterate() throws IOException {
+    public void testIterate() {
         var text = "\"a\",\"b\",\"c\"\r\n1,2,3\r\n4,5,6\r\n7,8,9\r\n";
 
         var inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));

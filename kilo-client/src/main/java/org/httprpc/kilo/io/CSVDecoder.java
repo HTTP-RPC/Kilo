@@ -106,7 +106,12 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
     private StringBuilder valueBuilder = new StringBuilder();
 
     @Override
-    public List<Map<String, String>> read(Reader reader) throws IOException {
+    public List<Map<String, String>> read(InputStream inputStream) {
+        return listOf(iterate(inputStream));
+    }
+
+    @Override
+    public List<Map<String, String>> read(Reader reader) {
         return listOf(iterate(reader));
     }
 
