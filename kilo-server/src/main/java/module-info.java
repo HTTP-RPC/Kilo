@@ -12,21 +12,10 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+module org.httprpc.kilo.server {
+    requires transitive org.httprpc.kilo.client;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+    requires jakarta.servlet;
 
-/**
- * Associates a resource path with a service method.
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ResourcePath {
-    /**
-     * The method's resource path.
-     */
-    String value();
+    exports org.httprpc.kilo.web.service;
 }

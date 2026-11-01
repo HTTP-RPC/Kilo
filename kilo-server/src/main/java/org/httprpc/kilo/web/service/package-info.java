@@ -12,21 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Associates a service path with a proxy type.
+ * Contains classes for creating web APIs.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ServicePath {
-    /**
-     * The type's service path.
-     */
-    String value();
-}
+package org.httprpc.kilo.web.service;

@@ -15,7 +15,7 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.ServletException;
-import org.httprpc.kilo.WebService;
+import org.httprpc.kilo.web.service.WebService;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

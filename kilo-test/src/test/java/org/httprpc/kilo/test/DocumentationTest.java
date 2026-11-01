@@ -14,7 +14,7 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.io.TextDecoder;
 import org.junit.jupiter.api.Test;
 

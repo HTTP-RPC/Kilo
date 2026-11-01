@@ -16,8 +16,8 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Name;
-import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.WebService;
+import org.httprpc.kilo.web.RequestMethod;
+import org.httprpc.kilo.web.service.WebService;
 
 import java.util.List;
 

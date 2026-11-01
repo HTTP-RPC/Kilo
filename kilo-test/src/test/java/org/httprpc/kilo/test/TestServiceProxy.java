@@ -14,11 +14,11 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.web.RequestMethod;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.ServicePath;
-import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.web.ResourcePath;
+import org.httprpc.kilo.web.ServicePath;
+import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.io.TextDecoder;
 import org.w3c.dom.Document;
 

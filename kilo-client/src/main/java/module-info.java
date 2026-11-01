@@ -23,4 +23,5 @@ module org.httprpc.kilo.client {
     exports org.httprpc.kilo.util;
     exports org.httprpc.kilo.util.concurrent;
     exports org.httprpc.kilo.xml;
+    exports org.httprpc.kilo.web;
 }

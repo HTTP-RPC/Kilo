@@ -15,8 +15,8 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
-import org.httprpc.kilo.PageServlet;
-import org.httprpc.kilo.WebService;
+import org.httprpc.kilo.web.service.PageServlet;
+import org.httprpc.kilo.web.service.WebService;
 
 import java.util.List;
 

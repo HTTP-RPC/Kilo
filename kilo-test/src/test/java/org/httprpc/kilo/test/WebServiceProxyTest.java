@@ -14,8 +14,8 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.WebServiceException;
-import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.web.WebServiceException;
+import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;

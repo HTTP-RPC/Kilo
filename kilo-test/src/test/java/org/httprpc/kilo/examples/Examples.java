@@ -14,7 +14,7 @@
 
 package org.httprpc.kilo.examples;
 
-import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONDecoder;

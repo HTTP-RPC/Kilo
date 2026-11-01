@@ -13,6 +13,6 @@
  */
 
 /**
- * Contains classes for creating and consuming web APIs.
+ * Contains common annotations.
  */
 package org.httprpc.kilo;

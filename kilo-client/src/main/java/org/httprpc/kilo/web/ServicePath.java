@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.web;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,13 +20,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Associates an HTTP verb with a service method.
+ * Associates a service path with a proxy type.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface RequestMethod {
+@Target(ElementType.TYPE)
+public @interface ServicePath {
     /**
-     * The method's HTTP verb.
+     * The type's service path.
      */
     String value();
 }

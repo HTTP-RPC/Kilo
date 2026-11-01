@@ -14,9 +14,9 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.ServicePath;
+import org.httprpc.kilo.web.RequestMethod;
+import org.httprpc.kilo.web.ResourcePath;
+import org.httprpc.kilo.web.ServicePath;
 
 import java.io.IOException;
 import java.util.List;
