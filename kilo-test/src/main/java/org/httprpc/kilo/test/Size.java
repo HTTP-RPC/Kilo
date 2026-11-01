@@ -14,8 +14,8 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.web.service.Description;
 import org.httprpc.kilo.sql.Numeric;
+import org.httprpc.kilo.web.service.Description;
 
 @Description("Represents a size option.")
 public enum Size implements Numeric {

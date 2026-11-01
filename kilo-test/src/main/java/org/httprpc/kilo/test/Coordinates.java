@@ -14,8 +14,8 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.web.service.Description;
 import org.httprpc.kilo.Required;
+import org.httprpc.kilo.web.service.Description;
 
 @Description("Represents an x/y coordinate pair.")
 public record Coordinates(

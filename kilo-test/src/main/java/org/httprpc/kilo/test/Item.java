@@ -14,13 +14,13 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.web.service.Description;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
+import org.httprpc.kilo.web.service.Description;
 
 @Table("item")
 @Description("Represents a catalog item.")

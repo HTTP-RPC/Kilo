@@ -15,10 +15,10 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
-import org.httprpc.kilo.web.RequestMethod;
-import org.httprpc.kilo.web.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.kilo.web.RequestMethod;
+import org.httprpc.kilo.web.ResourcePath;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

@@ -14,8 +14,8 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.web.service.Description;
 import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.web.service.Description;
 
 import java.util.List;
 

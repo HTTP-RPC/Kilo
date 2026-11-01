@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.examples;
 
-import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONDecoder;
@@ -22,6 +21,7 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;

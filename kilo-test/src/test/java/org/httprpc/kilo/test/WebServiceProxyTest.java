@@ -14,11 +14,11 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.web.WebServiceException;
-import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
+import org.httprpc.kilo.web.WebServiceException;
+import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;

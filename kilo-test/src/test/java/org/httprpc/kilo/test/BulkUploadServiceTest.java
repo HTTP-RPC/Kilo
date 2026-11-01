@@ -14,10 +14,10 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.web.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONEncoder;
+import org.httprpc.kilo.web.WebServiceProxy;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
