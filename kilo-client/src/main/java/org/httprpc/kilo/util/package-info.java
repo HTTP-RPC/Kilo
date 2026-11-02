@@ -13,6 +13,6 @@
  */
 
 /**
- * Contains common utility classes.
+ * Contains general-purpose utility classes.
  */
 package org.httprpc.kilo.util;

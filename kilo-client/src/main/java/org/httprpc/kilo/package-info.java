@@ -13,6 +13,6 @@
  */
 
 /**
- * Contains common annotations.
+ * Contains shared annotations.
  */
 package org.httprpc.kilo;
