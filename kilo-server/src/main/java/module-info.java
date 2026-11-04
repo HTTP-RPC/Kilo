@@ -13,9 +13,9 @@
  */
 
 module org.httprpc.kilo.server {
-    requires transitive org.httprpc.kilo.client;
+    requires transitive jakarta.servlet;
 
-    requires jakarta.servlet;
+    requires transitive org.httprpc.kilo.client;
 
     exports org.httprpc.kilo.web.service;
 }
