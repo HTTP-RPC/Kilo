@@ -14,7 +14,7 @@
 
 subprojects {
     group = 'org.httprpc'
-    version = '6.6'
+    version = '6.6.1'
 
     repositories {
         mavenCentral()

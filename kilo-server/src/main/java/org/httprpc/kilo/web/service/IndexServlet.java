@@ -18,6 +18,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import static org.httprpc.kilo.util.Collections.*;
 /**
  * Generates API documentation.
  */
-@WebServlet(urlPatterns = {"", "*.html"}, loadOnStartup = Integer.MAX_VALUE)
+@WebServlet(urlPatterns = {"", "*.html", "*.json"}, loadOnStartup = Integer.MAX_VALUE)
 public class IndexServlet extends HttpServlet {
     private Map<String, WebService.ServiceDescriptor> serviceDescriptors = new TreeMap<>();
 
@@ -64,47 +65,55 @@ public class IndexServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType(WebService.TEXT_HTML);
+        var servletPath = request.getServletPath();
 
-        var locale = request.getLocale();
-        var resourceBundle = ResourceBundle.getBundle(IndexServlet.class.getName(), locale);
+        if (servletPath.isEmpty()) {
+            response.setContentType(WebService.TEXT_HTML);
 
-        var servletContext = getServletContext();
+            var locale = request.getLocale();
 
-        if (request.getPathInfo() != null) {
             var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
             templateEncoder.setLocale(locale);
-            templateEncoder.setResourceBundle(resourceBundle);
+            templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), locale));
 
             templateEncoder.write(mapOf(
                 entry("language", locale.getLanguage()),
-                entry("title", servletContext.getServletContextName()),
-                entry("contextPath", servletContext.getContextPath()),
+                entry("contextPath", getServletContext().getContextPath()),
                 entry("services", serviceDescriptors.values())
             ), response.getOutputStream());
         } else {
-            var servletPath = request.getServletPath();
-
-            var path = servletPath.substring(0, servletPath.lastIndexOf("."));
-
-            var serviceDescriptor = serviceDescriptors.get(path);
+            var serviceDescriptor = serviceDescriptors.get(servletPath.substring(0, servletPath.lastIndexOf(".")));
 
             if (serviceDescriptor == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            var templateEncoder = new TemplateEncoder(IndexServlet.class, "api.html");
+            if (servletPath.endsWith(".html")) {
+                response.setContentType(WebService.TEXT_HTML);
 
-            templateEncoder.setLocale(locale);
-            templateEncoder.setResourceBundle(resourceBundle);
+                var locale = request.getLocale();
 
-            templateEncoder.write(mapOf(
-                entry("language", locale.getLanguage()),
-                entry("contextPath", servletContext.getContextPath()),
-                entry("service", serviceDescriptor)
-            ), response.getOutputStream());
+                var templateEncoder = new TemplateEncoder(IndexServlet.class, "service.html");
+
+                templateEncoder.setLocale(locale);
+                templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), locale));
+
+                templateEncoder.write(mapOf(
+                    entry("language", locale.getLanguage()),
+                    entry("contextPath", getServletContext().getContextPath()),
+                    entry("service", serviceDescriptor)
+                ), response.getOutputStream());
+            } else if (servletPath.endsWith(".json")) {
+                response.setContentType(WebService.APPLICATION_JSON);
+
+                var jsonEncoder = new JSONEncoder();
+
+                jsonEncoder.write(serviceDescriptor, response.getOutputStream());
+            } else {
+                throw new UnsupportedOperationException();
+            }
         }
     }
 }
