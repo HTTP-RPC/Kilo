@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.web.WebServiceProxy;
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,11 @@ public class DocumentationTest {
     }
 
     private void testDocumentation(String name) throws IOException {
+        testHTMLDocumentation(name);
+        testJSONDocumentation(name);
+    }
+
+    private void testHTMLDocumentation(String name) throws IOException {
         String expected;
         try (var inputStream = getClass().getResourceAsStream(String.format("api/%s.html", name))) {
             var textDecoder = new TextDecoder();
@@ -86,6 +92,21 @@ public class DocumentationTest {
 
             return textDecoder.read(inputStream);
         });
+
+        var actual = webServiceProxy.invoke();
+
+        assertEquals(expected, actual);
+    }
+
+    private void testJSONDocumentation(String name) throws IOException {
+        Object expected;
+        try (var inputStream = getClass().getResourceAsStream(String.format("api/%s.json", name))) {
+            var jsonDecoder = new JSONDecoder();
+
+            expected = jsonDecoder.read(inputStream);
+        }
+
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("%s.json", name)));
 
         var actual = webServiceProxy.invoke();
 
