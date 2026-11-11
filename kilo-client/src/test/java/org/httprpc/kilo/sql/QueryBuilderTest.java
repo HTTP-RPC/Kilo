@@ -639,6 +639,6 @@ public class QueryBuilderTest {
     }
 
     private static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mariadb://db.local:3306/demo", "demo", "demo123!");
+        return DriverManager.getConnection("jdbc:mariadb://db.local:3306/demo?sslMode=disable", "demo", "demo123!");
     }
 }
