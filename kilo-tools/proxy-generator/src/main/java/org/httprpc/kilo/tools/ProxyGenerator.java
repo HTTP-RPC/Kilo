@@ -14,7 +14,12 @@
 
 package org.httprpc.kilo.tools;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.web.WebServiceProxy;
+
+import java.net.URI;
 import java.util.List;
+import java.util.TreeMap;
 
 public class ProxyGenerator {
     public interface ServiceDescriptor {
@@ -103,6 +108,76 @@ public class ProxyGenerator {
     }
 
     public static void main(String[] args) throws Exception {
+        if (args.length < 1) {
+            System.out.println("Base URI is required.");
+            return;
+        }
+
+        if (args.length < 2) {
+            System.out.println("Package name is required.");
+            return;
+        }
+
+        var baseURI = URI.create(args[0]);
+
+        var packageName = args[1];
+
+        var proxyTypeNames = new TreeMap<String, String>();
+        var serviceDescriptors = new TreeMap<String, ServiceDescriptor>();
+
+        var enumerations = new TreeMap<String, EnumerationDescriptor>();
+        var structures = new TreeMap<String, StructureDescriptor>();
+
+        for (var i = 2; i < args.length; i++) {
+            var components = args[i].split(":");
+
+            if (components.length != 2) {
+                System.out.println("Invalid service mapping.");
+                return;
+            }
+
+            var servicePath = components[0];
+            var proxyTypeName = components[1];
+
+            proxyTypeNames.put(servicePath, proxyTypeName);
+
+            var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("%s.json", servicePath)));
+
+            var serviceDescriptor = BeanAdapter.coerce(webServiceProxy.invoke(), ServiceDescriptor.class);
+
+            serviceDescriptors.put(servicePath, serviceDescriptor);
+
+            for (var enumerationDescriptor : serviceDescriptor.getEnumerations()) {
+                enumerations.put(enumerationDescriptor.getName(), enumerationDescriptor);
+            }
+
+            for (var structureDescriptor : serviceDescriptor.getStructures()) {
+                structures.put(structureDescriptor.getName(), structureDescriptor);
+            }
+        }
+
+        for (var entry : serviceDescriptors.entrySet()) {
+            generateProxyType(packageName, proxyTypeNames.get(entry.getKey()), entry.getValue());
+        }
+
+        for (var value : enumerations.values()) {
+            generateEnumeration(packageName, value);
+        }
+
+        for (var value : structures.values()) {
+            generateStructure(packageName, value);
+        }
+    }
+
+    private static void generateProxyType(String packageName, String proxyTypeName, ServiceDescriptor serviceDescriptor) {
+        // TODO
+    }
+
+    private static void generateEnumeration(String packageName, EnumerationDescriptor enumerationDescriptor) {
+        // TODO
+    }
+
+    private static void generateStructure(String packageName, StructureDescriptor structureDescriptor) {
         // TODO
     }
 }
