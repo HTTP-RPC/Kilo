@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$/kilo-client" />
             <option value="$PROJECT_DIR$/kilo-server" />
             <option value="$PROJECT_DIR$/kilo-test" />
+            <option value="$PROJECT_DIR$/kilo-tools" />
+            <option value="$PROJECT_DIR$/kilo-tools/proxy-generator" />
           </set>
         </option>
       </GradleProjectSettings>
