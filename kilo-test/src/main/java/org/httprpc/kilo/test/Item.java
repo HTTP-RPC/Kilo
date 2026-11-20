@@ -32,8 +32,6 @@ public interface Item {
     Integer getID();
     void setID(Integer id);
 
-    int getid();
-
     @Column("description")
     @Index
     @Description("The item's description.")
