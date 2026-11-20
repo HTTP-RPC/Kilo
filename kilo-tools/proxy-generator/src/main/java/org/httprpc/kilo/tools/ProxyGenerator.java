@@ -15,11 +15,21 @@
 package org.httprpc.kilo.tools;
 
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.web.WebServiceProxy;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
+
+import static org.httprpc.kilo.util.Collections.*;
 
 public class ProxyGenerator {
     public interface ServiceDescriptor {
@@ -107,6 +117,56 @@ public class ProxyGenerator {
         TypeDescriptor getValueType();
     }
 
+    private static class MethodDeclarationModifier implements TemplateEncoder.Modifier<OperationDescriptor> {
+        @Override
+        public Object apply(OperationDescriptor operation, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
+    private static class ConstantDeclarationModifier implements TemplateEncoder.Modifier<ConstantDescriptor> {
+        @Override
+        public Object apply(ConstantDescriptor constant, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            var resultBuilder = new StringBuilder(constant.getName());
+
+            if (!last) {
+                resultBuilder.append(", ");
+            }
+
+            return resultBuilder.toString();
+        }
+    }
+
+    private static class SupertypeDeclarationModifier implements TemplateEncoder.Modifier<TypeDescriptor> {
+        @Override
+        public Object apply(TypeDescriptor type, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            var resultBuilder = new StringBuilder(type.getName());
+
+            if (!last) {
+                resultBuilder.append(", ");
+            }
+
+            return resultBuilder.toString();
+        }
+    }
+
+    private static class AccessorDeclarationModifier implements TemplateEncoder.Modifier<PropertyDescriptor> {
+        @Override
+        public Object apply(PropertyDescriptor property, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
+    private static class MutatorDeclarationModifier implements TemplateEncoder.Modifier<PropertyDescriptor> {
+        @Override
+        public Object apply(PropertyDescriptor property, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
             System.out.println("Base URI is required.");
@@ -157,27 +217,49 @@ public class ProxyGenerator {
         }
 
         for (var entry : serviceDescriptors.entrySet()) {
-            generateProxyType(packageName, proxyTypeNames.get(entry.getKey()), entry.getValue());
+            generate(packageName, proxyTypeNames.get(entry.getKey()), "service-proxy.java", mapOf(
+                entry("methodDeclaration", new MethodDeclarationModifier())
+            ), "service", entry.getValue());
         }
 
-        for (var value : enumerations.values()) {
-            generateEnumeration(packageName, value);
+        for (var enumeration : enumerations.values()) {
+            generate(packageName, enumeration.getName(), "enumeration.java", mapOf(
+                entry("constantDeclaration", new ConstantDeclarationModifier())
+            ), "enumeration", enumeration);
         }
 
-        for (var value : structures.values()) {
-            generateStructure(packageName, value);
+        for (var structure : structures.values()) {
+            generate(packageName, structure.getName(), "structure.java", mapOf(
+                entry("supertypeDeclaration", new SupertypeDeclarationModifier()),
+                entry("accessorDeclaration", new AccessorDeclarationModifier()),
+                entry("mutatorDeclaration", new MutatorDeclarationModifier())
+            ), "structure", structure);
         }
     }
 
-    private static void generateProxyType(String packageName, String proxyTypeName, ServiceDescriptor serviceDescriptor) {
-        // TODO
-    }
+    private static void generate(String packageName, String typeName, String templateName,
+        Map<String, TemplateEncoder.Modifier<?>> modifiers,
+        String descriptorKey,
+        Object descriptor) throws IOException {
+        var workingPath = Path.of(System.getProperty("user.dir"));
 
-    private static void generateEnumeration(String packageName, EnumerationDescriptor enumerationDescriptor) {
-        // TODO
-    }
+        var packagePath = workingPath.resolve(packageName.replace(".", "/"));
+        var filePath = packagePath.resolve(String.format("%s.java", typeName));
 
-    private static void generateStructure(String packageName, StructureDescriptor structureDescriptor) {
-        // TODO
+        var templateEncoder = new TemplateEncoder(ProxyGenerator.class, templateName);
+
+        for (var entry : modifiers.entrySet()) {
+            templateEncoder.bind(entry.getKey(), entry.getValue());
+        }
+
+        try (var outputStream = Files.newOutputStream(filePath,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING)) {
+            templateEncoder.write(mapOf(
+                entry("proxyGeneratorTypeName", ProxyGenerator.class.getSimpleName()),
+                entry("packageName", packageName),
+                entry(descriptorKey, descriptor)
+            ), outputStream);
+        }
     }
 }
