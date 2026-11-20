@@ -34,6 +34,8 @@ import static org.httprpc.kilo.util.Collections.*;
 public class ProxyGenerator {
     public interface ServiceDescriptor {
         String getPath();
+
+        String getName();
         String getDescription();
 
         List<EndpointDescriptor> getEndpoints();
@@ -67,6 +69,8 @@ public class ProxyGenerator {
         String getName();
         String getDescription();
 
+        String getIdentifier();
+
         boolean isRequired();
 
         TypeDescriptor getType();
@@ -83,6 +87,8 @@ public class ProxyGenerator {
         String getName();
         String getDescription();
 
+        String getIdentifier();
+
         boolean isDeprecated();
     }
 
@@ -97,6 +103,9 @@ public class ProxyGenerator {
     public interface PropertyDescriptor {
         String getName();
         String getDescription();
+
+        String getReadIdentifier();
+        String getWriteIdentifier();
 
         boolean isRequired();
         boolean isDeprecated();
@@ -182,30 +191,18 @@ public class ProxyGenerator {
 
         var packageName = args[1];
 
-        var proxyTypeNames = new TreeMap<String, String>();
-        var serviceDescriptors = new TreeMap<String, ServiceDescriptor>();
-
+        var services = new TreeMap<String, ServiceDescriptor>();
         var enumerations = new TreeMap<String, EnumerationDescriptor>();
         var structures = new TreeMap<String, StructureDescriptor>();
 
         for (var i = 2; i < args.length; i++) {
-            var components = args[i].split(":");
-
-            if (components.length != 2) {
-                System.out.println("Invalid service mapping.");
-                return;
-            }
-
-            var servicePath = components[0];
-            var proxyTypeName = components[1];
-
-            proxyTypeNames.put(servicePath, proxyTypeName);
+            var servicePath = args[i];
 
             var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("%s.json", servicePath)));
 
             var serviceDescriptor = BeanAdapter.coerce(webServiceProxy.invoke(), ServiceDescriptor.class);
 
-            serviceDescriptors.put(servicePath, serviceDescriptor);
+            services.put(servicePath, serviceDescriptor);
 
             for (var enumerationDescriptor : serviceDescriptor.getEnumerations()) {
                 enumerations.put(enumerationDescriptor.getName(), enumerationDescriptor);
@@ -216,10 +213,10 @@ public class ProxyGenerator {
             }
         }
 
-        for (var entry : serviceDescriptors.entrySet()) {
-            generate(packageName, proxyTypeNames.get(entry.getKey()), "service-proxy.java", mapOf(
+        for (var service : services.values()) {
+            generate(packageName, service.getName(), "service-proxy.java", mapOf(
                 entry("methodDeclaration", new MethodDeclarationModifier())
-            ), "service", entry.getValue());
+            ), "service", service);
         }
 
         for (var enumeration : enumerations.values()) {
