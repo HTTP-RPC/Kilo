@@ -59,7 +59,7 @@ public class TemplateEncoder extends Encoder<Object> {
          * Applies the modifier.
          *
          * @param value
-         * The value to which the modifier is being be applied.
+         * The value to modify.
          *
          * @param argument
          * The modifier argument, or {@code null} if no argument was provided.
@@ -555,7 +555,6 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             sectionNames.pop();
-
                         }
                         case CONDITIONAL_SECTION_START -> {
                             sectionNames.push(marker);
@@ -569,7 +568,6 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             sectionNames.pop();
-
                         }
                         case INVERTED_SECTION_START -> {
                             sectionNames.push(marker);
@@ -583,7 +581,6 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             sectionNames.pop();
-
                         }
                         case SECTION_END -> {
                             if (!sectionNames.peek().equals(marker)) {
