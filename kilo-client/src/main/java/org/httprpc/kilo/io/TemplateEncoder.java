@@ -35,6 +35,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
@@ -53,8 +54,11 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class TemplateEncoder extends Encoder<Object> {
     /**
      * Represents a modifier.
+     *
+     * @param <T>
+     * The value type.
      */
-    public interface Modifier {
+    public interface Modifier<T> {
         /**
          * Applies the modifier.
          *
@@ -70,15 +74,20 @@ public class TemplateEncoder extends Encoder<Object> {
          * @param timeZone
          * The time zone for which the modifier is being applied.
          *
+         * @param last
+         * {@code true} if the value is the last element in a section;
+         * {@code false} if the value is not the last element or the number of
+         * elements is unknown.
+         *
          * @return
          * The modified value.
          */
-        Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
+        Object apply(T value, String argument, Locale locale, TimeZone timeZone, boolean last);
     }
 
-    private static class MarkupModifier implements Modifier {
+    private static class MarkupModifier implements Modifier<Object> {
         @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone, boolean last) {
             if (value instanceof CharSequence text) {
                 var stringBuilder = new StringBuilder();
 
@@ -105,7 +114,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    private static class FormatModifier implements Modifier {
+    private static class FormatModifier implements Modifier<Object> {
         enum DateTimeType {
             DATE,
             TIME,
@@ -134,7 +143,7 @@ public class TemplateEncoder extends Encoder<Object> {
         static final String ISO_DATE_TIME = "isoDateTime";
 
         @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone, boolean last) {
             if (argument == null) {
                 return value;
             }
@@ -211,6 +220,18 @@ public class TemplateEncoder extends Encoder<Object> {
         COMMENT
     }
 
+    private static class Section {
+        String name;
+        int count;
+
+        int index = 0;
+
+        Section(String name, int count) {
+            this.name = name;
+            this.count = count;
+        }
+    }
+
     private Class<?> type;
     private String name;
 
@@ -219,15 +240,15 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private ResourceBundle resourceBundle = null;
 
-    private Modifier defaultModifier = new MarkupModifier();
+    private Modifier<Object> defaultModifier = new MarkupModifier();
 
-    private Map<String, Modifier> modifiers = mapOf(
+    private Map<String, Modifier<Object>> modifiers = mapOf(
         entry("format", new FormatModifier())
     );
 
     private Deque<Map<?, ?>> dictionaries = new LinkedList<>();
 
-    private Deque<String> sectionNames = new LinkedList<>();
+    private Deque<Section> sections = new LinkedList<>();
 
     private static final int EOF = -1;
 
@@ -326,7 +347,7 @@ public class TemplateEncoder extends Encoder<Object> {
      * @return
      * The default modifier.
      */
-    public Modifier getDefaultModifier() {
+    public Modifier<?> getDefaultModifier() {
         return defaultModifier;
     }
 
@@ -336,12 +357,13 @@ public class TemplateEncoder extends Encoder<Object> {
      * @param defaultModifier
      * The default modifier.
      */
-    public void setDefaultModifier(Modifier defaultModifier) {
+    @SuppressWarnings("unchecked")
+    public void setDefaultModifier(Modifier<?> defaultModifier) {
         if (defaultModifier == null) {
             throw new IllegalArgumentException();
         }
 
-        this.defaultModifier = defaultModifier;
+        this.defaultModifier = (Modifier<Object>)defaultModifier;
     }
 
     /**
@@ -353,12 +375,13 @@ public class TemplateEncoder extends Encoder<Object> {
      * @param modifier
      * The custom modifier.
      */
-    public void bind(String name, Modifier modifier) {
+    @SuppressWarnings("unchecked")
+    public void bind(String name, Modifier<?> modifier) {
         if (name == null || modifier == null) {
             throw new IllegalArgumentException();
         }
 
-        modifiers.put(name, modifier);
+        modifiers.put(name, (Modifier<Object>)modifier);
     }
 
     @Override
@@ -504,7 +527,9 @@ public class TemplateEncoder extends Encoder<Object> {
                                     throw new IOException("Invalid modifier.");
                                 }
 
-                                value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
+                                var last = coalesce(map(sections.peek(), section -> ++section.index == section.count), () -> true);
+
+                                value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone, last);
                             }
 
                             if (value instanceof Document document) {
@@ -520,19 +545,29 @@ public class TemplateEncoder extends Encoder<Object> {
 
                                 value = documentWriter;
                             } else {
-                                value = defaultModifier.apply(value, null, locale, timeZone);
+                                value = defaultModifier.apply(value, null, locale, timeZone, false);
                             }
 
                             writer.append(value.toString());
                         }
                         case REPEATING_SECTION_START -> {
-                            sectionNames.push(marker);
+                            var section = new Section(marker, 0);
+
+                            sections.push(section);
 
                             var value = getMarkerValue(marker);
 
                             var iterator = switch (value) {
                                 case null -> emptyListOf(Object.class).iterator();
-                                case Iterable<?> iterable -> iterable.iterator();
+                                case Iterable<?> iterable -> {
+                                    if (iterable instanceof Collection<?> collection) {
+                                        section.count = collection.size();
+                                    } else {
+                                        section.count = -1;
+                                    }
+
+                                    yield iterable.iterator();
+                                }
                                 default -> throw new IOException("Invalid section element.");
                             };
 
@@ -554,10 +589,10 @@ public class TemplateEncoder extends Encoder<Object> {
                                 encode(null, new NullWriter(), reader);
                             }
 
-                            sectionNames.pop();
+                            sections.pop();
                         }
                         case CONDITIONAL_SECTION_START -> {
-                            sectionNames.push(marker);
+                            sections.push(new Section(marker, 1));
 
                             var value = getMarkerValue(marker);
 
@@ -567,10 +602,10 @@ public class TemplateEncoder extends Encoder<Object> {
                                 encode(null, new NullWriter(), reader);
                             }
 
-                            sectionNames.pop();
+                            sections.pop();
                         }
                         case INVERTED_SECTION_START -> {
-                            sectionNames.push(marker);
+                            sections.push(new Section(marker, 1));
 
                             var value = getMarkerValue(marker);
 
@@ -580,10 +615,10 @@ public class TemplateEncoder extends Encoder<Object> {
                                 encode(null, new NullWriter(), reader);
                             }
 
-                            sectionNames.pop();
+                            sections.pop();
                         }
                         case SECTION_END -> {
-                            if (!sectionNames.peek().equals(marker)) {
+                            if (!sections.peek().name.equals(marker)) {
                                 throw new IOException("Invalid closing section marker.");
                             }
 
@@ -596,7 +631,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                 throw new IllegalStateException("Resource bundle not specified.");
                             }
 
-                            var value = defaultModifier.apply(resourceBundle.getObject(marker), null, locale, timeZone);
+                            var value = defaultModifier.apply(resourceBundle.getObject(marker), null, locale, timeZone, false);
 
                             writer.append(value.toString());
                         }
