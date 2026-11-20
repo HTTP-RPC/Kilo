@@ -617,16 +617,33 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testCustomModifier() throws IOException {
+    public void testCustomModifier1() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "upper.txt");
 
-        templateEncoder.bind("upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
+        templateEncoder.bind("upper", (value, argument, locale, timeZone, last) -> value.toString().toUpperCase(locale));
 
         var writer = new StringWriter();
 
         templateEncoder.write("hello", writer);
 
         assertEquals("HELLO", writer.toString());
+    }
+
+    @Test
+    public void testCustomModifier2() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "delimiter.txt");
+
+        templateEncoder.bind("delimiter", (value, argument, locale, timeZone, last) -> last ? "" : ", ");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(listOf(
+            listOf("a", "b", "c"),
+            listOf("d", "e", "f"),
+            listOf("g", "h", "i")
+        ), writer);
+
+        assertEquals("[[a, b, c], [d, e, f], [g, h, i]]", writer.toString());
     }
 
     @Test
