@@ -7,8 +7,9 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Returns a list of all items in the catalog.",
+          "identifier": "getItems",
           "method": "GET",
-          "parameters": false,
+          "parameterCount": 0,
           "pathParameters": [
           ],
           "produces": {
@@ -34,6 +35,7 @@
         {
           "bodyParameter": {
             "description": "The item to add.",
+            "identifier": "item",
             "name": "item",
             "required": true,
             "type": {
@@ -48,8 +50,9 @@
           },
           "deprecated": false,
           "description": "Adds an item to the catalog.",
+          "identifier": "addItem",
           "method": "POST",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
           ],
           "produces": {
@@ -73,11 +76,13 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Returns detailed information about a specific item.",
+          "identifier": "getItem",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
             {
               "description": "The item ID.",
+              "identifier": "itemID",
               "name": "itemID",
               "required": true,
               "type": {
@@ -106,6 +111,7 @@
         {
           "bodyParameter": {
             "description": "The updated item.",
+            "identifier": "item",
             "name": "item",
             "required": true,
             "type": {
@@ -120,11 +126,13 @@
           },
           "deprecated": false,
           "description": "Updates an item.",
+          "identifier": "updateItem",
           "method": "PUT",
-          "parameters": true,
+          "parameterCount": 2,
           "pathParameters": [
             {
               "description": "The item ID.",
+              "identifier": "itemID",
               "name": "itemID",
               "required": true,
               "type": {
@@ -154,11 +162,13 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Deletes an item.",
+          "identifier": "deleteItem",
           "method": "DELETE",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
             {
               "description": "The item ID.",
+              "identifier": "itemID",
               "name": "itemID",
               "required": true,
               "type": {
@@ -196,21 +206,25 @@
         {
           "deprecated": false,
           "description": "A small size.",
+          "identifier": "SMALL",
           "name": "SMALL"
         },
         {
           "deprecated": false,
           "description": "A medium size.",
+          "identifier": "MEDIUM",
           "name": "MEDIUM"
         },
         {
           "deprecated": false,
           "description": "A large size.",
+          "identifier": "LARGE",
           "name": "LARGE"
         }
       ]
     }
   ],
+  "name": "CatalogService",
   "path": "/catalog",
   "structures": [
     {
@@ -221,6 +235,7 @@
           "deprecated": false,
           "description": "The item's description.",
           "name": "description",
+          "readIdentifier": "getDescription",
           "required": true,
           "type": {
             "elementType": null,
@@ -230,12 +245,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setDescription"
         },
         {
           "deprecated": false,
           "description": "The item's ID.",
           "name": "id",
+          "readIdentifier": "getID",
           "required": false,
           "type": {
             "elementType": null,
@@ -245,12 +262,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setID"
         },
         {
           "deprecated": false,
           "description": "The item's price.",
           "name": "price",
+          "readIdentifier": "getPrice",
           "required": true,
           "type": {
             "elementType": null,
@@ -260,7 +279,8 @@
             "map": false,
             "name": "Double",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setPrice"
         }
       ],
       "supertypes": [
@@ -274,6 +294,7 @@
           "deprecated": false,
           "description": "The item's color.",
           "name": "color",
+          "readIdentifier": "getColor",
           "required": false,
           "type": {
             "elementType": null,
@@ -283,12 +304,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setColor"
         },
         {
           "deprecated": false,
           "description": "The date the item was created.",
           "name": "created",
+          "readIdentifier": "getCreated",
           "required": false,
           "type": {
             "elementType": null,
@@ -298,12 +321,14 @@
             "map": false,
             "name": "Instant",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setCreated"
         },
         {
           "deprecated": false,
           "description": "The item's size.",
           "name": "size",
+          "readIdentifier": "getSize",
           "required": false,
           "type": {
             "elementType": null,
@@ -313,12 +338,14 @@
             "map": false,
             "name": "Size",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setSize"
         },
         {
           "deprecated": false,
           "description": "The item's weight.",
           "name": "weight",
+          "readIdentifier": "getWeight",
           "required": false,
           "type": {
             "elementType": null,
@@ -328,7 +355,8 @@
             "map": false,
             "name": "Double",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setWeight"
         }
       ],
       "supertypes": [

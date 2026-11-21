@@ -6,6 +6,7 @@
         {
           "bodyParameter": {
             "description": null,
+            "identifier": "body",
             "name": "body",
             "required": true,
             "type": {
@@ -20,8 +21,9 @@
           },
           "deprecated": false,
           "description": null,
+          "identifier": "uploadCSV",
           "method": "POST",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
           ],
           "produces": {
@@ -44,6 +46,7 @@
         {
           "bodyParameter": {
             "description": null,
+            "identifier": "body",
             "name": "body",
             "required": true,
             "type": {
@@ -58,8 +61,9 @@
           },
           "deprecated": false,
           "description": null,
+          "identifier": "uploadJSON",
           "method": "POST",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
           ],
           "produces": {
@@ -80,6 +84,7 @@
   ],
   "enumerations": [
   ],
+  "name": "BulkUploadService",
   "path": "/bulk-upload",
   "structures": [
   ]

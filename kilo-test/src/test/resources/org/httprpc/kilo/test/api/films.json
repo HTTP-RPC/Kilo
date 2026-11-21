@@ -7,8 +7,9 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Returns a list of all films.",
+          "identifier": "getFilms",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
           ],
           "produces": {
@@ -31,6 +32,7 @@
           "queryParameters": [
             {
               "description": "An optional name pattern to match. An asterisk may be used as a wildcard.",
+              "identifier": "match",
               "name": "match",
               "required": false,
               "type": {
@@ -54,11 +56,13 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Returns detailed information about a specific film.",
+          "identifier": "getFilm",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
             {
               "description": "The film ID.",
+              "identifier": "filmID",
               "name": "filmID",
               "required": true,
               "type": {
@@ -96,31 +100,37 @@
         {
           "deprecated": false,
           "description": "A \"G\" rating.",
+          "identifier": "G",
           "name": "G"
         },
         {
           "deprecated": false,
           "description": "A \"PG\" rating.",
+          "identifier": "PG",
           "name": "PG"
         },
         {
           "deprecated": false,
           "description": "A \"PG-13\" rating.",
+          "identifier": "PG_13",
           "name": "PG-13"
         },
         {
           "deprecated": false,
           "description": "An \"R\" rating.",
+          "identifier": "R",
           "name": "R"
         },
         {
           "deprecated": false,
           "description": "An \"NC-17\" rating.",
+          "identifier": "NC_17",
           "name": "NC-17"
         }
       ]
     }
   ],
+  "name": "FilmService",
   "path": "/films",
   "structures": [
     {
@@ -131,6 +141,7 @@
           "deprecated": false,
           "description": "The actor's first name.",
           "name": "firstName",
+          "readIdentifier": "getFirstName",
           "required": false,
           "type": {
             "elementType": null,
@@ -140,12 +151,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": "The actor's ID.",
           "name": "id",
+          "readIdentifier": "getID",
           "required": false,
           "type": {
             "elementType": null,
@@ -155,12 +168,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": "The actor's last name.",
           "name": "lastName",
+          "readIdentifier": "getLastName",
           "required": false,
           "type": {
             "elementType": null,
@@ -170,7 +185,8 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [
@@ -184,6 +200,7 @@
           "deprecated": false,
           "description": "The category's ID.",
           "name": "id",
+          "readIdentifier": "getID",
           "required": false,
           "type": {
             "elementType": null,
@@ -193,12 +210,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": "The name of the category.",
           "name": "name",
+          "readIdentifier": "getName",
           "required": false,
           "type": {
             "elementType": null,
@@ -208,7 +227,8 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [
@@ -222,6 +242,7 @@
           "deprecated": false,
           "description": "The film's ID.",
           "name": "id",
+          "readIdentifier": "getID",
           "required": false,
           "type": {
             "elementType": null,
@@ -231,12 +252,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": "The length of the film, in minutes.",
           "name": "length",
+          "readIdentifier": "getLength",
           "required": false,
           "type": {
             "elementType": null,
@@ -246,12 +269,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": "The film's rating.",
           "name": "rating",
+          "readIdentifier": "getRating",
           "required": false,
           "type": {
             "elementType": null,
@@ -261,12 +286,14 @@
             "map": false,
             "name": "Rating",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": "The date the film was released.",
           "name": "releaseDate",
+          "readIdentifier": "getReleaseDate",
           "required": false,
           "type": {
             "elementType": null,
@@ -276,12 +303,14 @@
             "map": false,
             "name": "LocalDate",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": "The title of the film.",
           "name": "title",
+          "readIdentifier": "getTitle",
           "required": true,
           "type": {
             "elementType": null,
@@ -291,7 +320,8 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [
@@ -305,6 +335,7 @@
           "deprecated": false,
           "description": "The actors that appeared in the film.",
           "name": "actors",
+          "readIdentifier": "getActors",
           "required": false,
           "type": {
             "elementType": {
@@ -322,12 +353,14 @@
             "map": false,
             "name": "Iterable",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setActors"
         },
         {
           "deprecated": false,
           "description": "The categories associated with the film.",
           "name": "categories",
+          "readIdentifier": "getCategories",
           "required": false,
           "type": {
             "elementType": {
@@ -345,12 +378,14 @@
             "map": false,
             "name": "Iterable",
             "valueType": null
-          }
+          },
+          "writeIdentifier": "setCategories"
         },
         {
           "deprecated": false,
           "description": "A description of the film.",
           "name": "description",
+          "readIdentifier": "getDescription",
           "required": false,
           "type": {
             "elementType": null,
@@ -360,7 +395,8 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [

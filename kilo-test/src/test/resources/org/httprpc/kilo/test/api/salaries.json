@@ -7,8 +7,9 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": null,
+          "identifier": "getAverageSalary",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 2,
           "pathParameters": [
           ],
           "produces": {
@@ -23,6 +24,7 @@
           "queryParameters": [
             {
               "description": null,
+              "identifier": "fromDate",
               "name": "fromDate",
               "required": false,
               "type": {
@@ -37,6 +39,7 @@
             },
             {
               "description": null,
+              "identifier": "toDate",
               "name": "toDate",
               "required": false,
               "type": {
@@ -57,6 +60,7 @@
   ],
   "enumerations": [
   ],
+  "name": "SalaryService",
   "path": "/salaries",
   "structures": [
   ]

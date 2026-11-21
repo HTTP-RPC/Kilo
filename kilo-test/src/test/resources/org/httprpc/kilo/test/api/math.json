@@ -7,8 +7,9 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Calculates the sum of two numbers.",
+          "identifier": "getSum",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 2,
           "pathParameters": [
           ],
           "produces": {
@@ -23,6 +24,7 @@
           "queryParameters": [
             {
               "description": "The first number.",
+              "identifier": "a",
               "name": "a",
               "required": false,
               "type": {
@@ -37,6 +39,7 @@
             },
             {
               "description": "The second number.",
+              "identifier": "b",
               "name": "b",
               "required": false,
               "type": {
@@ -55,8 +58,9 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Calculates the sum of a list of numbers.",
+          "identifier": "getSum",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
           ],
           "produces": {
@@ -71,6 +75,7 @@
           "queryParameters": [
             {
               "description": "The numbers to add.",
+              "identifier": "values",
               "name": "values",
               "required": false,
               "type": {
@@ -99,6 +104,7 @@
   ],
   "enumerations": [
   ],
+  "name": "MathService",
   "path": "/math",
   "structures": [
   ]

@@ -7,8 +7,9 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": null,
+          "identifier": "getEmployees",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
           ],
           "produces": {
@@ -31,6 +32,7 @@
           "queryParameters": [
             {
               "description": null,
+              "identifier": "stream",
               "name": "stream",
               "required": false,
               "type": {
@@ -54,11 +56,13 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": null,
+          "identifier": "getEmployee",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
             {
               "description": null,
+              "identifier": "employeeNumber",
               "name": "employeeNumber",
               "required": true,
               "type": {
@@ -90,6 +94,7 @@
   ],
   "enumerations": [
   ],
+  "name": "EmployeeService",
   "path": "/employees",
   "structures": [
     {
@@ -100,6 +105,7 @@
           "deprecated": false,
           "description": null,
           "name": "birthDate",
+          "readIdentifier": "getBirthDate",
           "required": true,
           "type": {
             "elementType": null,
@@ -109,12 +115,14 @@
             "map": false,
             "name": "LocalDate",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "employeeNumber",
+          "readIdentifier": "getEmployeeNumber",
           "required": false,
           "type": {
             "elementType": null,
@@ -124,12 +132,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "firstName",
+          "readIdentifier": "getFirstName",
           "required": true,
           "type": {
             "elementType": null,
@@ -139,12 +149,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "gender",
+          "readIdentifier": "getGender",
           "required": true,
           "type": {
             "elementType": null,
@@ -154,12 +166,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "hireDate",
+          "readIdentifier": "getHireDate",
           "required": true,
           "type": {
             "elementType": null,
@@ -169,12 +183,14 @@
             "map": false,
             "name": "LocalDate",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "lastName",
+          "readIdentifier": "getLastName",
           "required": true,
           "type": {
             "elementType": null,
@@ -184,7 +200,8 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [
@@ -198,6 +215,7 @@
           "deprecated": false,
           "description": null,
           "name": "salaries",
+          "readIdentifier": "getSalaries",
           "required": false,
           "type": {
             "elementType": {
@@ -215,7 +233,8 @@
             "map": false,
             "name": "Iterable",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [
@@ -238,6 +257,7 @@
           "deprecated": false,
           "description": null,
           "name": "employeeNumber",
+          "readIdentifier": "employeeNumber",
           "required": false,
           "type": {
             "elementType": null,
@@ -247,12 +267,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "salary",
+          "readIdentifier": "salary",
           "required": false,
           "type": {
             "elementType": null,
@@ -262,12 +284,14 @@
             "map": false,
             "name": "Integer",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "fromDate",
+          "readIdentifier": "fromDate",
           "required": false,
           "type": {
             "elementType": null,
@@ -277,12 +301,14 @@
             "map": false,
             "name": "LocalDate",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "toDate",
+          "readIdentifier": "toDate",
           "required": false,
           "type": {
             "elementType": null,
@@ -292,7 +318,8 @@
             "map": false,
             "name": "LocalDate",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [

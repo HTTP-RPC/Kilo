@@ -7,8 +7,9 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": null,
+          "identifier": "getPets",
           "method": "GET",
-          "parameters": true,
+          "parameterCount": 1,
           "pathParameters": [
           ],
           "produces": {
@@ -31,6 +32,7 @@
           "queryParameters": [
             {
               "description": null,
+              "identifier": "owner",
               "name": "owner",
               "required": true,
               "type": {
@@ -51,6 +53,7 @@
   ],
   "enumerations": [
   ],
+  "name": "PetService",
   "path": "/pets",
   "structures": [
     {
@@ -61,6 +64,7 @@
           "deprecated": false,
           "description": null,
           "name": "birth",
+          "readIdentifier": "getBirth",
           "required": false,
           "type": {
             "elementType": null,
@@ -70,12 +74,14 @@
             "map": false,
             "name": "LocalDate",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "death",
+          "readIdentifier": "getDeath",
           "required": false,
           "type": {
             "elementType": null,
@@ -85,12 +91,14 @@
             "map": false,
             "name": "LocalDate",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "name",
+          "readIdentifier": "getName",
           "required": false,
           "type": {
             "elementType": null,
@@ -100,12 +108,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "owner",
+          "readIdentifier": "getOwner",
           "required": false,
           "type": {
             "elementType": null,
@@ -115,12 +125,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "sex",
+          "readIdentifier": "getSex",
           "required": false,
           "type": {
             "elementType": null,
@@ -130,12 +142,14 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         },
         {
           "deprecated": false,
           "description": null,
           "name": "species",
+          "readIdentifier": "getSpecies",
           "required": false,
           "type": {
             "elementType": null,
@@ -145,7 +159,8 @@
             "map": false,
             "name": "String",
             "valueType": null
-          }
+          },
+          "writeIdentifier": null
         }
       ],
       "supertypes": [

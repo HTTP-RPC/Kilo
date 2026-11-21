@@ -53,11 +53,13 @@ public class ProxyGenerator {
         String getMethod();
         String getDescription();
 
+        String getIdentifier();
+
         boolean isDeprecated();
 
         TypeDescriptor getProduces();
 
-        boolean getParameters();
+        int getParameterCount();
 
         List<ParameterDescriptor> getPathParameters();
         List<ParameterDescriptor> getQueryParameters();

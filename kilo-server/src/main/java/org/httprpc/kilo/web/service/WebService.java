@@ -86,6 +86,8 @@ public abstract class WebService extends HttpServlet {
      */
     public static class ServiceDescriptor {
         private String path;
+
+        private String name;
         private String description;
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
@@ -96,6 +98,8 @@ public abstract class WebService extends HttpServlet {
         private ServiceDescriptor(String path, Class<? extends WebService> type) {
             this.path = path;
 
+            name = getTypeName(type);
+
             description = map(type.getAnnotation(Description.class), Description::value);
         }
 
@@ -103,17 +107,27 @@ public abstract class WebService extends HttpServlet {
          * Returns the path to the service.
          *
          * @return
-         * The service's path.
+         * The service path.
          */
         public String getPath() {
             return path;
         }
 
         /**
+         * Returns the name of the service.
+         *
+         * @return
+         * The service name.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
          * Returns a description of the service.
          *
          * @return
-         * The service description, or {@code null} for no description.
+         * The service's description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
@@ -123,14 +137,14 @@ public abstract class WebService extends HttpServlet {
          * Returns the endpoints provided by the service.
          *
          * @return
-         * The service endpoints.
+         * The service's endpoints.
          */
         public List<EndpointDescriptor> getEndpoints() {
             return endpoints;
         }
 
         /**
-         * Returns the enumerations defined by the service.
+         * Returns the enumerations associated with the service.
          *
          * @return
          * The service enumerations.
@@ -140,7 +154,7 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns the structures defined by the service.
+         * Returns the structures associated with the service.
          *
          * @return
          * The service structures.
@@ -166,7 +180,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the path to the endpoint.
          *
          * @return
-         * The endpoint's path.
+         * The endpoint path.
          */
         public String getPath() {
             return path;
@@ -189,11 +203,12 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
+
+        private String identifier;
+
         private boolean deprecated;
 
         private TypeDescriptor produces = null;
-
-        private boolean parameters = false;
 
         private List<ParameterDescriptor> pathParameters = new LinkedList<>();
         private List<ParameterDescriptor> queryParameters = new LinkedList<>();
@@ -205,6 +220,8 @@ public abstract class WebService extends HttpServlet {
 
             description = map(handler.getAnnotation(Description.class), Description::value);
 
+            identifier = handler.getName();
+
             deprecated = handler.getAnnotation(Deprecated.class) != null;
         }
 
@@ -212,7 +229,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the HTTP method used to invoke the operation.
          *
          * @return
-         * The HTTP method used to invoke the operation.
+         * The operation's HTTP method.
          */
         public String getMethod() {
             return method;
@@ -226,6 +243,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Returns the operation's identifier.
+         *
+         * @return
+         * The operation's identifier.
+         */
+        public String getIdentifier() {
+            return identifier;
         }
 
         /**
@@ -251,14 +278,13 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Indicates that the operation defines at least one parameter.
+         * Returns the number of parameters defined by the operation.
          *
          * @return
-         * {@code true} if the operation defines at least one parameter;
-         * {@code false}, otherwise.
+         * The operation's parameter count.
          */
-        public boolean getParameters() {
-            return parameters;
+        public int getParameterCount() {
+            return pathParameters.size() + queryParameters.size() + (bodyParameter == null ? 0 : 1);
         }
 
         /**
@@ -300,21 +326,27 @@ public abstract class WebService extends HttpServlet {
         private String name;
         private String description;
 
+        private String identifier;
+
         private boolean required = false;
 
         private TypeDescriptor type = null;
 
         private ParameterDescriptor(Parameter parameter) {
-            name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
+            var parameterName = parameter.getName();
+
+            name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), () -> parameterName);
 
             description = map(parameter.getAnnotation(Description.class), Description::value);
+
+            identifier = parameterName;
         }
 
         /**
          * Returns the name of the parameter.
          *
          * @return
-         * The parameter's name.
+         * The parameter name.
          */
         public String getName() {
             return name;
@@ -331,6 +363,16 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
+         * Returns the parameter's identifier.
+         *
+         * @return
+         * The parameter's identifier.
+         */
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        /**
          * Indicates that the parameter is required.
          *
          * @return
@@ -344,7 +386,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the type of the parameter.
          *
          * @return
-         * The parameter's type.
+         * The parameter type.
          */
         public TypeDescriptor getType() {
             return type;
@@ -370,7 +412,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the name of the enumeration.
          *
          * @return
-         * The enumeration's name.
+         * The enumeration name.
          */
         public String getName() {
             return name;
@@ -403,6 +445,9 @@ public abstract class WebService extends HttpServlet {
     public static class ConstantDescriptor {
         private String name;
         private String description;
+
+        private String identifier;
+
         private boolean deprecated;
 
         private ConstantDescriptor(Field field) {
@@ -417,6 +462,8 @@ public abstract class WebService extends HttpServlet {
 
             description = map(field.getAnnotation(Description.class), Description::value);
 
+            identifier = field.getName();
+
             deprecated = field.getAnnotation(Deprecated.class) != null;
         }
 
@@ -424,7 +471,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the name of the constant.
          *
          * @return
-         * The constant's name.
+         * The constant name.
          */
         public String getName() {
             return name;
@@ -438,6 +485,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Returns the constant's identifier.
+         *
+         * @return
+         * The constant's identifier.
+         */
+        public String getIdentifier() {
+            return identifier;
         }
 
         /**
@@ -472,7 +529,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the name of the structure.
          *
          * @return
-         * The structure's name.
+         * The structure name.
          */
         public String getName() {
             return name;
@@ -515,15 +572,27 @@ public abstract class WebService extends HttpServlet {
     public static class PropertyDescriptor {
         private String name;
         private String description;
+
+        private String readIdentifier;
+        private String writeIdentifier;
+
         private boolean required;
         private boolean deprecated;
 
         private TypeDescriptor type = null;
 
-        private PropertyDescriptor(String name, Method accessor) {
+        private PropertyDescriptor(String name, Method accessor, Method mutator) {
             this.name = name;
 
             description = map(accessor.getAnnotation(Description.class), Description::value);
+
+            readIdentifier = accessor.getName();
+
+            if (mutator != null) {
+                writeIdentifier = mutator.getName();
+            } else {
+                writeIdentifier = null;
+            }
 
             required = accessor.getAnnotation(Required.class) != null;
             deprecated = accessor.getAnnotation(Deprecated.class) != null;
@@ -533,7 +602,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the name of the property.
          *
          * @return
-         * The property's name.
+         * The property name.
          */
         public String getName() {
             return name;
@@ -547,6 +616,27 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Returns the property's read identifier.
+         *
+         * @return
+         * The property's read identifier.
+         */
+        public String getReadIdentifier() {
+            return readIdentifier;
+        }
+
+        /**
+         * Returns the property's write identifier.
+         *
+         * @return
+         * The property's write identifier, or {@code null} if the property is
+         * read-only.
+         */
+        public String getWriteIdentifier() {
+            return writeIdentifier;
         }
 
         /**
@@ -618,10 +708,10 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Indicates that the type is iterable.
+         * Indicates that the type is an iterable.
          *
          * @return
-         * {@code true} if the type is iterable; {@code false}, otherwise.
+         * {@code true} if the type is an iterable; {@code false}, otherwise.
          */
         public boolean isIterable() {
             return false;
@@ -631,7 +721,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the element type.
          *
          * @return
-         * The element type, or {@code null} if the type is not a list.
+         * The element type, or {@code null} if the type is not an iterable.
          */
         public TypeDescriptor getElementType() {
             return null;
@@ -1413,8 +1503,6 @@ public abstract class WebService extends HttpServlet {
 
                     var n = parameters.length;
 
-                    operation.parameters = n > 0;
-
                     if (verb.hasBody()) {
                         n--;
                     }
@@ -1544,13 +1632,15 @@ public abstract class WebService extends HttpServlet {
             }
 
             for (var entry : BeanAdapter.getProperties(type).entrySet()) {
-                var accessor = entry.getValue().getAccessor();
+                var property = entry.getValue();
+
+                var accessor = property.getAccessor();
 
                 if (accessor.getDeclaringClass() != type) {
                     continue;
                 }
 
-                var propertyDescriptor = new PropertyDescriptor(entry.getKey(), accessor);
+                var propertyDescriptor = new PropertyDescriptor(entry.getKey(), accessor, property.getMutator());
 
                 propertyDescriptor.type = describeGenericType(accessor.getGenericReturnType());
 
