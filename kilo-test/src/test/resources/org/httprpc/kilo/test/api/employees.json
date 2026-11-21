@@ -100,6 +100,7 @@
     {
       "name": "Employee",
       "description": null,
+      "concrete": false,
       "supertypes": [
       ],
       "properties": [
@@ -210,6 +211,7 @@
     {
       "name": "EmployeeDetails",
       "description": null,
+      "concrete": false,
       "supertypes": [
         {
           "name": "Employee",
@@ -252,6 +254,7 @@
     {
       "name": "Salary",
       "description": null,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [

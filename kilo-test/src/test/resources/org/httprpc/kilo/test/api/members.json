@@ -74,6 +74,7 @@
     {
       "name": "Person",
       "description": null,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [

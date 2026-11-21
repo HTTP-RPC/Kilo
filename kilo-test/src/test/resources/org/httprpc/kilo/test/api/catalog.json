@@ -230,6 +230,7 @@
     {
       "name": "Item",
       "description": "Represents a catalog item.",
+      "concrete": false,
       "supertypes": [
       ],
       "properties": [
@@ -289,6 +290,7 @@
     {
       "name": "ItemDetails",
       "description": "Represents detailed information about a catalog item.",
+      "concrete": false,
       "supertypes": [
         {
           "name": "Item",

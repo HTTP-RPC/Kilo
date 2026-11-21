@@ -98,6 +98,8 @@ public class ProxyGenerator {
         String getName();
         String getDescription();
 
+        boolean isConcrete();
+
         List<TypeDescriptor> getSupertypes();
         List<PropertyDescriptor> getProperties();
     }

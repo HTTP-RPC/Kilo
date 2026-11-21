@@ -59,6 +59,7 @@
     {
       "name": "Pet",
       "description": null,
+      "concrete": false,
       "supertypes": [
       ],
       "properties": [

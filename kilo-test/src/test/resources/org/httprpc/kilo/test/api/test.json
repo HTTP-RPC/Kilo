@@ -1663,6 +1663,7 @@
     {
       "name": "Coordinates",
       "description": "Represents an x/y coordinate pair.",
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [
@@ -1705,6 +1706,7 @@
     {
       "name": "TestService$A",
       "description": null,
+      "concrete": false,
       "supertypes": [
       ],
       "properties": [
@@ -1730,6 +1732,7 @@
     {
       "name": "TestService$B",
       "description": null,
+      "concrete": false,
       "supertypes": [
       ],
       "properties": [
@@ -1755,6 +1758,7 @@
     {
       "name": "TestService$Body",
       "description": null,
+      "concrete": false,
       "supertypes": [
       ],
       "properties": [
@@ -1864,6 +1868,7 @@
     {
       "name": "TestService$C",
       "description": null,
+      "concrete": false,
       "supertypes": [
         {
           "name": "TestService$A",
@@ -1932,6 +1937,7 @@
     {
       "name": "TestService$D",
       "description": null,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [
@@ -1957,6 +1963,7 @@
     {
       "name": "TestService$E",
       "description": null,
+      "concrete": true,
       "supertypes": [
         {
           "name": "TestService$D",
@@ -1991,6 +1998,7 @@
     {
       "name": "TestService$FormContents",
       "description": null,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [
@@ -2117,6 +2125,7 @@
     {
       "name": "TestService$Response",
       "description": null,
+      "concrete": false,
       "supertypes": [
       ],
       "properties": [
@@ -2387,6 +2396,7 @@
     {
       "name": "TestService$TestRecord",
       "description": null,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [

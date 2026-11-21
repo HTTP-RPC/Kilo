@@ -516,6 +516,8 @@ public abstract class WebService extends HttpServlet {
         private String name;
         private String description;
 
+        private boolean concrete;
+
         private List<TypeDescriptor> supertypes = new LinkedList<>();
         private List<PropertyDescriptor> properties = new LinkedList<>();
 
@@ -523,6 +525,8 @@ public abstract class WebService extends HttpServlet {
             name = BeanAdapter.getName(type);
 
             description = map(type.getAnnotation(Description.class), Description::value);
+
+            concrete = !type.isInterface();
         }
 
         /**
@@ -543,6 +547,17 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Indicates that the structure is a concrete type.
+         *
+         * @return
+         * {@code true} if the structure is a concrete type; {@code false},
+         * otherwise.
+         */
+        public boolean isConcrete() {
+            return concrete;
         }
 
         /**
