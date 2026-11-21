@@ -18,7 +18,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "TestService.Response",
+            "name": "TestService$Response",
             "valueType": null
           },
           "queryParameters": [
@@ -627,7 +627,7 @@
               "iterable": false,
               "keyType": null,
               "map": false,
-              "name": "TestService.Body",
+              "name": "TestService$Body",
               "valueType": null
             }
           },
@@ -644,7 +644,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "TestService.Body",
+            "name": "TestService$Body",
             "valueType": null
           },
           "queryParameters": [
@@ -670,7 +670,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "TestService.C",
+            "name": "TestService$C",
             "valueType": null
           },
           "queryParameters": [
@@ -776,7 +776,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "TestService.TestRecord",
+            "name": "TestService$TestRecord",
             "valueType": null
           },
           "queryParameters": [
@@ -802,7 +802,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "TestService.E",
+            "name": "TestService$E",
             "valueType": null
           },
           "queryParameters": [
@@ -1039,7 +1039,7 @@
               "iterable": false,
               "keyType": null,
               "map": false,
-              "name": "TestService.FormContents",
+              "name": "TestService$FormContents",
               "valueType": null
             }
           },
@@ -1634,7 +1634,7 @@
     },
     {
       "description": null,
-      "name": "TestService.TestRecord.TestEnum",
+      "name": "TestService$TestRecord$TestEnum",
       "values": [
         {
           "deprecated": false,
@@ -1704,7 +1704,7 @@
     },
     {
       "description": null,
-      "name": "TestService.A",
+      "name": "TestService$A",
       "properties": [
         {
           "deprecated": false,
@@ -1729,7 +1729,7 @@
     },
     {
       "description": null,
-      "name": "TestService.B",
+      "name": "TestService$B",
       "properties": [
         {
           "deprecated": false,
@@ -1754,7 +1754,7 @@
     },
     {
       "description": null,
-      "name": "TestService.Body",
+      "name": "TestService$Body",
       "properties": [
         {
           "deprecated": false,
@@ -1863,7 +1863,7 @@
     },
     {
       "description": null,
-      "name": "TestService.C",
+      "name": "TestService$C",
       "properties": [
         {
           "deprecated": false,
@@ -1915,7 +1915,7 @@
           "iterable": false,
           "keyType": null,
           "map": false,
-          "name": "TestService.A",
+          "name": "TestService$A",
           "valueType": null
         },
         {
@@ -1924,14 +1924,14 @@
           "iterable": false,
           "keyType": null,
           "map": false,
-          "name": "TestService.B",
+          "name": "TestService$B",
           "valueType": null
         }
       ]
     },
     {
       "description": null,
-      "name": "TestService.D",
+      "name": "TestService$D",
       "properties": [
         {
           "deprecated": false,
@@ -1956,7 +1956,7 @@
     },
     {
       "description": null,
-      "name": "TestService.E",
+      "name": "TestService$E",
       "properties": [
         {
           "deprecated": false,
@@ -1983,14 +1983,14 @@
           "iterable": false,
           "keyType": null,
           "map": false,
-          "name": "TestService.D",
+          "name": "TestService$D",
           "valueType": null
         }
       ]
     },
     {
       "description": null,
-      "name": "TestService.FormContents",
+      "name": "TestService$FormContents",
       "properties": [
         {
           "deprecated": false,
@@ -2116,7 +2116,7 @@
     },
     {
       "description": null,
-      "name": "TestService.Response",
+      "name": "TestService$Response",
       "properties": [
         {
           "deprecated": false,
@@ -2386,7 +2386,7 @@
     },
     {
       "description": null,
-      "name": "TestService.TestRecord",
+      "name": "TestService$TestRecord",
       "properties": [
         {
           "deprecated": false,
@@ -2417,7 +2417,7 @@
             "iterable": false,
             "keyType": null,
             "map": false,
-            "name": "TestService.TestRecord.TestEnum",
+            "name": "TestService$TestRecord$TestEnum",
             "valueType": null
           },
           "writeIdentifier": null

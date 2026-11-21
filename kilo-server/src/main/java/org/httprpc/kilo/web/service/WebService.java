@@ -92,13 +92,13 @@ public abstract class WebService extends HttpServlet {
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
 
-        private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
-        private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
+        private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(BeanAdapter::getName));
+        private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(BeanAdapter::getName));
 
         private ServiceDescriptor(String path, Class<? extends WebService> type) {
             this.path = path;
 
-            name = getTypeName(type);
+            name = BeanAdapter.getName(type);
 
             description = map(type.getAnnotation(Description.class), Description::value);
         }
@@ -403,7 +403,7 @@ public abstract class WebService extends HttpServlet {
         private List<ConstantDescriptor> values = new LinkedList<>();
 
         private EnumerationDescriptor(Class<?> type) {
-            name = getTypeName(type);
+            name = BeanAdapter.getName(type);
 
             description = map(type.getAnnotation(Description.class), Description::value);
         }
@@ -520,7 +520,7 @@ public abstract class WebService extends HttpServlet {
         private List<PropertyDescriptor> properties = new LinkedList<>();
 
         private StructureDescriptor(Class<?> type) {
-            name = getTypeName(type);
+            name = BeanAdapter.getName(type);
 
             description = map(type.getAnnotation(Description.class), Description::value);
         }
@@ -693,7 +693,7 @@ public abstract class WebService extends HttpServlet {
             if (type.isPrimitive()) {
                 return type.getName();
             } else {
-                return getTypeName(type);
+                return BeanAdapter.getName(type);
             }
         }
 
@@ -1649,9 +1649,5 @@ public abstract class WebService extends HttpServlet {
         }
 
         return new TypeDescriptor(type, false);
-    }
-
-    private static String getTypeName(Class<?> type) {
-        return type.getCanonicalName().substring(type.getPackageName().length() + 1);
     }
 }

@@ -1033,15 +1033,36 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the properties for a given type.
+     * Returns the name of a given type.
      *
      * @param type
-     * The bean type.
+     * The requested type.
+     *
+     * @return
+     * The name of the requested type.
+     */
+    public static String getName(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return type.getName().substring(type.getPackageName().length() + 1);
+    }
+
+    /**
+     * Returns the properties defined by a given type.
+     *
+     * @param type
+     * The requested type.
      *
      * @return
      * The properties defined by the requested type.
      */
     public static Map<String, Property> getProperties(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
         return types.computeIfAbsent(type, BeanAdapter::computeProperties);
     }
 

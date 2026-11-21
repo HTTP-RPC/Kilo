@@ -17,10 +17,13 @@ package org.httprpc.kilo.beans;
 import org.httprpc.kilo.Name;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -457,6 +460,7 @@ public class BeanAdapterTest {
         assertEquals(String.class, propertyTypes.get("string"));
         assertEquals(BigInteger.class, propertyTypes.get("bigInteger"));
         assertEquals(DayOfWeek.class, propertyTypes.get("dayOfWeek"));
+        assertEquals(Instant.class, propertyTypes.get("instant"));
         assertEquals(Date.class, propertyTypes.get("date"));
         assertEquals(LocalDate.class, propertyTypes.get("localDate"));
         assertEquals(LocalTime.class, propertyTypes.get("localTime"));
@@ -464,6 +468,10 @@ public class BeanAdapterTest {
         assertEquals(Duration.class, propertyTypes.get("duration"));
         assertEquals(Period.class, propertyTypes.get("period"));
         assertEquals(UUID.class, propertyTypes.get("UUID"));
+        assertEquals(URI.class, propertyTypes.get("URI"));
+        assertEquals(URL.class, propertyTypes.get("URL"));
+        assertEquals(Path.class, propertyTypes.get("path"));
+        assertEquals(File.class, propertyTypes.get("file"));
 
         assertEquals(TestInterface.NestedInterface.class, propertyTypes.get("nestedBean"));
 
