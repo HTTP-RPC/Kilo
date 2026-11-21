@@ -1,328 +1,328 @@
 {
+  "path": "/employees",
+  "name": "EmployeeService",
   "description": null,
   "endpoints": [
     {
+      "path": "/employees",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "getEmployees",
-          "method": "GET",
-          "parameterCount": 1,
-          "pathParameters": [
-          ],
+          "deprecated": false,
           "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Employee",
-              "valueType": null
-            },
+            "name": "Iterable",
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
+            "elementType": {
+              "name": "Employee",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
             "map": false,
-            "name": "Iterable",
+            "keyType": null,
             "valueType": null
           },
-          "queryParameters": [
-            {
-              "description": null,
-              "identifier": "stream",
-              "name": "stream",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "boolean",
-                "valueType": null
-              }
-            }
-          ]
-        }
-      ],
-      "path": "/employees"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "identifier": "getEmployee",
-          "method": "GET",
           "parameterCount": 1,
           "pathParameters": [
+          ],
+          "queryParameters": [
             {
+              "name": "stream",
               "description": null,
-              "identifier": "employeeNumber",
-              "name": "employeeNumber",
-              "required": true,
+              "identifier": "stream",
+              "required": false,
               "type": {
-                "elementType": null,
+                "name": "boolean",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Integer",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/employees/?",
+      "operations": [
+        {
+          "method": "GET",
+          "description": null,
+          "identifier": "getEmployee",
+          "deprecated": false,
           "produces": {
-            "elementType": null,
+            "name": "EmployeeDetails",
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "EmployeeDetails",
+            "keyType": null,
             "valueType": null
           },
+          "parameterCount": 1,
+          "pathParameters": [
+            {
+              "name": "employeeNumber",
+              "description": null,
+              "identifier": "employeeNumber",
+              "required": true,
+              "type": {
+                "name": "Integer",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              }
+            }
+          ],
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/employees/?"
+      ]
     }
   ],
   "enumerations": [
   ],
-  "name": "EmployeeService",
-  "path": "/employees",
   "structures": [
     {
-      "description": null,
       "name": "Employee",
+      "description": null,
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": null,
-          "name": "birthDate",
-          "readIdentifier": "getBirthDate",
-          "required": true,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "LocalDate",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
           "name": "employeeNumber",
+          "description": null,
           "readIdentifier": "getEmployeeNumber",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
             "name": "Integer",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "firstName",
+          "description": null,
           "readIdentifier": "getFirstName",
+          "writeIdentifier": null,
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
             "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "gender",
-          "readIdentifier": "getGender",
-          "required": true,
-          "type": {
-            "elementType": null,
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "hireDate",
-          "readIdentifier": "getHireDate",
-          "required": true,
-          "type": {
             "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "LocalDate",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "lastName",
+          "description": null,
           "readIdentifier": "getLastName",
+          "writeIdentifier": null,
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
+        },
+        {
+          "name": "gender",
+          "description": null,
+          "readIdentifier": "getGender",
+          "writeIdentifier": null,
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "birthDate",
+          "description": null,
+          "readIdentifier": "getBirthDate",
+          "writeIdentifier": null,
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "LocalDate",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "hireDate",
+          "description": null,
+          "readIdentifier": "getHireDate",
+          "writeIdentifier": null,
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "LocalDate",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": null,
       "name": "EmployeeDetails",
-      "properties": [
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "salaries",
-          "readIdentifier": "getSalaries",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Salary",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        }
-      ],
+      "description": null,
       "supertypes": [
         {
-          "elementType": null,
+          "name": "Employee",
           "intrinsic": false,
           "iterable": false,
-          "keyType": null,
+          "elementType": null,
           "map": false,
-          "name": "Employee",
+          "keyType": null,
           "valueType": null
+        }
+      ],
+      "properties": [
+        {
+          "name": "salaries",
+          "description": null,
+          "readIdentifier": "getSalaries",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Salary",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
         }
       ]
     },
     {
-      "description": null,
       "name": "Salary",
+      "description": null,
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": null,
           "name": "employeeNumber",
+          "description": null,
           "readIdentifier": "employeeNumber",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Integer",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "salary",
+          "description": null,
           "readIdentifier": "salary",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
             "name": "Integer",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "fromDate",
+          "description": null,
           "readIdentifier": "fromDate",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "LocalDate",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "LocalDate",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "toDate",
+          "description": null,
           "readIdentifier": "toDate",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "LocalDate",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "LocalDate",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     }
   ]

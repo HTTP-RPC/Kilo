@@ -1,116 +1,116 @@
 {
+  "path": "/members",
+  "name": "MemberService",
   "description": null,
   "endpoints": [
     {
+      "path": "/members",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "getMembers",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Person",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 2,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Person",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "first_name",
               "description": null,
               "identifier": "firstName",
-              "name": "first_name",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "String",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "last_name",
               "description": null,
               "identifier": "lastName",
-              "name": "last_name",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "String",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/members"
+      ]
     }
   ],
   "enumerations": [
   ],
-  "name": "MemberService",
-  "path": "/members",
   "structures": [
     {
-      "description": null,
       "name": "Person",
+      "description": null,
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": null,
           "name": "first_name",
+          "description": null,
           "readIdentifier": "getFirstName",
+          "writeIdentifier": "setFirstName",
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": "setFirstName"
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "last_name",
+          "description": null,
           "readIdentifier": "getLastName",
+          "writeIdentifier": "setLastName",
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": "setLastName"
+          }
         }
-      ],
-      "supertypes": [
       ]
     }
   ]

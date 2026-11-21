@@ -1,413 +1,413 @@
 {
+  "path": "/films",
+  "name": "FilmService",
   "description": "Film service.",
   "endpoints": [
     {
+      "path": "/films",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": "Returns a list of all films.",
           "identifier": "getFilms",
-          "method": "GET",
-          "parameterCount": 1,
-          "pathParameters": [
-          ],
+          "deprecated": false,
           "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Film",
-              "valueType": null
-            },
+            "name": "Iterable",
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
+            "elementType": {
+              "name": "Film",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
             "map": false,
-            "name": "Iterable",
+            "keyType": null,
             "valueType": null
           },
-          "queryParameters": [
-            {
-              "description": "An optional name pattern to match. An asterisk may be used as a wildcard.",
-              "identifier": "match",
-              "name": "match",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "String",
-                "valueType": null
-              }
-            }
-          ]
-        }
-      ],
-      "path": "/films"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": "Returns detailed information about a specific film.",
-          "identifier": "getFilm",
-          "method": "GET",
           "parameterCount": 1,
           "pathParameters": [
+          ],
+          "queryParameters": [
             {
-              "description": "The film ID.",
-              "identifier": "filmID",
-              "name": "filmID",
-              "required": true,
+              "name": "match",
+              "description": "An optional name pattern to match. An asterisk may be used as a wildcard.",
+              "identifier": "match",
+              "required": false,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Integer",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/films/?",
+      "operations": [
+        {
+          "method": "GET",
+          "description": "Returns detailed information about a specific film.",
+          "identifier": "getFilm",
+          "deprecated": false,
           "produces": {
-            "elementType": null,
+            "name": "FilmDetails",
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "FilmDetails",
+            "keyType": null,
             "valueType": null
           },
+          "parameterCount": 1,
+          "pathParameters": [
+            {
+              "name": "filmID",
+              "description": "The film ID.",
+              "identifier": "filmID",
+              "required": true,
+              "type": {
+                "name": "Integer",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              }
+            }
+          ],
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/films/?"
+      ]
     }
   ],
   "enumerations": [
     {
-      "description": "Represents a film rating.",
       "name": "Rating",
+      "description": "Represents a film rating.",
       "values": [
         {
-          "deprecated": false,
+          "name": "G",
           "description": "A \"G\" rating.",
           "identifier": "G",
-          "name": "G"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "PG",
           "description": "A \"PG\" rating.",
           "identifier": "PG",
-          "name": "PG"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "PG-13",
           "description": "A \"PG-13\" rating.",
           "identifier": "PG_13",
-          "name": "PG-13"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "R",
           "description": "An \"R\" rating.",
           "identifier": "R",
-          "name": "R"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "NC-17",
           "description": "An \"NC-17\" rating.",
           "identifier": "NC_17",
-          "name": "NC-17"
+          "deprecated": false
         }
       ]
     }
   ],
-  "name": "FilmService",
-  "path": "/films",
   "structures": [
     {
-      "description": "Represents a film actor.",
       "name": "Actor",
+      "description": "Represents a film actor.",
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": "The actor's first name.",
-          "name": "firstName",
-          "readIdentifier": "getFirstName",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
+          "name": "id",
           "description": "The actor's ID.",
-          "name": "id",
           "readIdentifier": "getID",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Integer",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
+          "name": "firstName",
+          "description": "The actor's first name.",
+          "readIdentifier": "getFirstName",
+          "writeIdentifier": null,
+          "required": false,
           "deprecated": false,
-          "description": "The actor's last name.",
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
           "name": "lastName",
+          "description": "The actor's last name.",
           "readIdentifier": "getLastName",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": "Represents a film category.",
       "name": "Category",
+      "description": "Represents a film category.",
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": "The category's ID.",
           "name": "id",
+          "description": "The category's ID.",
           "readIdentifier": "getID",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Integer",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": "The name of the category.",
           "name": "name",
+          "description": "The name of the category.",
           "readIdentifier": "getName",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": "Represents a film.",
       "name": "Film",
+      "description": "Represents a film.",
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": "The film's ID.",
           "name": "id",
+          "description": "The film's ID.",
           "readIdentifier": "getID",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Integer",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
+          "name": "title",
+          "description": "The title of the film.",
+          "readIdentifier": "getTitle",
+          "writeIdentifier": null,
+          "required": true,
           "deprecated": false,
-          "description": "The length of the film, in minutes.",
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "releaseDate",
+          "description": "The date the film was released.",
+          "readIdentifier": "getReleaseDate",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "LocalDate",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
           "name": "length",
+          "description": "The length of the film, in minutes.",
           "readIdentifier": "getLength",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Integer",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": "The film's rating.",
           "name": "rating",
+          "description": "The film's rating.",
           "readIdentifier": "getRating",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "Rating",
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Rating",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": "The date the film was released.",
-          "name": "releaseDate",
-          "readIdentifier": "getReleaseDate",
-          "required": false,
-          "type": {
             "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "LocalDate",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": "The title of the film.",
-          "name": "title",
-          "readIdentifier": "getTitle",
-          "required": true,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
             "keyType": null,
-            "map": false,
-            "name": "String",
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": "Represents detailed information about a film.",
       "name": "FilmDetails",
-      "properties": [
-        {
-          "deprecated": false,
-          "description": "The actors that appeared in the film.",
-          "name": "actors",
-          "readIdentifier": "getActors",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Actor",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": "setActors"
-        },
-        {
-          "deprecated": false,
-          "description": "The categories associated with the film.",
-          "name": "categories",
-          "readIdentifier": "getCategories",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Category",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": "setCategories"
-        },
-        {
-          "deprecated": false,
-          "description": "A description of the film.",
-          "name": "description",
-          "readIdentifier": "getDescription",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        }
-      ],
+      "description": "Represents detailed information about a film.",
       "supertypes": [
         {
-          "elementType": null,
+          "name": "Film",
           "intrinsic": false,
           "iterable": false,
-          "keyType": null,
+          "elementType": null,
           "map": false,
-          "name": "Film",
+          "keyType": null,
           "valueType": null
+        }
+      ],
+      "properties": [
+        {
+          "name": "description",
+          "description": "A description of the film.",
+          "readIdentifier": "getDescription",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "actors",
+          "description": "The actors that appeared in the film.",
+          "readIdentifier": "getActors",
+          "writeIdentifier": "setActors",
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Actor",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "categories",
+          "description": "The categories associated with the film.",
+          "readIdentifier": "getCategories",
+          "writeIdentifier": "setCategories",
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Category",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
         }
       ]
     }

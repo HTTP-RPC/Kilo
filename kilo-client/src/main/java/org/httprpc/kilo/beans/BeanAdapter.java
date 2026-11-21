@@ -19,6 +19,8 @@ import org.httprpc.kilo.Required;
 import org.w3c.dom.Document;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.classfile.ClassFile;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -53,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -1067,10 +1070,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Map<String, Property> computeProperties(Class<?> type) {
-        Map<String, Property> properties;
-        if (type.isRecord()) {
-            properties = new LinkedHashMap<>();
+        var properties = new LinkedHashMap<String, Property>();
 
+        if (type.isRecord()) {
             var recordComponents = type.getRecordComponents();
 
             for (var i = 0; i < recordComponents.length; i++) {
@@ -1081,34 +1083,37 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 properties.put(getKey(accessor, recordComponent.getName()), new Property(accessor, null));
             }
         } else {
-            var accessors = new HashMap<String, Method>();
+            var accessors = new LinkedHashMap<String, Method>();
             var mutatorLists = new HashMap<String, List<Method>>();
 
-            var methods = type.getMethods();
+            var methodNames = new LinkedHashSet<String>();
 
-            for (var i = 0; i < methods.length; i++) {
-                var method = methods[i];
+            addMethodNames(type, methodNames);
 
-                if (method.getDeclaringClass() == Object.class) {
-                    continue;
-                }
+            var methods = groupBy(iterableOf(type.getMethods()), Method::getName);
 
-                var propertyName = getPropertyName(method);
+            for (var methodName : methodNames) {
+                for (var method : coalesce(methods.get(methodName), () -> emptyListOf(Method.class))) {
+                    if (method.getDeclaringClass() == Object.class) {
+                        continue;
+                    }
 
-                if (propertyName == null) {
-                    continue;
-                }
+                    var propertyName = getPropertyName(method);
 
-                if (method.getParameterCount() == 0) {
-                    accessors.put(propertyName, method);
-                } else {
-                    mutatorLists.computeIfAbsent(propertyName, key -> new LinkedList<>()).add(method);
+                    if (propertyName == null) {
+                        continue;
+                    }
+
+                    if (method.getParameterCount() == 0) {
+                        accessors.put(propertyName, method);
+                    } else {
+                        mutatorLists.computeIfAbsent(propertyName, key -> new LinkedList<>()).add(method);
+                    }
                 }
             }
 
-            properties = sortedMapOf(mapAll(accessors.entrySet(), entry -> {
+            for (var entry : accessors.entrySet()) {
                 var propertyName = entry.getKey();
-
                 var accessor = entry.getValue();
 
                 var propertyType = accessor.getReturnType();
@@ -1117,11 +1122,35 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 var mutator = firstOf(filter(mutatorList, method -> method.getParameterTypes()[0] == propertyType));
 
-                return entry(getKey(accessor, propertyName), new Property(accessor, mutator));
-            }));
+                properties.put(getKey(accessor, propertyName), new Property(accessor, mutator));
+            }
         }
 
         return immutableMapOf(properties);
+    }
+
+    private static void addMethodNames(Class<?> type, SequencedSet<String> methodNames) {
+        if (type == null) {
+            return;
+        }
+
+        addMethodNames(type.getSuperclass(), methodNames);
+
+        var interfaces = type.getInterfaces();
+
+        for (var i = 0; i < interfaces.length; i++) {
+            addMethodNames(interfaces[i], methodNames);
+        }
+
+        try (var inputStream = type.getResourceAsStream(String.format("%s.class", getName(type)))) {
+            var methods = ClassFile.of().parse(inputStream.readAllBytes()).methods();
+
+            for (var methodName : mapAll(methods, method -> method.methodName().stringValue())) {
+                methodNames.add(methodName);
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     private static String getPropertyName(Method method) {

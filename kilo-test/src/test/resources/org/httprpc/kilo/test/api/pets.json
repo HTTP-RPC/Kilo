@@ -1,169 +1,169 @@
 {
+  "path": "/pets",
+  "name": "PetService",
   "description": null,
   "endpoints": [
     {
+      "path": "/pets",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "getPets",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Pet",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Pet",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "owner",
               "description": null,
               "identifier": "owner",
-              "name": "owner",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "String",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/pets"
+      ]
     }
   ],
   "enumerations": [
   ],
-  "name": "PetService",
-  "path": "/pets",
   "structures": [
     {
-      "description": null,
       "name": "Pet",
+      "description": null,
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": null,
-          "name": "birth",
-          "readIdentifier": "getBirth",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "LocalDate",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "death",
-          "readIdentifier": "getDeath",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "LocalDate",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
           "name": "name",
+          "description": null,
           "readIdentifier": "getName",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "owner",
+          "description": null,
           "readIdentifier": "getOwner",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "sex",
-          "readIdentifier": "getSex",
-          "required": false,
-          "type": {
             "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "species",
+          "description": null,
           "readIdentifier": "getSpecies",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
+        },
+        {
+          "name": "sex",
+          "description": null,
+          "readIdentifier": "getSex",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "birth",
+          "description": null,
+          "readIdentifier": "getBirth",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "LocalDate",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "death",
+          "description": null,
+          "readIdentifier": "getDeath",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "LocalDate",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     }
   ]

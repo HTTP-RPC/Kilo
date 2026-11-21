@@ -262,7 +262,7 @@ public class QueryBuilderTest {
     public void testSelectB() {
         var queryBuilder = QueryBuilder.select(B.class).filterByPrimaryKey("a").limit(10);
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B where B.a = ? limit 10", queryBuilder.toString());
+        assertEquals("select B.a, B.b, B.c, B.d as x, B.e, B.f as y from B where B.a = ? limit 10", queryBuilder.toString());
         assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
@@ -296,7 +296,7 @@ public class QueryBuilderTest {
             .filterByPrimaryKey("a")
             .filterByForeignKey(E.class, D.class, "d");
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y, E.z from B "
+        assertEquals("select B.a, B.b, B.c, B.d as x, B.e, B.f as y, E.z from B "
             + "join E on B.a = E.a "
             + "where B.a = ? "
             + "and E.d = ?", queryBuilder.toString());
@@ -342,7 +342,7 @@ public class QueryBuilderTest {
             .filterByForeignKey(G.class, F.class, "f")
             .ordered(true);
 
-        assertEquals("select I.h, I.i, I.t, I.u, H.h, H.s, G.g, G.r from I "
+        assertEquals("select I.i, I.h, I.t, I.u, H.h, H.s, G.g, G.r from I "
             + "join H on I.h = H.h "
             + "join G on H.g = G.g "
             + "where G.f = ? "
@@ -359,7 +359,7 @@ public class QueryBuilderTest {
             .filterByPrimaryKey("i")
             .ordered(false);
 
-        assertEquals("select I.h, I.i, I.t, I.u, J.v, K.w from I "
+        assertEquals("select I.i, I.h, I.t, I.u, J.v, K.w from I "
             + "join J on I.i = J.i "
             + "join K on J.i = K.i "
             + "where I.i = ? "
@@ -416,7 +416,7 @@ public class QueryBuilderTest {
     public void testGreaterThan() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThan("t");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t > ?", queryBuilder.toString());
+        assertEquals("select I.i, I.h, I.t, I.u from I where I.t > ?", queryBuilder.toString());
         assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
@@ -424,7 +424,7 @@ public class QueryBuilderTest {
     public void testGreaterThanOrEqualTo() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThanOrEqualTo("t");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t >= ?", queryBuilder.toString());
+        assertEquals("select I.i, I.h, I.t, I.u from I where I.t >= ?", queryBuilder.toString());
         assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
@@ -432,7 +432,7 @@ public class QueryBuilderTest {
     public void testLessThan() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThan("t");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t < ?", queryBuilder.toString());
+        assertEquals("select I.i, I.h, I.t, I.u from I where I.t < ?", queryBuilder.toString());
         assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
@@ -440,7 +440,7 @@ public class QueryBuilderTest {
     public void testLessThanOrEqualTo() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThanOrEqualTo("t");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t <= ?", queryBuilder.toString());
+        assertEquals("select I.i, I.h, I.t, I.u from I where I.t <= ?", queryBuilder.toString());
         assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
@@ -448,7 +448,7 @@ public class QueryBuilderTest {
     public void testEqualTo() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexEqualTo("t", "u");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t = ? and I.u = ?", queryBuilder.toString());
+        assertEquals("select I.i, I.h, I.t, I.u from I where I.t = ? and I.u = ?", queryBuilder.toString());
         assertEquals(listOf("t", "u"), getParameters(queryBuilder));
     }
 
@@ -456,7 +456,7 @@ public class QueryBuilderTest {
     public void testLike() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t", "u");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t like ? and I.u like ?", queryBuilder.toString());
+        assertEquals("select I.i, I.h, I.t, I.u from I where I.t like ? and I.u like ?", queryBuilder.toString());
         assertEquals(listOf("t", "u"), getParameters(queryBuilder));
     }
 

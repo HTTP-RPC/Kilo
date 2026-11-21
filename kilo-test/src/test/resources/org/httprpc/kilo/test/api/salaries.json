@@ -1,67 +1,67 @@
 {
+  "path": "/salaries",
+  "name": "SalaryService",
   "description": null,
   "endpoints": [
     {
+      "path": "/salaries/average",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "getAverageSalary",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "Double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 2,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Double",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "fromDate",
               "description": null,
               "identifier": "fromDate",
-              "name": "fromDate",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "LocalDate",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "LocalDate",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "toDate",
               "description": null,
               "identifier": "toDate",
-              "name": "toDate",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "LocalDate",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "LocalDate",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/salaries/average"
+      ]
     }
   ],
   "enumerations": [
   ],
-  "name": "SalaryService",
-  "path": "/salaries",
   "structures": [
   ]
 }

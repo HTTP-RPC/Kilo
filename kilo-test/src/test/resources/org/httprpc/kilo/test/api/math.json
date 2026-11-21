@@ -1,111 +1,111 @@
 {
+  "path": "/math",
+  "name": "MathService",
   "description": "Math service.",
   "endpoints": [
     {
+      "path": "/math/sum",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": "Calculates the sum of two numbers.",
           "identifier": "getSum",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 2,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "a",
               "description": "The first number.",
               "identifier": "a",
-              "name": "a",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "double",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "double",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "b",
               "description": "The second number.",
               "identifier": "b",
-              "name": "b",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "double",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "double",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": null
         },
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": "Calculates the sum of a list of numbers.",
           "identifier": "getSum",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "values",
               "description": "The numbers to add.",
               "identifier": "values",
-              "name": "values",
               "required": false,
               "type": {
-                "elementType": {
-                  "elementType": null,
-                  "intrinsic": true,
-                  "iterable": false,
-                  "keyType": null,
-                  "map": false,
-                  "name": "Double",
-                  "valueType": null
-                },
+                "name": "Iterable",
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
+                "elementType": {
+                  "name": "Double",
+                  "intrinsic": true,
+                  "iterable": false,
+                  "elementType": null,
+                  "map": false,
+                  "keyType": null,
+                  "valueType": null
+                },
                 "map": false,
-                "name": "Iterable",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/math/sum"
+      ]
     }
   ],
   "enumerations": [
   ],
-  "name": "MathService",
-  "path": "/math",
   "structures": [
   ]
 }

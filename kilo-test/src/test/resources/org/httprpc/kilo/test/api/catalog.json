@@ -1,373 +1,373 @@
 {
+  "path": "/catalog",
+  "name": "CatalogService",
   "description": "Catalog service.",
   "endpoints": [
     {
+      "path": "/catalog/items",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": "Returns a list of all items in the catalog.",
           "identifier": "getItems",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Item",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 0,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Item",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         },
         {
-          "bodyParameter": {
-            "description": "The item to add.",
-            "identifier": "item",
-            "name": "item",
-            "required": true,
-            "type": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "ItemDetails",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
+          "method": "POST",
           "description": "Adds an item to the catalog.",
           "identifier": "addItem",
-          "method": "POST",
+          "deprecated": false,
+          "produces": {
+            "name": "ItemDetails",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "ItemDetails",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": {
+            "name": "item",
+            "description": "The item to add.",
+            "identifier": "item",
+            "required": true,
+            "type": {
+              "name": "ItemDetails",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
         }
-      ],
-      "path": "/catalog/items"
+      ]
     },
     {
+      "path": "/catalog/items/?",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": "Returns detailed information about a specific item.",
           "identifier": "getItem",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "ItemDetails",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
             {
+              "name": "itemID",
               "description": "The item ID.",
               "identifier": "itemID",
-              "name": "itemID",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Integer",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "ItemDetails",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         },
         {
-          "bodyParameter": {
-            "description": "The updated item.",
-            "identifier": "item",
-            "name": "item",
-            "required": true,
-            "type": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "ItemDetails",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
+          "method": "PUT",
           "description": "Updates an item.",
           "identifier": "updateItem",
-          "method": "PUT",
+          "deprecated": false,
+          "produces": {
+            "name": "ItemDetails",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 2,
           "pathParameters": [
             {
+              "name": "itemID",
               "description": "The item ID.",
               "identifier": "itemID",
-              "name": "itemID",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Integer",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "ItemDetails",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": {
+            "name": "item",
+            "description": "The updated item.",
+            "identifier": "item",
+            "required": true,
+            "type": {
+              "name": "ItemDetails",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
         },
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "DELETE",
           "description": "Deletes an item.",
           "identifier": "deleteItem",
-          "method": "DELETE",
+          "deprecated": false,
+          "produces": {
+            "name": "void",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
             {
+              "name": "itemID",
               "description": "The item ID.",
               "identifier": "itemID",
-              "name": "itemID",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Integer",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "void",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/catalog/items/?"
+      ]
     }
   ],
   "enumerations": [
     {
-      "description": "Represents a size option.",
       "name": "Size",
+      "description": "Represents a size option.",
       "values": [
         {
-          "deprecated": false,
+          "name": "SMALL",
           "description": "A small size.",
           "identifier": "SMALL",
-          "name": "SMALL"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "MEDIUM",
           "description": "A medium size.",
           "identifier": "MEDIUM",
-          "name": "MEDIUM"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "LARGE",
           "description": "A large size.",
           "identifier": "LARGE",
-          "name": "LARGE"
+          "deprecated": false
         }
       ]
     }
   ],
-  "name": "CatalogService",
-  "path": "/catalog",
   "structures": [
     {
-      "description": "Represents a catalog item.",
       "name": "Item",
+      "description": "Represents a catalog item.",
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": "The item's description.",
-          "name": "description",
-          "readIdentifier": "getDescription",
-          "required": true,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": "setDescription"
-        },
-        {
-          "deprecated": false,
-          "description": "The item's ID.",
           "name": "id",
+          "description": "The item's ID.",
           "readIdentifier": "getID",
+          "writeIdentifier": "setID",
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Integer",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": "setID"
+          }
         },
         {
-          "deprecated": false,
-          "description": "The item's price.",
-          "name": "price",
-          "readIdentifier": "getPrice",
+          "name": "description",
+          "description": "The item's description.",
+          "readIdentifier": "getDescription",
+          "writeIdentifier": "setDescription",
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Double",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": "setPrice"
+          }
+        },
+        {
+          "name": "price",
+          "description": "The item's price.",
+          "readIdentifier": "getPrice",
+          "writeIdentifier": "setPrice",
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "Double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": "Represents detailed information about a catalog item.",
       "name": "ItemDetails",
-      "properties": [
-        {
-          "deprecated": false,
-          "description": "The item's color.",
-          "name": "color",
-          "readIdentifier": "getColor",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": "setColor"
-        },
-        {
-          "deprecated": false,
-          "description": "The date the item was created.",
-          "name": "created",
-          "readIdentifier": "getCreated",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Instant",
-            "valueType": null
-          },
-          "writeIdentifier": "setCreated"
-        },
-        {
-          "deprecated": false,
-          "description": "The item's size.",
-          "name": "size",
-          "readIdentifier": "getSize",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Size",
-            "valueType": null
-          },
-          "writeIdentifier": "setSize"
-        },
-        {
-          "deprecated": false,
-          "description": "The item's weight.",
-          "name": "weight",
-          "readIdentifier": "getWeight",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Double",
-            "valueType": null
-          },
-          "writeIdentifier": "setWeight"
-        }
-      ],
+      "description": "Represents detailed information about a catalog item.",
       "supertypes": [
         {
-          "elementType": null,
+          "name": "Item",
           "intrinsic": false,
           "iterable": false,
-          "keyType": null,
+          "elementType": null,
           "map": false,
-          "name": "Item",
+          "keyType": null,
           "valueType": null
+        }
+      ],
+      "properties": [
+        {
+          "name": "size",
+          "description": "The item's size.",
+          "readIdentifier": "getSize",
+          "writeIdentifier": "setSize",
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Size",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "color",
+          "description": "The item's color.",
+          "readIdentifier": "getColor",
+          "writeIdentifier": "setColor",
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "weight",
+          "description": "The item's weight.",
+          "readIdentifier": "getWeight",
+          "writeIdentifier": "setWeight",
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "created",
+          "description": "The date the item was created.",
+          "readIdentifier": "getCreated",
+          "writeIdentifier": "setCreated",
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Instant",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
         }
       ]
     }

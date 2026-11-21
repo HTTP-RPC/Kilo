@@ -1,2429 +1,2429 @@
 {
+  "path": "/test",
+  "name": "TestService",
   "description": null,
   "endpoints": [
     {
+      "path": "/test",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "testGet",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "TestService$Response",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 14,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "TestService$Response",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "string",
               "description": null,
               "identifier": "string",
-              "name": "string",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "String",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "strings",
               "description": null,
               "identifier": "strings",
-              "name": "strings",
               "required": false,
               "type": {
-                "elementType": {
-                  "elementType": null,
-                  "intrinsic": true,
-                  "iterable": false,
-                  "keyType": null,
-                  "map": false,
-                  "name": "String",
-                  "valueType": null
-                },
+                "name": "Iterable",
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
+                "elementType": {
+                  "name": "String",
+                  "intrinsic": true,
+                  "iterable": false,
+                  "elementType": null,
+                  "map": false,
+                  "keyType": null,
+                  "valueType": null
+                },
                 "map": false,
-                "name": "Iterable",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "number",
               "description": null,
               "identifier": "number",
-              "name": "number",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "numbers",
               "description": null,
               "identifier": "numbers",
-              "name": "numbers",
               "required": false,
               "type": {
-                "elementType": {
-                  "elementType": null,
-                  "intrinsic": true,
-                  "iterable": false,
-                  "keyType": null,
-                  "map": false,
-                  "name": "Integer",
-                  "valueType": null
-                },
+                "name": "Iterable",
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
+                "elementType": {
+                  "name": "Integer",
+                  "intrinsic": true,
+                  "iterable": false,
+                  "elementType": null,
+                  "map": false,
+                  "keyType": null,
+                  "valueType": null
+                },
                 "map": false,
-                "name": "Iterable",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "flag",
               "description": null,
               "identifier": "flag",
-              "name": "flag",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "boolean",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "boolean",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "dayOfWeek",
               "description": null,
               "identifier": "dayOfWeek",
-              "name": "dayOfWeek",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "DayOfWeek",
                 "intrinsic": false,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "DayOfWeek",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "date",
               "description": null,
               "identifier": "date",
-              "name": "date",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "Instant",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Instant",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "dates",
               "description": null,
               "identifier": "dates",
-              "name": "dates",
               "required": false,
               "type": {
-                "elementType": {
-                  "elementType": null,
-                  "intrinsic": true,
-                  "iterable": false,
-                  "keyType": null,
-                  "map": false,
-                  "name": "Instant",
-                  "valueType": null
-                },
+                "name": "Iterable",
                 "intrinsic": true,
                 "iterable": true,
-                "keyType": null,
+                "elementType": {
+                  "name": "Instant",
+                  "intrinsic": true,
+                  "iterable": false,
+                  "elementType": null,
+                  "map": false,
+                  "keyType": null,
+                  "valueType": null
+                },
                 "map": false,
-                "name": "Iterable",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "localDate",
               "description": null,
               "identifier": "localDate",
-              "name": "localDate",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "LocalDate",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "LocalDate",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "localTime",
               "description": null,
               "identifier": "localTime",
-              "name": "localTime",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "LocalTime",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "LocalTime",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "localDateTime",
               "description": null,
               "identifier": "localDateTime",
-              "name": "localDateTime",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "LocalDateTime",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "LocalDateTime",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "duration",
               "description": null,
               "identifier": "duration",
-              "name": "duration",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "Duration",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Duration",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "period",
               "description": null,
               "identifier": "period",
-              "name": "period",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "Period",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Period",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "uuid",
               "description": null,
               "identifier": "uuid",
-              "name": "uuid",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "UUID",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "UUID",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": null
         },
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "testTimeout",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "int",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 2,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "int",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "value",
               "description": null,
               "identifier": "value",
-              "name": "value",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "delay",
               "description": null,
               "identifier": "delay",
-              "name": "delay",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": null
         },
         {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "strings",
-            "name": "strings",
-            "required": true,
-            "type": {
-              "elementType": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "String",
-                "valueType": null
-              },
-              "intrinsic": true,
-              "iterable": true,
-              "keyType": null,
-              "map": false,
-              "name": "Iterable",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
+          "method": "POST",
           "description": null,
           "identifier": "testPost",
-          "method": "POST",
+          "deprecated": false,
+          "produces": {
+            "name": "void",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 2,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "void",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "number",
               "description": null,
               "identifier": "number",
-              "name": "number",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Integer",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
-        },
-        {
+          ],
           "bodyParameter": {
+            "name": "strings",
             "description": null,
-            "identifier": "body",
-            "name": "body",
+            "identifier": "strings",
             "required": true,
             "type": {
-              "elementType": null,
+              "name": "Iterable",
               "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
+              "iterable": true,
+              "elementType": {
+                "name": "String",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              },
               "map": false,
-              "name": "Void",
+              "keyType": null,
               "valueType": null
             }
-          },
-          "deprecated": false,
+          }
+        },
+        {
+          "method": "PUT",
           "description": null,
           "identifier": "testPut",
-          "method": "PUT",
+          "deprecated": false,
+          "produces": {
+            "name": "void",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "void",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test"
-    },
-    {
-      "operations": [
-        {
+          ],
           "bodyParameter": {
+            "name": "body",
             "description": null,
             "identifier": "body",
-            "name": "body",
             "required": true,
             "type": {
-              "elementType": null,
+              "name": "Void",
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "Void",
+              "keyType": null,
               "valueType": null
             }
-          },
-          "deprecated": false,
+          }
+        }
+      ]
+    },
+    {
+      "path": "/test/?",
+      "operations": [
+        {
+          "method": "PUT",
           "description": null,
           "identifier": "testEmptyPut",
-          "method": "PUT",
+          "deprecated": false,
+          "produces": {
+            "name": "int",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 3,
           "pathParameters": [
             {
+              "name": "id",
               "description": null,
               "identifier": "id",
-              "name": "id",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "int",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "value",
               "description": null,
               "identifier": "value",
-              "name": "value",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "String",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": {
+            "name": "body",
+            "description": null,
+            "identifier": "body",
+            "required": true,
+            "type": {
+              "name": "Void",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
         },
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "DELETE",
           "description": null,
           "identifier": "testDelete",
-          "method": "DELETE",
+          "deprecated": false,
+          "produces": {
+            "name": "Integer",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
             {
+              "name": "id",
               "description": null,
               "identifier": "id",
-              "name": "id",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Integer",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Integer",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/test/?"
+      ]
     },
     {
+      "path": "/test/a#/?/b*/?/c@/?/d=/?",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "testKeys",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "Map",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": true,
+            "keyType": {
+              "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "valueType": {
+              "name": "Object",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          },
           "parameterCount": 4,
           "pathParameters": [
             {
+              "name": "a",
               "description": "First key.",
               "identifier": "a",
-              "name": "a",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "b",
               "description": "Second key.",
               "identifier": "b",
-              "name": "b",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "String",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "c",
               "description": "Third key.",
               "identifier": "c",
-              "name": "c",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "d",
               "description": "Fourth key.",
               "identifier": "d",
-              "name": "d",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "String",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "String",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            },
-            "map": true,
-            "name": "Map",
-            "valueType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Object",
-              "valueType": null
-            }
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/test/a#/?/b*/?/c@/?/d=/?"
+      ]
     },
     {
+      "path": "/test/body",
       "operations": [
         {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "body",
-            "name": "body",
-            "required": true,
-            "type": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "TestService$Body",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
+          "method": "POST",
           "description": null,
           "identifier": "testPostBody",
-          "method": "POST",
-          "parameterCount": 1,
-          "pathParameters": [
-          ],
+          "deprecated": false,
           "produces": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
             "name": "TestService$Body",
-            "valueType": null
-          },
-          "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/body"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "identifier": "testGetC",
-          "method": "GET",
-          "parameterCount": 0,
-          "pathParameters": [
-          ],
-          "produces": {
-            "elementType": null,
             "intrinsic": false,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "TestService$C",
+            "keyType": null,
             "valueType": null
           },
-          "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/c"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "coordinates",
-            "name": "coordinates",
-            "required": true,
-            "type": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Coordinates",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
-          "description": null,
-          "identifier": "testPostCoordinates",
-          "method": "POST",
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Coordinates",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/coordinates"
-    },
-    {
-      "operations": [
-        {
+          ],
           "bodyParameter": {
+            "name": "body",
             "description": null,
             "identifier": "body",
-            "name": "body",
             "required": true,
             "type": {
-              "elementType": null,
-              "intrinsic": true,
+              "name": "TestService$Body",
+              "intrinsic": false,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "Void",
+              "keyType": null,
               "valueType": null
             }
-          },
+          }
+        }
+      ]
+    },
+    {
+      "path": "/test/c",
+      "operations": [
+        {
+          "method": "GET",
+          "description": null,
+          "identifier": "testGetC",
           "deprecated": false,
+          "produces": {
+            "name": "TestService$C",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 0,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+          ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/test/coordinates",
+      "operations": [
+        {
+          "method": "POST",
+          "description": null,
+          "identifier": "testPostCoordinates",
+          "deprecated": false,
+          "produces": {
+            "name": "Coordinates",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 1,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+          ],
+          "bodyParameter": {
+            "name": "coordinates",
+            "description": null,
+            "identifier": "coordinates",
+            "required": true,
+            "type": {
+              "name": "Coordinates",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "path": "/test/deferred",
+      "operations": [
+        {
+          "method": "POST",
           "description": null,
           "identifier": "testPostDeferred",
-          "method": "POST",
-          "parameterCount": 1,
-          "pathParameters": [
-          ],
+          "deprecated": false,
           "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
             "name": "int",
-            "valueType": null
-          },
-          "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/deferred"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": true,
-          "description": null,
-          "identifier": "testDeprecated",
-          "method": "GET",
-          "parameterCount": 0,
-          "pathParameters": [
-          ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": false,
+            "intrinsic": true,
             "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "TestService$TestRecord",
-            "valueType": null
-          },
-          "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/deprecated"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "identifier": "testGetE",
-          "method": "GET",
-          "parameterCount": 0,
-          "pathParameters": [
-          ],
-          "produces": {
             "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
             "map": false,
-            "name": "TestService$E",
+            "keyType": null,
             "valueType": null
           },
-          "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/e"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "identifier": "testError",
-          "method": "GET",
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "void",
-            "valueType": null
-          },
           "queryParameters": [
-            {
-              "description": null,
-              "identifier": "committed",
-              "name": "committed",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "boolean",
-                "valueType": null
-              }
-            }
-          ]
-        }
-      ],
-      "path": "/test/error"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "identifier": "testGetFibonacci",
-          "method": "GET",
-          "parameterCount": 1,
-          "pathParameters": [
           ],
-          "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Number",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "queryParameters": [
-            {
-              "description": null,
-              "identifier": "count",
-              "name": "count",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "int",
-                "valueType": null
-              }
-            }
-          ]
-        }
-      ],
-      "path": "/test/fibonacci"
-    },
-    {
-      "operations": [
-        {
           "bodyParameter": {
+            "name": "body",
             "description": null,
-            "identifier": "values",
-            "name": "values",
+            "identifier": "body",
             "required": true,
             "type": {
-              "elementType": {
-                "elementType": null,
+              "name": "Void",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "path": "/test/deprecated",
+      "operations": [
+        {
+          "method": "GET",
+          "description": null,
+          "identifier": "testDeprecated",
+          "deprecated": true,
+          "produces": {
+            "name": "TestService$TestRecord",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 0,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+          ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/test/e",
+      "operations": [
+        {
+          "method": "GET",
+          "description": null,
+          "identifier": "testGetE",
+          "deprecated": false,
+          "produces": {
+            "name": "TestService$E",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 0,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+          ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/test/error",
+      "operations": [
+        {
+          "method": "GET",
+          "description": null,
+          "identifier": "testError",
+          "deprecated": false,
+          "produces": {
+            "name": "void",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 1,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+            {
+              "name": "committed",
+              "description": null,
+              "identifier": "committed",
+              "required": false,
+              "type": {
+                "name": "boolean",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "Double",
+                "keyType": null,
                 "valueType": null
-              },
+              }
+            }
+          ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/test/fibonacci",
+      "operations": [
+        {
+          "method": "GET",
+          "description": null,
+          "identifier": "testGetFibonacci",
+          "deprecated": false,
+          "produces": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Number",
               "intrinsic": true,
-              "iterable": true,
-              "keyType": null,
+              "iterable": false,
+              "elementType": null,
               "map": false,
-              "name": "Iterable",
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 1,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+            {
+              "name": "count",
+              "description": null,
+              "identifier": "count",
+              "required": false,
+              "type": {
+                "name": "int",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              }
+            }
+          ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/test/foo/?/bar/?",
+      "operations": [
+        {
+          "method": "POST",
+          "description": null,
+          "identifier": "testParameters",
+          "deprecated": false,
+          "produces": {
+            "name": "Map",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": true,
+            "keyType": {
+              "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "valueType": {
+              "name": "Object",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
               "valueType": null
             }
           },
-          "deprecated": false,
-          "description": null,
-          "identifier": "testParameters",
-          "method": "POST",
           "parameterCount": 5,
           "pathParameters": [
             {
+              "name": "x",
               "description": null,
               "identifier": "x",
-              "name": "x",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "y",
               "description": null,
               "identifier": "y",
-              "name": "y",
               "required": true,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             }
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            },
-            "map": true,
-            "name": "Map",
-            "valueType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Object",
-              "valueType": null
-            }
-          },
           "queryParameters": [
             {
+              "name": "a",
               "description": null,
               "identifier": "a",
-              "name": "a",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "b",
               "description": null,
               "identifier": "b",
-              "name": "b",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
-        }
-      ],
-      "path": "/test/foo/?/bar/?"
-    },
-    {
-      "operations": [
-        {
+          ],
           "bodyParameter": {
+            "name": "values",
             "description": null,
-            "identifier": "formContents",
-            "name": "formContents",
+            "identifier": "values",
             "required": true,
             "type": {
-              "elementType": null,
-              "intrinsic": false,
-              "iterable": false,
-              "keyType": null,
+              "name": "Iterable",
+              "intrinsic": true,
+              "iterable": true,
+              "elementType": {
+                "name": "Double",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              },
               "map": false,
-              "name": "TestService$FormContents",
+              "keyType": null,
               "valueType": null
             }
-          },
-          "deprecated": false,
+          }
+        }
+      ]
+    },
+    {
+      "path": "/test/form-data",
+      "operations": [
+        {
+          "method": "POST",
           "description": null,
           "identifier": "testPostFormData",
-          "method": "POST",
-          "parameterCount": 1,
-          "pathParameters": [
-          ],
+          "deprecated": false,
           "produces": {
-            "elementType": null,
+            "name": "Map",
             "intrinsic": true,
             "iterable": false,
+            "elementType": null,
+            "map": true,
             "keyType": {
-              "elementType": null,
+              "name": "String",
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "String",
+              "keyType": null,
               "valueType": null
             },
-            "map": true,
-            "name": "Map",
             "valueType": {
-              "elementType": null,
+              "name": "Object",
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "Object",
+              "keyType": null,
               "valueType": null
             }
           },
+          "parameterCount": 1,
+          "pathParameters": [
+          ],
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": {
+            "name": "formContents",
+            "description": null,
+            "identifier": "formContents",
+            "required": true,
+            "type": {
+              "name": "TestService$FormContents",
+              "intrinsic": false,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
         }
-      ],
-      "path": "/test/form-data"
+      ]
     },
     {
+      "path": "/test/headers",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "testHeaders",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "Map",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": true,
+            "keyType": {
+              "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "valueType": {
+              "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          },
           "parameterCount": 0,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            },
-            "map": true,
-            "name": "Map",
-            "valueType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            }
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/test/headers"
+      ]
     },
     {
+      "path": "/test/image",
       "operations": [
         {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "body",
-            "name": "body",
-            "required": true,
-            "type": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Void",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
+          "method": "POST",
           "description": null,
           "identifier": "testPostImage",
-          "method": "POST",
+          "deprecated": false,
+          "produces": {
+            "name": "void",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "void",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": {
+            "name": "body",
+            "description": null,
+            "identifier": "body",
+            "required": true,
+            "type": {
+              "name": "Void",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
         }
-      ],
-      "path": "/test/image"
+      ]
     },
     {
+      "path": "/test/invalid-result",
       "operations": [
         {
-          "bodyParameter": null,
-          "deprecated": false,
+          "method": "GET",
           "description": null,
           "identifier": "testInvalidResult",
-          "method": "GET",
+          "deprecated": false,
+          "produces": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Double",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 0,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Double",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": null
         }
-      ],
-      "path": "/test/invalid-result"
+      ]
     },
     {
+      "path": "/test/list",
       "operations": [
         {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "list",
-            "name": "list",
-            "required": true,
-            "type": {
-              "elementType": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "String",
-                "valueType": null
-              },
-              "intrinsic": true,
-              "iterable": true,
-              "keyType": null,
-              "map": false,
-              "name": "Iterable",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
+          "method": "POST",
           "description": null,
           "identifier": "testPostList",
-          "method": "POST",
-          "parameterCount": 1,
-          "pathParameters": [
-          ],
+          "deprecated": false,
           "produces": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            },
+            "name": "Iterable",
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/list"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "map",
-            "name": "map",
-            "required": true,
-            "type": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "String",
-                "valueType": null
-              },
-              "map": true,
-              "name": "Map",
-              "valueType": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "Double",
-                "valueType": null
-              }
-            }
-          },
-          "deprecated": false,
-          "description": null,
-          "identifier": "testPostMap",
-          "method": "POST",
-          "parameterCount": 1,
-          "pathParameters": [
-          ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
+            "elementType": {
               "name": "String",
-              "valueType": null
-            },
-            "map": true,
-            "name": "Map",
-            "valueType": {
-              "elementType": null,
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "Double",
+              "keyType": null,
               "valueType": null
-            }
-          },
-          "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/test/map"
-    },
-    {
-      "operations": [
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "identifier": "getSum",
-          "method": "GET",
-          "parameterCount": 2,
-          "pathParameters": [
-          ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
+            },
             "map": false,
-            "name": "double",
+            "keyType": null,
             "valueType": null
           },
-          "queryParameters": [
-            {
-              "description": null,
-              "identifier": "a",
-              "name": "a",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "double",
-                "valueType": null
-              }
-            },
-            {
-              "description": null,
-              "identifier": "b",
-              "name": "b",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "double",
-                "valueType": null
-              }
-            }
-          ]
-        },
-        {
-          "bodyParameter": null,
-          "deprecated": false,
-          "description": null,
-          "identifier": "getSum",
-          "method": "GET",
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          },
           "queryParameters": [
-            {
-              "description": null,
-              "identifier": "values",
-              "name": "values",
-              "required": false,
-              "type": {
-                "elementType": {
-                  "elementType": null,
-                  "intrinsic": true,
-                  "iterable": false,
-                  "keyType": null,
-                  "map": false,
-                  "name": "Double",
-                  "valueType": null
-                },
-                "intrinsic": true,
-                "iterable": true,
-                "keyType": null,
-                "map": false,
-                "name": "Iterable",
-                "valueType": null
-              }
-            }
-          ]
-        }
-      ],
-      "path": "/test/math/sum"
-    },
-    {
-      "operations": [
-        {
+          ],
           "bodyParameter": {
+            "name": "list",
             "description": null,
-            "identifier": "strings",
-            "name": "strings",
+            "identifier": "list",
             "required": true,
             "type": {
-              "elementType": {
-                "elementType": null,
-                "intrinsic": true,
-                "iterable": false,
-                "keyType": null,
-                "map": false,
-                "name": "String",
-                "valueType": null
-              },
+              "name": "Iterable",
               "intrinsic": true,
               "iterable": true,
-              "keyType": null,
+              "elementType": {
+                "name": "String",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              },
               "map": false,
-              "name": "Iterable",
+              "keyType": null,
               "valueType": null
             }
-          },
-          "deprecated": false,
-          "description": null,
-          "identifier": "testVarargs",
+          }
+        }
+      ]
+    },
+    {
+      "path": "/test/map",
+      "operations": [
+        {
           "method": "POST",
-          "parameterCount": 2,
-          "pathParameters": [
-          ],
+          "description": null,
+          "identifier": "testPostMap",
+          "deprecated": false,
           "produces": {
-            "elementType": null,
+            "name": "Map",
             "intrinsic": true,
             "iterable": false,
+            "elementType": null,
+            "map": true,
             "keyType": {
-              "elementType": null,
+              "name": "String",
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "String",
+              "keyType": null,
               "valueType": null
             },
-            "map": true,
-            "name": "Map",
             "valueType": {
-              "elementType": null,
+              "name": "Double",
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "Object",
+              "keyType": null,
               "valueType": null
             }
           },
+          "parameterCount": 1,
+          "pathParameters": [
+          ],
           "queryParameters": [
-            {
-              "description": null,
-              "identifier": "numbers",
-              "name": "numbers",
-              "required": false,
-              "type": {
-                "elementType": {
-                  "elementType": null,
-                  "intrinsic": true,
-                  "iterable": false,
-                  "keyType": null,
-                  "map": false,
-                  "name": "int",
-                  "valueType": null
-                },
+          ],
+          "bodyParameter": {
+            "name": "map",
+            "description": null,
+            "identifier": "map",
+            "required": true,
+            "type": {
+              "name": "Map",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": true,
+              "keyType": {
+                "name": "String",
                 "intrinsic": true,
-                "iterable": true,
-                "keyType": null,
+                "iterable": false,
+                "elementType": null,
                 "map": false,
-                "name": "Iterable",
+                "keyType": null,
+                "valueType": null
+              },
+              "valueType": {
+                "name": "Double",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          }
         }
-      ],
-      "path": "/test/varargs"
+      ]
     },
     {
+      "path": "/test/math/sum",
       "operations": [
         {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "document",
-            "name": "document",
-            "required": true,
-            "type": {
-              "elementType": null,
+          "method": "GET",
+          "description": null,
+          "identifier": "getSum",
+          "deprecated": false,
+          "produces": {
+            "name": "double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 2,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+            {
+              "name": "a",
+              "description": null,
+              "identifier": "a",
+              "required": false,
+              "type": {
+                "name": "double",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              }
+            },
+            {
+              "name": "b",
+              "description": null,
+              "identifier": "b",
+              "required": false,
+              "type": {
+                "name": "double",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              }
+            }
+          ],
+          "bodyParameter": null
+        },
+        {
+          "method": "GET",
+          "description": null,
+          "identifier": "getSum",
+          "deprecated": false,
+          "produces": {
+            "name": "double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
+          "parameterCount": 1,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+            {
+              "name": "values",
+              "description": null,
+              "identifier": "values",
+              "required": false,
+              "type": {
+                "name": "Iterable",
+                "intrinsic": true,
+                "iterable": true,
+                "elementType": {
+                  "name": "Double",
+                  "intrinsic": true,
+                  "iterable": false,
+                  "elementType": null,
+                  "map": false,
+                  "keyType": null,
+                  "valueType": null
+                },
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              }
+            }
+          ],
+          "bodyParameter": null
+        }
+      ]
+    },
+    {
+      "path": "/test/varargs",
+      "operations": [
+        {
+          "method": "POST",
+          "description": null,
+          "identifier": "testVarargs",
+          "deprecated": false,
+          "produces": {
+            "name": "Map",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": true,
+            "keyType": {
+              "name": "String",
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "Document",
+              "keyType": null,
+              "valueType": null
+            },
+            "valueType": {
+              "name": "Object",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
               "valueType": null
             }
           },
-          "deprecated": false,
+          "parameterCount": 2,
+          "pathParameters": [
+          ],
+          "queryParameters": [
+            {
+              "name": "numbers",
+              "description": null,
+              "identifier": "numbers",
+              "required": false,
+              "type": {
+                "name": "Iterable",
+                "intrinsic": true,
+                "iterable": true,
+                "elementType": {
+                  "name": "int",
+                  "intrinsic": true,
+                  "iterable": false,
+                  "elementType": null,
+                  "map": false,
+                  "keyType": null,
+                  "valueType": null
+                },
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              }
+            }
+          ],
+          "bodyParameter": {
+            "name": "strings",
+            "description": null,
+            "identifier": "strings",
+            "required": true,
+            "type": {
+              "name": "Iterable",
+              "intrinsic": true,
+              "iterable": true,
+              "elementType": {
+                "name": "String",
+                "intrinsic": true,
+                "iterable": false,
+                "elementType": null,
+                "map": false,
+                "keyType": null,
+                "valueType": null
+              },
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "path": "/test/xml",
+      "operations": [
+        {
+          "method": "POST",
           "description": null,
           "identifier": "testPostXML",
-          "method": "POST",
+          "deprecated": false,
+          "produces": {
+            "name": "Document",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 3,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Document",
-            "valueType": null
-          },
           "queryParameters": [
             {
+              "name": "a",
               "description": null,
               "identifier": "a",
-              "name": "a",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             },
             {
+              "name": "b",
               "description": null,
               "identifier": "b",
-              "name": "b",
               "required": false,
               "type": {
-                "elementType": null,
+                "name": "int",
                 "intrinsic": true,
                 "iterable": false,
-                "keyType": null,
+                "elementType": null,
                 "map": false,
-                "name": "int",
+                "keyType": null,
                 "valueType": null
               }
             }
-          ]
+          ],
+          "bodyParameter": {
+            "name": "document",
+            "description": null,
+            "identifier": "document",
+            "required": true,
+            "type": {
+              "name": "Document",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
         }
-      ],
-      "path": "/test/xml"
+      ]
     }
   ],
   "enumerations": [
     {
-      "description": null,
       "name": "DayOfWeek",
+      "description": null,
       "values": [
         {
-          "deprecated": false,
+          "name": "MONDAY",
           "description": null,
           "identifier": "MONDAY",
-          "name": "MONDAY"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "TUESDAY",
           "description": null,
           "identifier": "TUESDAY",
-          "name": "TUESDAY"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "WEDNESDAY",
           "description": null,
           "identifier": "WEDNESDAY",
-          "name": "WEDNESDAY"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "THURSDAY",
           "description": null,
           "identifier": "THURSDAY",
-          "name": "THURSDAY"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "FRIDAY",
           "description": null,
           "identifier": "FRIDAY",
-          "name": "FRIDAY"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "SATURDAY",
           "description": null,
           "identifier": "SATURDAY",
-          "name": "SATURDAY"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "SUNDAY",
           "description": null,
           "identifier": "SUNDAY",
-          "name": "SUNDAY"
+          "deprecated": false
         }
       ]
     },
     {
-      "description": null,
       "name": "TestService$TestRecord$TestEnum",
+      "description": null,
       "values": [
         {
-          "deprecated": false,
+          "name": "ONE",
           "description": null,
           "identifier": "ONE",
-          "name": "ONE"
+          "deprecated": false
         },
         {
-          "deprecated": false,
+          "name": "TWO",
           "description": null,
           "identifier": "TWO",
-          "name": "TWO"
+          "deprecated": false
         },
         {
-          "deprecated": true,
+          "name": "THREE",
           "description": null,
           "identifier": "THREE",
-          "name": "THREE"
+          "deprecated": true
         }
       ]
     }
   ],
-  "name": "TestService",
-  "path": "/test",
   "structures": [
     {
-      "description": "Represents an x/y coordinate pair.",
       "name": "Coordinates",
+      "description": "Represents an x/y coordinate pair.",
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": "The x-coordinate.",
           "name": "x",
+          "description": "The x-coordinate.",
           "readIdentifier": "x",
+          "writeIdentifier": null,
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "int",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "int",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": "The y-coordinate.",
           "name": "y",
+          "description": "The y-coordinate.",
           "readIdentifier": "y",
+          "writeIdentifier": null,
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "int",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "int",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": null,
       "name": "TestService$A",
+      "description": null,
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": null,
           "name": "a",
+          "description": null,
           "readIdentifier": "getA",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "int",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "int",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": null,
       "name": "TestService$B",
+      "description": null,
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
+          "name": "b",
           "description": "B's version of B",
-          "name": "b",
           "readIdentifier": "getB",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "double",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "double",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": null,
       "name": "TestService$Body",
+      "description": null,
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
-          "description": null,
-          "name": "flag",
-          "readIdentifier": "getFlag",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "boolean",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "number",
-          "readIdentifier": "getNumber",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Integer",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "numbers",
-          "readIdentifier": "getNumbers",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Integer",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
           "name": "string",
+          "description": null,
           "readIdentifier": "getString",
+          "writeIdentifier": null,
           "required": true,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "String",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "String",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
           "name": "strings",
+          "description": null,
           "readIdentifier": "getStrings",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            },
+            "name": "Iterable",
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
+            "elementType": {
+              "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
             "map": false,
-            "name": "Iterable",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
+        },
+        {
+          "name": "number",
+          "description": null,
+          "readIdentifier": "getNumber",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Integer",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "numbers",
+          "description": null,
+          "readIdentifier": "getNumbers",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Integer",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "flag",
+          "description": null,
+          "readIdentifier": "getFlag",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "boolean",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
-      "description": null,
       "name": "TestService$C",
-      "properties": [
-        {
-          "deprecated": false,
-          "description": "C's version of B",
-          "name": "b",
-          "readIdentifier": "getB",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": "An array of strings",
-          "name": "c",
-          "readIdentifier": "getC",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        }
-      ],
+      "description": null,
       "supertypes": [
         {
-          "elementType": null,
-          "intrinsic": false,
-          "iterable": false,
-          "keyType": null,
-          "map": false,
           "name": "TestService$A",
+          "intrinsic": false,
+          "iterable": false,
+          "elementType": null,
+          "map": false,
+          "keyType": null,
           "valueType": null
         },
         {
-          "elementType": null,
-          "intrinsic": false,
-          "iterable": false,
-          "keyType": null,
-          "map": false,
           "name": "TestService$B",
-          "valueType": null
-        }
-      ]
-    },
-    {
-      "description": null,
-      "name": "TestService$D",
-      "properties": [
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "d",
-          "readIdentifier": "getD",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "int",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        }
-      ],
-      "supertypes": [
-      ]
-    },
-    {
-      "description": null,
-      "name": "TestService$E",
-      "properties": [
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "e",
-          "readIdentifier": "getE",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        }
-      ],
-      "supertypes": [
-        {
-          "elementType": null,
           "intrinsic": false,
           "iterable": false,
-          "keyType": null,
+          "elementType": null,
           "map": false,
-          "name": "TestService$D",
+          "keyType": null,
           "valueType": null
         }
-      ]
-    },
-    {
-      "description": null,
-      "name": "TestService$FormContents",
-      "properties": [
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "string",
-          "readIdentifier": "string",
-          "required": true,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "strings",
-          "readIdentifier": "strings",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "String",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "number",
-          "readIdentifier": "number",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Integer",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "date",
-          "readIdentifier": "date",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Instant",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "file",
-          "readIdentifier": "file",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Path",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "files",
-          "readIdentifier": "files",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Path",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        }
       ],
-      "supertypes": [
-      ]
-    },
-    {
-      "description": null,
-      "name": "TestService$Response",
       "properties": [
         {
-          "deprecated": false,
-          "description": null,
-          "name": "date",
-          "readIdentifier": "getDate",
+          "name": "b",
+          "description": "C's version of B",
+          "readIdentifier": "getB",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
+            "name": "double",
             "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "Instant",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         },
         {
-          "deprecated": false,
-          "description": null,
-          "name": "dates",
-          "readIdentifier": "getDates",
+          "name": "c",
+          "description": "An array of strings",
+          "readIdentifier": "getC",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Instant",
-              "valueType": null
-            },
+            "name": "Iterable",
             "intrinsic": true,
             "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "dayOfWeek",
-          "readIdentifier": "getDayOfWeek",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": false,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "DayOfWeek",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "duration",
-          "readIdentifier": "getDuration",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Duration",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "flag",
-          "readIdentifier": "getFlag",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "boolean",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "localDate",
-          "readIdentifier": "getLocalDate",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "LocalDate",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "localDateTime",
-          "readIdentifier": "getLocalDateTime",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "LocalDateTime",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "localTime",
-          "readIdentifier": "getLocalTime",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "LocalTime",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "number",
-          "readIdentifier": "getNumber",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Integer",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "numbers",
-          "readIdentifier": "getNumbers",
-          "required": false,
-          "type": {
             "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Integer",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
-            "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "period",
-          "readIdentifier": "getPeriod",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "Period",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "string",
-          "readIdentifier": "getString",
-          "required": true,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "String",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "strings",
-          "readIdentifier": "getStrings",
-          "required": false,
-          "type": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
               "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
               "valueType": null
             },
-            "intrinsic": true,
-            "iterable": true,
-            "keyType": null,
             "map": false,
-            "name": "Iterable",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": false,
-          "description": null,
-          "name": "uuid",
-          "readIdentifier": "getUUID",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
             "keyType": null,
-            "map": false,
-            "name": "UUID",
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
         }
-      ],
-      "supertypes": [
       ]
     },
     {
+      "name": "TestService$D",
       "description": null,
-      "name": "TestService$TestRecord",
+      "supertypes": [
+      ],
       "properties": [
         {
-          "deprecated": false,
+          "name": "d",
           "description": null,
-          "name": "number",
-          "readIdentifier": "number",
+          "readIdentifier": "getD",
+          "writeIdentifier": null,
           "required": false,
+          "deprecated": false,
           "type": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
             "name": "int",
-            "valueType": null
-          },
-          "writeIdentifier": null
-        },
-        {
-          "deprecated": true,
-          "description": null,
-          "name": "testEnum",
-          "readIdentifier": "testEnum",
-          "required": false,
-          "type": {
-            "elementType": null,
-            "intrinsic": false,
+            "intrinsic": true,
             "iterable": false,
-            "keyType": null,
+            "elementType": null,
             "map": false,
-            "name": "TestService$TestRecord$TestEnum",
+            "keyType": null,
             "valueType": null
-          },
-          "writeIdentifier": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "TestService$E",
+      "description": null,
+      "supertypes": [
+        {
+          "name": "TestService$D",
+          "intrinsic": false,
+          "iterable": false,
+          "elementType": null,
+          "map": false,
+          "keyType": null,
+          "valueType": null
         }
       ],
+      "properties": [
+        {
+          "name": "e",
+          "description": null,
+          "readIdentifier": "getE",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "double",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "TestService$FormContents",
+      "description": null,
       "supertypes": [
+      ],
+      "properties": [
+        {
+          "name": "string",
+          "description": null,
+          "readIdentifier": "string",
+          "writeIdentifier": null,
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "strings",
+          "description": null,
+          "readIdentifier": "strings",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "number",
+          "description": null,
+          "readIdentifier": "number",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Integer",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "date",
+          "description": null,
+          "readIdentifier": "date",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Instant",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "file",
+          "description": null,
+          "readIdentifier": "file",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Path",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "files",
+          "description": null,
+          "readIdentifier": "files",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Path",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "TestService$Response",
+      "description": null,
+      "supertypes": [
+      ],
+      "properties": [
+        {
+          "name": "string",
+          "description": null,
+          "readIdentifier": "getString",
+          "writeIdentifier": null,
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "String",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "strings",
+          "description": null,
+          "readIdentifier": "getStrings",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "String",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "number",
+          "description": null,
+          "readIdentifier": "getNumber",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Integer",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "numbers",
+          "description": null,
+          "readIdentifier": "getNumbers",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Integer",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "flag",
+          "description": null,
+          "readIdentifier": "getFlag",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "boolean",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "dayOfWeek",
+          "description": null,
+          "readIdentifier": "getDayOfWeek",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "DayOfWeek",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "date",
+          "description": null,
+          "readIdentifier": "getDate",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Instant",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "dates",
+          "description": null,
+          "readIdentifier": "getDates",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Iterable",
+            "intrinsic": true,
+            "iterable": true,
+            "elementType": {
+              "name": "Instant",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            },
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "localDate",
+          "description": null,
+          "readIdentifier": "getLocalDate",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "LocalDate",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "localTime",
+          "description": null,
+          "readIdentifier": "getLocalTime",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "LocalTime",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "localDateTime",
+          "description": null,
+          "readIdentifier": "getLocalDateTime",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "LocalDateTime",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "duration",
+          "description": null,
+          "readIdentifier": "getDuration",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Duration",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "period",
+          "description": null,
+          "readIdentifier": "getPeriod",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "Period",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "uuid",
+          "description": null,
+          "readIdentifier": "getUUID",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "UUID",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "TestService$TestRecord",
+      "description": null,
+      "supertypes": [
+      ],
+      "properties": [
+        {
+          "name": "number",
+          "description": null,
+          "readIdentifier": "number",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": false,
+          "type": {
+            "name": "int",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "testEnum",
+          "description": null,
+          "readIdentifier": "testEnum",
+          "writeIdentifier": null,
+          "required": false,
+          "deprecated": true,
+          "type": {
+            "name": "TestService$TestRecord$TestEnum",
+            "intrinsic": false,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        }
       ]
     }
   ]

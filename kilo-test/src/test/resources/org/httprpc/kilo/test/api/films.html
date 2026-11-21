@@ -364,15 +364,15 @@
                 <tbody>
                 <!--  -->
                 <tr>
-                    <td><code>firstName</code></td>
-                    <td><code>String</code></td>
-                    <td>The actor's first name.</td>
-                </tr>
-                <!--  -->
-                <tr>
                     <td><code>id</code></td>
                     <td><code>Integer</code></td>
                     <td>The actor's ID.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>firstName</code></td>
+                    <td><code>String</code></td>
+                    <td>The actor's first name.</td>
                 </tr>
                 <!--  -->
                 <tr>
@@ -438,15 +438,9 @@
                 </tr>
                 <!--  -->
                 <tr>
-                    <td><code>length</code></td>
-                    <td><code>Integer</code></td>
-                    <td>The length of the film, in minutes.</td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>rating</code></td>
-                    <td><code><a href="#Rating">Rating</a></code></td>
-                    <td>The film's rating.</td>
+                    <td><code>title</code></td>
+                    <td><code>String&nbsp;•</code></td>
+                    <td>The title of the film.</td>
                 </tr>
                 <!--  -->
                 <tr>
@@ -456,9 +450,15 @@
                 </tr>
                 <!--  -->
                 <tr>
-                    <td><code>title</code></td>
-                    <td><code>String&nbsp;•</code></td>
-                    <td>The title of the film.</td>
+                    <td><code>length</code></td>
+                    <td><code>Integer</code></td>
+                    <td>The length of the film, in minutes.</td>
+                </tr>
+                <!--  -->
+                <tr>
+                    <td><code>rating</code></td>
+                    <td><code><a href="#Rating">Rating</a></code></td>
+                    <td>The film's rating.</td>
                 </tr>
                 <!--  -->
                 </tbody>
@@ -481,6 +481,12 @@
                 <tbody>
                 <!--  -->
                 <tr>
+                    <td><code>description</code></td>
+                    <td><code>String</code></td>
+                    <td>A description of the film.</td>
+                </tr>
+                <!--  -->
+                <tr>
                     <td><code>actors</code></td>
                     <td><code>[<a href="#Actor">Actor</a>]</code></td>
                     <td>The actors that appeared in the film.</td>
@@ -490,12 +496,6 @@
                     <td><code>categories</code></td>
                     <td><code>[<a href="#Category">Category</a>]</code></td>
                     <td>The categories associated with the film.</td>
-                </tr>
-                <!--  -->
-                <tr>
-                    <td><code>description</code></td>
-                    <td><code>String</code></td>
-                    <td>A description of the film.</td>
                 </tr>
                 <!--  -->
                 </tbody>

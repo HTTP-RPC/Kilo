@@ -1,91 +1,91 @@
 {
+  "path": "/bulk-upload",
+  "name": "BulkUploadService",
   "description": null,
   "endpoints": [
     {
+      "path": "/bulk-upload/csv",
       "operations": [
         {
-          "bodyParameter": {
-            "description": null,
-            "identifier": "body",
-            "name": "body",
-            "required": true,
-            "type": {
-              "elementType": null,
-              "intrinsic": true,
-              "iterable": false,
-              "keyType": null,
-              "map": false,
-              "name": "Void",
-              "valueType": null
-            }
-          },
-          "deprecated": false,
+          "method": "POST",
           "description": null,
           "identifier": "uploadCSV",
-          "method": "POST",
+          "deprecated": false,
+          "produces": {
+            "name": "int",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "int",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
-        }
-      ],
-      "path": "/bulk-upload/csv"
-    },
-    {
-      "operations": [
-        {
+          ],
           "bodyParameter": {
+            "name": "body",
             "description": null,
             "identifier": "body",
-            "name": "body",
             "required": true,
             "type": {
-              "elementType": null,
+              "name": "Void",
               "intrinsic": true,
               "iterable": false,
-              "keyType": null,
+              "elementType": null,
               "map": false,
-              "name": "Void",
+              "keyType": null,
               "valueType": null
             }
-          },
-          "deprecated": false,
+          }
+        }
+      ]
+    },
+    {
+      "path": "/bulk-upload/json",
+      "operations": [
+        {
+          "method": "POST",
           "description": null,
           "identifier": "uploadJSON",
-          "method": "POST",
+          "deprecated": false,
+          "produces": {
+            "name": "int",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          },
           "parameterCount": 1,
           "pathParameters": [
           ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "int",
-            "valueType": null
-          },
           "queryParameters": [
-          ]
+          ],
+          "bodyParameter": {
+            "name": "body",
+            "description": null,
+            "identifier": "body",
+            "required": true,
+            "type": {
+              "name": "Void",
+              "intrinsic": true,
+              "iterable": false,
+              "elementType": null,
+              "map": false,
+              "keyType": null,
+              "valueType": null
+            }
+          }
         }
-      ],
-      "path": "/bulk-upload/json"
+      ]
     }
   ],
   "enumerations": [
   ],
-  "name": "BulkUploadService",
-  "path": "/bulk-upload",
   "structures": [
   ]
 }
