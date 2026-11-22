@@ -92,13 +92,13 @@ public abstract class WebService extends HttpServlet {
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
 
-        private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(BeanAdapter::getName));
-        private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(BeanAdapter::getName));
+        private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
+        private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
         private ServiceDescriptor(String path, Class<? extends WebService> type) {
             this.path = path;
 
-            name = BeanAdapter.getName(type);
+            name = type.getSimpleName();
 
             description = map(type.getAnnotation(Description.class), Description::value);
         }
@@ -403,7 +403,7 @@ public abstract class WebService extends HttpServlet {
         private List<ConstantDescriptor> values = new LinkedList<>();
 
         private EnumerationDescriptor(Class<?> type) {
-            name = BeanAdapter.getName(type);
+            name = type.getSimpleName();
 
             description = map(type.getAnnotation(Description.class), Description::value);
         }
@@ -521,7 +521,7 @@ public abstract class WebService extends HttpServlet {
         private List<PropertyDescriptor> properties = new LinkedList<>();
 
         private StructureDescriptor(Class<?> type) {
-            name = BeanAdapter.getName(type);
+            name = type.getSimpleName();
 
             description = map(type.getAnnotation(Description.class), Description::value);
 
@@ -685,11 +685,7 @@ public abstract class WebService extends HttpServlet {
          * The type name.
          */
         public String getName() {
-            if (type.isPrimitive()) {
-                return type.getName();
-            } else {
-                return BeanAdapter.getName(type);
-            }
+            return type.getSimpleName();
         }
 
         /**

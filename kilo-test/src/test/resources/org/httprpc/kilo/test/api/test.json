@@ -12,7 +12,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "TestService$Response",
+            "name": "Response",
             "intrinsic": false,
             "iterable": false,
             "elementType": null,
@@ -624,7 +624,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "TestService$Body",
+            "name": "Body",
             "intrinsic": false,
             "iterable": false,
             "elementType": null,
@@ -643,7 +643,7 @@
             "description": null,
             "required": true,
             "type": {
-              "name": "TestService$Body",
+              "name": "Body",
               "intrinsic": false,
               "iterable": false,
               "elementType": null,
@@ -664,7 +664,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "TestService$C",
+            "name": "C",
             "intrinsic": false,
             "iterable": false,
             "elementType": null,
@@ -770,7 +770,7 @@
           "description": null,
           "deprecated": true,
           "produces": {
-            "name": "TestService$TestRecord",
+            "name": "TestRecord",
             "intrinsic": false,
             "iterable": false,
             "elementType": null,
@@ -796,7 +796,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "TestService$E",
+            "name": "E",
             "intrinsic": false,
             "iterable": false,
             "elementType": null,
@@ -1071,7 +1071,7 @@
             "description": null,
             "required": true,
             "type": {
-              "name": "TestService$FormContents",
+              "name": "FormContents",
               "intrinsic": false,
               "iterable": false,
               "elementType": null,
@@ -1635,7 +1635,7 @@
       ]
     },
     {
-      "name": "TestService$TestRecord$TestEnum",
+      "name": "TestEnum",
       "description": null,
       "values": [
         {
@@ -1661,48 +1661,7 @@
   ],
   "structures": [
     {
-      "name": "Coordinates",
-      "description": "Represents an x/y coordinate pair.",
-      "concrete": true,
-      "supertypes": [
-      ],
-      "properties": [
-        {
-          "name": "x",
-          "identifier": "x",
-          "description": "The x-coordinate.",
-          "required": true,
-          "deprecated": false,
-          "type": {
-            "name": "int",
-            "intrinsic": true,
-            "iterable": false,
-            "elementType": null,
-            "map": false,
-            "keyType": null,
-            "valueType": null
-          }
-        },
-        {
-          "name": "y",
-          "identifier": "y",
-          "description": "The y-coordinate.",
-          "required": true,
-          "deprecated": false,
-          "type": {
-            "name": "int",
-            "intrinsic": true,
-            "iterable": false,
-            "elementType": null,
-            "map": false,
-            "keyType": null,
-            "valueType": null
-          }
-        }
-      ]
-    },
-    {
-      "name": "TestService$A",
+      "name": "A",
       "description": null,
       "concrete": false,
       "supertypes": [
@@ -1727,7 +1686,7 @@
       ]
     },
     {
-      "name": "TestService$B",
+      "name": "B",
       "description": null,
       "concrete": false,
       "supertypes": [
@@ -1752,7 +1711,7 @@
       ]
     },
     {
-      "name": "TestService$Body",
+      "name": "Body",
       "description": null,
       "concrete": false,
       "supertypes": [
@@ -1857,12 +1816,12 @@
       ]
     },
     {
-      "name": "TestService$C",
+      "name": "C",
       "description": null,
       "concrete": false,
       "supertypes": [
         {
-          "name": "TestService$A",
+          "name": "A",
           "intrinsic": false,
           "iterable": false,
           "elementType": null,
@@ -1871,7 +1830,7 @@
           "valueType": null
         },
         {
-          "name": "TestService$B",
+          "name": "B",
           "intrinsic": false,
           "iterable": false,
           "elementType": null,
@@ -1924,7 +1883,48 @@
       ]
     },
     {
-      "name": "TestService$D",
+      "name": "Coordinates",
+      "description": "Represents an x/y coordinate pair.",
+      "concrete": true,
+      "supertypes": [
+      ],
+      "properties": [
+        {
+          "name": "x",
+          "identifier": "x",
+          "description": "The x-coordinate.",
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "int",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        },
+        {
+          "name": "y",
+          "identifier": "y",
+          "description": "The y-coordinate.",
+          "required": true,
+          "deprecated": false,
+          "type": {
+            "name": "int",
+            "intrinsic": true,
+            "iterable": false,
+            "elementType": null,
+            "map": false,
+            "keyType": null,
+            "valueType": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "D",
       "description": null,
       "concrete": true,
       "supertypes": [
@@ -1949,12 +1949,12 @@
       ]
     },
     {
-      "name": "TestService$E",
+      "name": "E",
       "description": null,
       "concrete": true,
       "supertypes": [
         {
-          "name": "TestService$D",
+          "name": "D",
           "intrinsic": false,
           "iterable": false,
           "elementType": null,
@@ -1983,7 +1983,7 @@
       ]
     },
     {
-      "name": "TestService$FormContents",
+      "name": "FormContents",
       "description": null,
       "concrete": true,
       "supertypes": [
@@ -2104,7 +2104,7 @@
       ]
     },
     {
-      "name": "TestService$Response",
+      "name": "Response",
       "description": null,
       "concrete": false,
       "supertypes": [
@@ -2361,7 +2361,7 @@
       ]
     },
     {
-      "name": "TestService$TestRecord",
+      "name": "TestRecord",
       "description": null,
       "concrete": true,
       "supertypes": [
@@ -2390,7 +2390,7 @@
           "required": false,
           "deprecated": true,
           "type": {
-            "name": "TestService$TestRecord$TestEnum",
+            "name": "TestEnum",
             "intrinsic": false,
             "iterable": false,
             "elementType": null,

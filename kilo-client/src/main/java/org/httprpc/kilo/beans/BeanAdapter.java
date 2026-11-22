@@ -1049,23 +1049,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the name of a given type.
-     *
-     * @param type
-     * The requested type.
-     *
-     * @return
-     * The name of the requested type.
-     */
-    public static String getName(Class<?> type) {
-        if (type == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return type.getName().substring(type.getPackageName().length() + 1);
-    }
-
-    /**
      * Returns the properties defined by a given type.
      *
      * @param type
@@ -1161,7 +1144,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             addMethodNames(interfaces[i], methodNames);
         }
 
-        try (var inputStream = type.getResourceAsStream(String.format("%s.class", getName(type)))) {
+        var typeName = type.getName().substring(type.getPackageName().length() + 1);
+
+        try (var inputStream = type.getResourceAsStream(String.format("%s.class", typeName))) {
             var methods = ClassFile.of().parse(inputStream.readAllBytes()).methods();
 
             for (var methodName : mapAll(methods, method -> method.methodName().stringValue())) {
