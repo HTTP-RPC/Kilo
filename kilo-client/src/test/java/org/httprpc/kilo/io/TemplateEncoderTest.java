@@ -617,21 +617,10 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testDelimiterModifier() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "delimiter.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(listOf("a", "b", "c"), writer);
-
-        assertEquals("a,b,c", writer.toString());
-    }
-
-    @Test
     public void testCustomModifier() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "upper.txt");
 
-        templateEncoder.bind("upper", (value, argument, locale, timeZone, last) -> value.toString().toUpperCase(locale));
+        templateEncoder.bind("upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 
         var writer = new StringWriter();
 
