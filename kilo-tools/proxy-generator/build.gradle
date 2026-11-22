@@ -18,6 +18,10 @@ plugins {
 
 dependencies {
     implementation project(':kilo-client')
+
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 application {
@@ -25,5 +29,11 @@ application {
 
     applicationDefaultJvmArgs = [
         '-Djava.awt.headless=true'
+    ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs = [
+        '-parameters'
     ]
 }

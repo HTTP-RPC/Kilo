@@ -8,6 +8,9 @@
       <module name="Kilo.kilo-test" options="-parameters" />
       <module name="Kilo.kilo-test.main" options="-parameters" />
       <module name="Kilo.kilo-test.test" options="-parameters" />
+      <module name="Kilo.kilo-tools.proxy-generator" options="-parameters" />
+      <module name="Kilo.kilo-tools.proxy-generator.main" options="-parameters" />
+      <module name="Kilo.kilo-tools.proxy-generator.test" options="-parameters" />
     </option>
   </component>
 </project>

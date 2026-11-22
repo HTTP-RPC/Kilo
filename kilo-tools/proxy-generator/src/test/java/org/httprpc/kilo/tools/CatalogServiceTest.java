@@ -12,10 +12,11 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.tools;
 
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.web.WebServiceProxy;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -23,7 +24,6 @@ import java.net.URI;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class CatalogServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
@@ -42,28 +42,28 @@ public class CatalogServiceTest {
 
         item = catalogServiceProxy.addItem(item);
 
-        assertNotNull(item);
+        Assertions.assertNotNull(item);
 
         var itemID = item.getID();
 
-        assertNotNull(itemID);
+        Assertions.assertNotNull(itemID);
 
-        assertEquals("abc", item.getDescription());
-        assertEquals(150.0, item.getPrice());
-        assertEquals(Size.MEDIUM, item.getSize());
-        assertEquals(5.0, item.getWeight());
+        Assertions.assertEquals("abc", item.getDescription());
+        Assertions.assertEquals(150.0, item.getPrice());
+        Assertions.assertEquals(Size.MEDIUM, item.getSize());
+        Assertions.assertEquals(5.0, item.getWeight());
 
-        assertNotNull(item.getCreated());
+        Assertions.assertNotNull(item.getCreated());
 
         item = catalogServiceProxy.getItem(itemID);
 
-        assertNotNull(item);
+        Assertions.assertNotNull(item);
 
-        assertEquals(itemID, item.getID());
-        assertEquals("abc", item.getDescription());
-        assertEquals(150.0, item.getPrice());
-        assertEquals(Size.MEDIUM, item.getSize());
-        assertEquals(5.0, item.getWeight());
+        Assertions.assertEquals(itemID, item.getID());
+        Assertions.assertEquals("abc", item.getDescription());
+        Assertions.assertEquals(150.0, item.getPrice());
+        Assertions.assertEquals(Size.MEDIUM, item.getSize());
+        Assertions.assertEquals(5.0, item.getWeight());
 
         item.setDescription("xyz");
         item.setPrice(300.0);
@@ -73,19 +73,19 @@ public class CatalogServiceTest {
 
         item = catalogServiceProxy.updateItem(item.getID(), item);
 
-        assertNotNull(item);
+        Assertions.assertNotNull(item);
 
-        assertEquals(itemID, item.getID());
-        assertEquals("xyz", item.getDescription());
-        assertEquals(300.0, item.getPrice());
-        assertEquals(Size.LARGE, item.getSize());
-        assertEquals("blue", item.getColor());
-        assertEquals(10.0, item.getWeight());
+        Assertions.assertEquals(itemID, item.getID());
+        Assertions.assertEquals("xyz", item.getDescription());
+        Assertions.assertEquals(300.0, item.getPrice());
+        Assertions.assertEquals(Size.LARGE, item.getSize());
+        Assertions.assertEquals("blue", item.getColor());
+        Assertions.assertEquals(10.0, item.getWeight());
 
-        assertNotNull(firstOf(filter(catalogServiceProxy.getItems(), result -> result.getID().equals(itemID))));
+        Assertions.assertNotNull(firstOf(filter(catalogServiceProxy.getItems(), result -> result.getID().equals(itemID))));
 
         catalogServiceProxy.deleteItem(item.getID());
 
-        assertNull(firstOf(filter(catalogServiceProxy.getItems(), result -> result.getID().equals(itemID))));
+        Assertions.assertNull(firstOf(filter(catalogServiceProxy.getItems(), result -> result.getID().equals(itemID))));
     }
 }

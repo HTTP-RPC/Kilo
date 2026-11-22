@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.tools;
 
 import org.httprpc.kilo.web.RequestMethod;
 import org.httprpc.kilo.web.ResourcePath;
@@ -21,25 +21,12 @@ import org.httprpc.kilo.web.ServicePath;
 import java.io.IOException;
 import java.util.List;
 
-@ServicePath("catalog")
-public interface CatalogServiceProxy {
+@ServicePath("films")
+public interface FilmServiceProxy {
     @RequestMethod("GET")
-    @ResourcePath("items")
-    List<Item> getItems() throws IOException;
+    List<Film> getFilms(String match) throws IOException;
 
     @RequestMethod("GET")
-    @ResourcePath("items/?")
-    ItemDetails getItem(Integer itemID) throws IOException;
-
-    @RequestMethod("POST")
-    @ResourcePath("items")
-    ItemDetails addItem(ItemDetails item) throws IOException;
-
-    @RequestMethod("PUT")
-    @ResourcePath("items/?")
-    ItemDetails updateItem(Integer itemID, ItemDetails item) throws IOException;
-
-    @RequestMethod("DELETE")
-    @ResourcePath("items/?")
-    void deleteItem(Integer itemID) throws IOException;
+    @ResourcePath("?")
+    FilmDetails getFilm(Integer filmID) throws IOException;
 }

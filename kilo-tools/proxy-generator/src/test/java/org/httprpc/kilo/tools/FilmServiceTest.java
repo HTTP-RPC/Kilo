@@ -12,15 +12,14 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.tools;
 
 import org.httprpc.kilo.web.WebServiceProxy;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class FilmServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
@@ -31,13 +30,13 @@ public class FilmServiceTest {
 
         var films = filmServiceProxy.getFilms("n*");
 
-        assertFalse(films.isEmpty());
+        Assertions.assertFalse(films.isEmpty());
 
         var film = filmServiceProxy.getFilm(films.getFirst().getID());
 
-        assertEquals('n', Character.toLowerCase(film.getTitle().charAt(0)));
+        Assertions.assertEquals('n', Character.toLowerCase(film.getTitle().charAt(0)));
 
-        assertFalse(film.getActors().isEmpty());
-        assertFalse(film.getCategories().isEmpty());
+        Assertions.assertFalse(film.getActors().isEmpty());
+        Assertions.assertFalse(film.getCategories().isEmpty());
     }
 }

@@ -12,21 +12,10 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.tools;
 
-import org.httprpc.kilo.web.RequestMethod;
-import org.httprpc.kilo.web.ResourcePath;
-import org.httprpc.kilo.web.ServicePath;
-
-import java.io.IOException;
-import java.util.List;
-
-@ServicePath("films")
-public interface FilmServiceProxy {
-    @RequestMethod("GET")
-    List<Film> getFilms(String match) throws IOException;
-
-    @RequestMethod("GET")
-    @ResourcePath("?")
-    FilmDetails getFilm(Integer filmID) throws IOException;
+public enum Size {
+    SMALL,
+    MEDIUM,
+    LARGE;
 }
