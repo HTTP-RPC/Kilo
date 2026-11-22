@@ -206,6 +206,13 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
+    private static class DelimiterModifier implements Modifier {
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            return last ? value : value + argument;
+        }
+    }
+
     private enum MarkerType {
         VARIABLE,
         REPEATING_SECTION_START,
@@ -240,7 +247,8 @@ public class TemplateEncoder extends Encoder<Object> {
     private Modifier defaultModifier = new MarkupModifier();
 
     private Map<String, Modifier> modifiers = mapOf(
-        entry("format", new FormatModifier())
+        entry("format", new FormatModifier()),
+        entry("delimiter", new DelimiterModifier())
     );
 
     private Deque<Map<?, ?>> dictionaries = new LinkedList<>();

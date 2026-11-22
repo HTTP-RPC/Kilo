@@ -84,6 +84,12 @@ For example:
 {{date:format=shortDate}}
 ```
 
+Additionally, the `delimiter` modifier can be used to insert a separator between elements in a repeating section:
+
+```
+{{.:delimiter=,}}
+```
+
 Applications may also define their own custom modifiers.
 
 ## Repeating Sections
