@@ -26,7 +26,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -1059,10 +1058,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     public static Map<String, Property> getProperties(Class<?> type) {
         if (type == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (!type.isInterface() && (type.getModifiers() & Modifier.ABSTRACT) > 0) {
             throw new IllegalArgumentException();
         }
 
