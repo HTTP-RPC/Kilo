@@ -15,13 +15,14 @@ public interface {{name}}{{?supertypes}} extends {{#.}}{{.:supertypeDeclaration}
      * {{.}} (getter)
      */
     {{/description}}
-    {{.:accessorDeclaration}}
+    {{.:typeDeclaration}} {{.:accessorDeclaration}}();
+
     {{?description}}
     /**
      * {{.}} (setter)
      */
     {{/description}}
-    {{.:mutatorDeclaration}}
+    void {{.:mutatorDeclaration}}({{.:typeDeclaration}} {{.:variableDeclaration}});
     {{/properties}}
 }
 {{/structure}}

@@ -1612,17 +1612,17 @@ public abstract class WebService extends HttpServlet {
 
             serviceDescriptor.structures.put(type, structure);
 
-            if (type.isInterface()) {
-                var interfaces = type.getInterfaces();
-
-                for (var i = 0; i < interfaces.length; i++) {
-                    structure.supertypes.add(describeRawType(interfaces[i]));
-                }
-            } else {
+            if (structure.concrete) {
                 var baseType = type.getSuperclass();
 
                 if (baseType != Object.class && baseType != Record.class) {
                     structure.supertypes.add(describeRawType(baseType));
+                }
+            } else {
+                var interfaces = type.getInterfaces();
+
+                for (var i = 0; i < interfaces.length; i++) {
+                    structure.supertypes.add(describeRawType(interfaces[i]));
                 }
             }
 

@@ -8,24 +8,29 @@ package {{packageName}};
  * {{.}}
  */
 {{/description}}
-public class {{name}} {
+public class {{name}}{{?supertypes}} extends {{#.}}{{.:supertypeDeclaration}}{{/.}} {
+    {{#properties}}
+    private {{.:typeDeclaration}} {{.:variableDeclaration}};
+    {{/properties}}
+
     {{#properties}}
     {{?description}}
     /**
      * {{.}} (getter)
      */
     {{/description}}
-
-    // TODO
+    public {{.:typeDeclaration}} {{.:accessorDeclaration}}() {
+        return {{.:variableDeclaration}};
+    }
 
     {{?description}}
     /**
      * {{.}} (setter)
      */
     {{/description}}
-
-    // TODO
-
+    public void {{.:mutatorDeclaration}}({{.:typeDeclaration}} {{.:variableDeclaration}}) {
+        this.{{.:variableDeclaration}} = {{.:variableDeclaration}};
+    }
     {{/properties}}
 }
 {{/structure}}

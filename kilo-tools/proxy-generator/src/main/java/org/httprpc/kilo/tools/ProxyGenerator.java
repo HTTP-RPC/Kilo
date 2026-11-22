@@ -51,9 +51,9 @@ public class ProxyGenerator {
 
     public interface OperationDescriptor {
         String getMethod();
-        String getDescription();
-
         String getIdentifier();
+
+        String getDescription();
 
         boolean isDeprecated();
 
@@ -69,9 +69,9 @@ public class ProxyGenerator {
 
     public interface ParameterDescriptor {
         String getName();
-        String getDescription();
-
         String getIdentifier();
+
+        String getDescription();
 
         boolean isRequired();
 
@@ -87,9 +87,9 @@ public class ProxyGenerator {
 
     public interface ConstantDescriptor {
         String getName();
-        String getDescription();
-
         String getIdentifier();
+
+        String getDescription();
 
         boolean isDeprecated();
     }
@@ -106,6 +106,8 @@ public class ProxyGenerator {
 
     public interface PropertyDescriptor {
         String getName();
+        String getIdentifier();
+
         String getDescription();
 
         boolean isRequired();
@@ -130,6 +132,22 @@ public class ProxyGenerator {
     private static class MethodDeclarationModifier implements TemplateEncoder.Modifier<OperationDescriptor> {
         @Override
         public Object apply(OperationDescriptor operation, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
+    private static class TypeDeclarationModifier implements TemplateEncoder.Modifier<TypeDescriptor> {
+        @Override
+        public Object apply(TypeDescriptor type, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
+    private static class ParameterDeclarationModifier implements TemplateEncoder.Modifier<ParameterDescriptor> {
+        @Override
+        public Object apply(ParameterDescriptor parameter, String argument, Locale locale, TimeZone timeZone, boolean last) {
             // TODO
             return "";
         }
@@ -161,20 +179,44 @@ public class ProxyGenerator {
         }
     }
 
+    private static class VariableDeclarationModifier implements TemplateEncoder.Modifier<PropertyDescriptor> {
+        @Override
+        public Object apply(PropertyDescriptor property, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
+    private static class AccessorDeclarationModifier implements TemplateEncoder.Modifier<PropertyDescriptor> {
+        @Override
+        public Object apply(PropertyDescriptor property, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
+    private static class MutatorDeclarationModifier implements TemplateEncoder.Modifier<PropertyDescriptor> {
+        @Override
+        public Object apply(PropertyDescriptor property, String argument, Locale locale, TimeZone timeZone, boolean last) {
+            // TODO
+            return "";
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
-            System.out.println("Base URI is required.");
-            return;
-        }
-
-        if (args.length < 2) {
             System.out.println("Package name is required.");
             return;
         }
 
-        var baseURI = URI.create(args[0]);
+        if (args.length < 2) {
+            System.out.println("Base URI is required.");
+            return;
+        }
 
-        var packageName = args[1];
+        var packageName = args[0];
+
+        var baseURI = URI.create(args[1]);
 
         var services = new TreeMap<String, ServiceDescriptor>();
         var enumerations = new TreeMap<String, EnumerationDescriptor>();
@@ -200,7 +242,9 @@ public class ProxyGenerator {
 
         for (var service : services.values()) {
             generate(packageName, service.getName(), "service-proxy.java", mapOf(
-                entry("methodDeclaration", new MethodDeclarationModifier())
+                entry("methodDeclaration", new MethodDeclarationModifier()),
+                entry("typeDeclaration", new TypeDeclarationModifier()),
+                entry("parameterDeclaration", new ParameterDeclarationModifier())
             ), "service", service);
         }
 
@@ -211,14 +255,15 @@ public class ProxyGenerator {
         }
 
         for (var structure : structures.values()) {
-            if (structure.isConcrete()) {
-                generate(packageName, structure.getName(), "concrete-structure.java", mapOf(
-                ), "structure", structure);
-            } else {
-                generate(packageName, structure.getName(), "abstract-structure.java", mapOf(
-                    entry("supertypeDeclaration", new SupertypeDeclarationModifier())
-                ), "structure", structure);
-            }
+            var templateName = structure.isConcrete() ? "concrete-structure.java" : "abstract-structure.java";
+
+            generate(packageName, structure.getName(), templateName, mapOf(
+                entry("supertypeDeclaration", new SupertypeDeclarationModifier()),
+                entry("typeDeclaration", new TypeDeclarationModifier()),
+                entry("variableDeclaration", new VariableDeclarationModifier()),
+                entry("accessorDeclaration", new AccessorDeclarationModifier()),
+                entry("mutatorDeclaration", new MutatorDeclarationModifier())
+            ), "structure", structure);
         }
     }
 
