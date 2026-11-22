@@ -76,35 +76,6 @@ public class TemplateEncoder extends Encoder<Object> {
         Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
     }
 
-    private static class MarkupModifier implements Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            if (value instanceof CharSequence text) {
-                var stringBuilder = new StringBuilder();
-
-                for (int i = 0, n = text.length(); i < n; i++) {
-                    var c = text.charAt(i);
-
-                    if (c == '<') {
-                        stringBuilder.append("&lt;");
-                    } else if (c == '>') {
-                        stringBuilder.append("&gt;");
-                    } else if (c == '&') {
-                        stringBuilder.append("&amp;");
-                    } else if (c == '"') {
-                        stringBuilder.append("&quot;");
-                    } else {
-                        stringBuilder.append(c);
-                    }
-                }
-
-                return stringBuilder.toString();
-            } else {
-                return value;
-            }
-        }
-    }
-
     private static class FormatModifier implements Modifier {
         enum DateTimeType {
             DATE,
@@ -219,7 +190,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private ResourceBundle resourceBundle = null;
 
-    private Modifier defaultModifier = new MarkupModifier();
+    private boolean markup = true;
 
     private Map<String, Modifier> modifiers = mapOf(
         entry("format", new FormatModifier())
@@ -321,27 +292,24 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     /**
-     * Returns the default modifier.
+     * Indicates that the template contains markup content.
      *
      * @return
-     * The default modifier.
+     * {@code true} if the template contains markup content; {@code false},
+     * otherwise.
      */
-    public Modifier getDefaultModifier() {
-        return defaultModifier;
+    public boolean isMarkup() {
+        return markup;
     }
 
     /**
-     * Sets the default modifier.
+     * Toggles markup support.
      *
-     * @param defaultModifier
-     * The default modifier.
+     * @param markup
+     * {@code true} to enable markup support; {@code false} to disable it.
      */
-    public void setDefaultModifier(Modifier defaultModifier) {
-        if (defaultModifier == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.defaultModifier = defaultModifier;
+    public void setMarkup(boolean markup) {
+        this.markup = markup;
     }
 
     /**
@@ -518,12 +486,14 @@ public class TemplateEncoder extends Encoder<Object> {
                                     throw new RuntimeException(exception);
                                 }
 
-                                value = documentWriter;
+                                writer.append(documentWriter.toString());
                             } else {
-                                value = defaultModifier.apply(value, null, locale, timeZone);
-                            }
+                                if (markup) {
+                                    value = escape(value);
+                                }
 
-                            writer.append(value.toString());
+                                writer.append(value.toString());
+                            }
                         }
                         case REPEATING_SECTION_START -> {
                             sectionNames.push(marker);
@@ -596,7 +566,11 @@ public class TemplateEncoder extends Encoder<Object> {
                                 throw new IllegalStateException("Resource bundle not specified.");
                             }
 
-                            var value = defaultModifier.apply(resourceBundle.getObject(marker), null, locale, timeZone);
+                            var value = resourceBundle.getObject(marker);
+
+                            if (markup) {
+                                value = escape(value);
+                            }
 
                             writer.append(value.toString());
                         }
@@ -654,6 +628,32 @@ public class TemplateEncoder extends Encoder<Object> {
             return valueAt(map, path);
         } else {
             throw new IllegalArgumentException("Value is not a map.");
+        }
+    }
+
+    private static Object escape(Object value) {
+        if (value instanceof CharSequence text) {
+            var stringBuilder = new StringBuilder();
+
+            for (int i = 0, n = text.length(); i < n; i++) {
+                var c = text.charAt(i);
+
+                if (c == '<') {
+                    stringBuilder.append("&lt;");
+                } else if (c == '>') {
+                    stringBuilder.append("&gt;");
+                } else if (c == '&') {
+                    stringBuilder.append("&amp;");
+                } else if (c == '"') {
+                    stringBuilder.append("&quot;");
+                } else {
+                    stringBuilder.append(c);
+                }
+            }
+
+            return stringBuilder.toString();
+        } else {
+            return value;
         }
     }
 
