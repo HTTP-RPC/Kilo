@@ -8,21 +8,23 @@ package {{packageName}};
  * {{.}}
  */
 {{/description}}
-public interface {{name}}{{?supertypes}} extends {{#.}}{{.:supertypeDeclaration}}{{/.}} {
+public interface {{name}}{{?supertypes}} extends {{#.}}{{name:supertypeDeclaration}}{{/.}}{{/supertypes}} {
     {{#properties}}
     {{?description}}
     /**
      * {{.}} (getter)
      */
     {{/description}}
-    {{.:typeDeclaration}} {{.:accessorDeclaration}}();
+    {{.:propertyNameAnnotation}}
+    {{.:requiredPropertyAnnotation}}
+    {{type:typeDeclaration}} {{.:accessorDeclaration}}();
 
     {{?description}}
     /**
      * {{.}} (setter)
      */
     {{/description}}
-    void {{.:mutatorDeclaration}}({{.:typeDeclaration}} {{.:variableDeclaration}});
+    void {{.:mutatorDeclaration}}({{type:typeDeclaration}} {{.:variableDeclaration}});
     {{/properties}}
 }
 {{/structure}}

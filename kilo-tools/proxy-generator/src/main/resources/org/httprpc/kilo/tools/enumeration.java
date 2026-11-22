@@ -9,13 +9,13 @@ package {{packageName}};
  */
 {{/description}}
 public enum {{name}} {
-    {{#constants}}
+    {{#values}}
     {{?description}}
     /**
      * {{.}}
      */
     {{/description}}
     {{.:constantDeclaration}}
-    {{/constants}}
+    {{/values}}
 }
 {{/enumeration}}

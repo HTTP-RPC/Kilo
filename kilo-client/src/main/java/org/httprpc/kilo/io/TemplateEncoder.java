@@ -54,11 +54,8 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class TemplateEncoder extends Encoder<Object> {
     /**
      * Represents a modifier.
-     *
-     * @param <T>
-     * The value type.
      */
-    public interface Modifier<T> {
+    public interface Modifier {
         /**
          * Applies the modifier.
          *
@@ -82,10 +79,10 @@ public class TemplateEncoder extends Encoder<Object> {
          * @return
          * The modified value.
          */
-        Object apply(T value, String argument, Locale locale, TimeZone timeZone, boolean last);
+        Object apply(Object value, String argument, Locale locale, TimeZone timeZone, boolean last);
     }
 
-    private static class MarkupModifier implements Modifier<Object> {
+    private static class MarkupModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone, boolean last) {
             if (value instanceof CharSequence text) {
@@ -114,7 +111,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    private static class FormatModifier implements Modifier<Object> {
+    private static class FormatModifier implements Modifier {
         enum DateTimeType {
             DATE,
             TIME,
@@ -240,9 +237,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private ResourceBundle resourceBundle = null;
 
-    private Modifier<Object> defaultModifier = new MarkupModifier();
+    private Modifier defaultModifier = new MarkupModifier();
 
-    private Map<String, Modifier<Object>> modifiers = mapOf(
+    private Map<String, Modifier> modifiers = mapOf(
         entry("format", new FormatModifier())
     );
 
@@ -347,7 +344,7 @@ public class TemplateEncoder extends Encoder<Object> {
      * @return
      * The default modifier.
      */
-    public Modifier<?> getDefaultModifier() {
+    public Modifier getDefaultModifier() {
         return defaultModifier;
     }
 
@@ -357,13 +354,12 @@ public class TemplateEncoder extends Encoder<Object> {
      * @param defaultModifier
      * The default modifier.
      */
-    @SuppressWarnings("unchecked")
-    public void setDefaultModifier(Modifier<?> defaultModifier) {
+    public void setDefaultModifier(Modifier defaultModifier) {
         if (defaultModifier == null) {
             throw new IllegalArgumentException();
         }
 
-        this.defaultModifier = (Modifier<Object>)defaultModifier;
+        this.defaultModifier = defaultModifier;
     }
 
     /**
@@ -375,13 +371,12 @@ public class TemplateEncoder extends Encoder<Object> {
      * @param modifier
      * The custom modifier.
      */
-    @SuppressWarnings("unchecked")
-    public void bind(String name, Modifier<?> modifier) {
+    public void bind(String name, Modifier modifier) {
         if (name == null || modifier == null) {
             throw new IllegalArgumentException();
         }
 
-        modifiers.put(name, (Modifier<Object>)modifier);
+        modifiers.put(name, modifier);
     }
 
     @Override
