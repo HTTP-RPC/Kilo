@@ -108,9 +108,6 @@ public class ProxyGenerator {
         String getName();
         String getDescription();
 
-        String getReadIdentifier();
-        String getWriteIdentifier();
-
         boolean isRequired();
         boolean isDeprecated();
 

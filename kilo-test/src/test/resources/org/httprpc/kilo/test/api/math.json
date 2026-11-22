@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": "Calculates the sum of two numbers.",
           "identifier": "getSum",
+          "description": "Calculates the sum of two numbers.",
           "deprecated": false,
           "produces": {
             "name": "double",
@@ -26,8 +26,8 @@
           "queryParameters": [
             {
               "name": "a",
-              "description": "The first number.",
               "identifier": "a",
+              "description": "The first number.",
               "required": false,
               "type": {
                 "name": "double",
@@ -41,8 +41,8 @@
             },
             {
               "name": "b",
-              "description": "The second number.",
               "identifier": "b",
+              "description": "The second number.",
               "required": false,
               "type": {
                 "name": "double",
@@ -59,8 +59,8 @@
         },
         {
           "method": "GET",
-          "description": "Calculates the sum of a list of numbers.",
           "identifier": "getSum",
+          "description": "Calculates the sum of a list of numbers.",
           "deprecated": false,
           "produces": {
             "name": "double",
@@ -77,8 +77,8 @@
           "queryParameters": [
             {
               "name": "values",
-              "description": "The numbers to add.",
               "identifier": "values",
+              "description": "The numbers to add.",
               "required": false,
               "type": {
                 "name": "Iterable",

@@ -1670,8 +1670,6 @@
         {
           "name": "x",
           "identifier": "x",
-          "readIdentifier": "x",
-          "writeIdentifier": null,
           "description": "The x-coordinate.",
           "required": true,
           "deprecated": false,
@@ -1688,8 +1686,6 @@
         {
           "name": "y",
           "identifier": "y",
-          "readIdentifier": "y",
-          "writeIdentifier": null,
           "description": "The y-coordinate.",
           "required": true,
           "deprecated": false,
@@ -1715,8 +1711,6 @@
         {
           "name": "a",
           "identifier": "a",
-          "readIdentifier": "getA",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -1742,8 +1736,6 @@
         {
           "name": "b",
           "identifier": "b",
-          "readIdentifier": "getB",
-          "writeIdentifier": null,
           "description": "B's version of B",
           "required": false,
           "deprecated": false,
@@ -1769,8 +1761,6 @@
         {
           "name": "string",
           "identifier": "string",
-          "readIdentifier": "getString",
-          "writeIdentifier": null,
           "description": null,
           "required": true,
           "deprecated": false,
@@ -1787,8 +1777,6 @@
         {
           "name": "strings",
           "identifier": "strings",
-          "readIdentifier": "getStrings",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -1813,8 +1801,6 @@
         {
           "name": "number",
           "identifier": "number",
-          "readIdentifier": "getNumber",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -1831,8 +1817,6 @@
         {
           "name": "numbers",
           "identifier": "numbers",
-          "readIdentifier": "getNumbers",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -1857,8 +1841,6 @@
         {
           "name": "flag",
           "identifier": "flag",
-          "readIdentifier": "getFlag",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -1902,8 +1884,6 @@
         {
           "name": "b",
           "identifier": "b",
-          "readIdentifier": "getB",
-          "writeIdentifier": null,
           "description": "C's version of B",
           "required": false,
           "deprecated": false,
@@ -1920,8 +1900,6 @@
         {
           "name": "c",
           "identifier": "c",
-          "readIdentifier": "getC",
-          "writeIdentifier": null,
           "description": "An array of strings",
           "required": false,
           "deprecated": false,
@@ -1955,8 +1933,6 @@
         {
           "name": "d",
           "identifier": "d",
-          "readIdentifier": "getD",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -1991,8 +1967,6 @@
         {
           "name": "e",
           "identifier": "e",
-          "readIdentifier": "getE",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2018,8 +1992,6 @@
         {
           "name": "string",
           "identifier": "string",
-          "readIdentifier": "string",
-          "writeIdentifier": null,
           "description": null,
           "required": true,
           "deprecated": false,
@@ -2036,8 +2008,6 @@
         {
           "name": "strings",
           "identifier": "strings",
-          "readIdentifier": "strings",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2062,8 +2032,6 @@
         {
           "name": "number",
           "identifier": "number",
-          "readIdentifier": "number",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2080,8 +2048,6 @@
         {
           "name": "date",
           "identifier": "date",
-          "readIdentifier": "date",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2098,8 +2064,6 @@
         {
           "name": "file",
           "identifier": "file",
-          "readIdentifier": "file",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2116,8 +2080,6 @@
         {
           "name": "files",
           "identifier": "files",
-          "readIdentifier": "files",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2151,8 +2113,6 @@
         {
           "name": "string",
           "identifier": "string",
-          "readIdentifier": "getString",
-          "writeIdentifier": null,
           "description": null,
           "required": true,
           "deprecated": false,
@@ -2169,8 +2129,6 @@
         {
           "name": "strings",
           "identifier": "strings",
-          "readIdentifier": "getStrings",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2195,8 +2153,6 @@
         {
           "name": "number",
           "identifier": "number",
-          "readIdentifier": "getNumber",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2213,8 +2169,6 @@
         {
           "name": "numbers",
           "identifier": "numbers",
-          "readIdentifier": "getNumbers",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2239,8 +2193,6 @@
         {
           "name": "flag",
           "identifier": "flag",
-          "readIdentifier": "getFlag",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2257,8 +2209,6 @@
         {
           "name": "dayOfWeek",
           "identifier": "dayOfWeek",
-          "readIdentifier": "getDayOfWeek",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2275,8 +2225,6 @@
         {
           "name": "date",
           "identifier": "date",
-          "readIdentifier": "getDate",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2293,8 +2241,6 @@
         {
           "name": "dates",
           "identifier": "dates",
-          "readIdentifier": "getDates",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2319,8 +2265,6 @@
         {
           "name": "localDate",
           "identifier": "localDate",
-          "readIdentifier": "getLocalDate",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2337,8 +2281,6 @@
         {
           "name": "localTime",
           "identifier": "localTime",
-          "readIdentifier": "getLocalTime",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2355,8 +2297,6 @@
         {
           "name": "localDateTime",
           "identifier": "localDateTime",
-          "readIdentifier": "getLocalDateTime",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2373,8 +2313,6 @@
         {
           "name": "duration",
           "identifier": "duration",
-          "readIdentifier": "getDuration",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2391,8 +2329,6 @@
         {
           "name": "period",
           "identifier": "period",
-          "readIdentifier": "getPeriod",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2409,8 +2345,6 @@
         {
           "name": "uuid",
           "identifier": "UUID",
-          "readIdentifier": "getUUID",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2436,8 +2370,6 @@
         {
           "name": "number",
           "identifier": "number",
-          "readIdentifier": "number",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": false,
@@ -2454,8 +2386,6 @@
         {
           "name": "testEnum",
           "identifier": "testEnum",
-          "readIdentifier": "testEnum",
-          "writeIdentifier": null,
           "description": null,
           "required": false,
           "deprecated": true,

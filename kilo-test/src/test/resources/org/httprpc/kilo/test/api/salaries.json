@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "getAverageSalary",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Double",
@@ -26,8 +26,8 @@
           "queryParameters": [
             {
               "name": "fromDate",
-              "description": null,
               "identifier": "fromDate",
+              "description": null,
               "required": false,
               "type": {
                 "name": "LocalDate",
@@ -41,8 +41,8 @@
             },
             {
               "name": "toDate",
-              "description": null,
               "identifier": "toDate",
+              "description": null,
               "required": false,
               "type": {
                 "name": "LocalDate",

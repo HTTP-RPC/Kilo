@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "uploadCSV",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "int",
@@ -27,8 +27,8 @@
           ],
           "bodyParameter": {
             "name": "body",
-            "description": null,
             "identifier": "body",
+            "description": null,
             "required": true,
             "type": {
               "name": "Void",
@@ -48,8 +48,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "uploadJSON",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "int",
@@ -67,8 +67,8 @@
           ],
           "bodyParameter": {
             "name": "body",
-            "description": null,
             "identifier": "body",
+            "description": null,
             "required": true,
             "type": {
               "name": "Void",

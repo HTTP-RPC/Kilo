@@ -586,8 +586,6 @@ public abstract class WebService extends HttpServlet {
     public static class PropertyDescriptor {
         private String name;
         private String identifier;
-        private String readIdentifier;
-        private String writeIdentifier;
 
         private String description;
 
@@ -596,12 +594,9 @@ public abstract class WebService extends HttpServlet {
 
         private TypeDescriptor type = null;
 
-        private PropertyDescriptor(String name, String identifier, Method accessor, Method mutator) {
+        private PropertyDescriptor(String name, String identifier, Method accessor) {
             this.name = name;
             this.identifier = identifier;
-
-            readIdentifier = accessor.getName();
-            writeIdentifier = map(mutator, Method::getName);
 
             description = map(accessor.getAnnotation(Description.class), Description::value);
 
@@ -627,27 +622,6 @@ public abstract class WebService extends HttpServlet {
          */
         public String getIdentifier() {
             return identifier;
-        }
-
-        /**
-         * Returns the property's read identifier.
-         *
-         * @return
-         * The property's read identifier.
-         */
-        public String getReadIdentifier() {
-            return readIdentifier;
-        }
-
-        /**
-         * Returns the property's write identifier.
-         *
-         * @return
-         * The property's write identifier, or {@code null} if the property is
-         * read-only.
-         */
-        public String getWriteIdentifier() {
-            return writeIdentifier;
         }
 
         /**
@@ -1663,7 +1637,7 @@ public abstract class WebService extends HttpServlet {
                     continue;
                 }
 
-                var propertyDescriptor = new PropertyDescriptor(name, identifier, accessor, property.getMutator());
+                var propertyDescriptor = new PropertyDescriptor(name, identifier, accessor);
 
                 propertyDescriptor.type = describeGenericType(accessor.getGenericReturnType());
 

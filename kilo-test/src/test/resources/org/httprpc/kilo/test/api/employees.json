@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "getEmployees",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Iterable",
@@ -34,8 +34,8 @@
           "queryParameters": [
             {
               "name": "stream",
-              "description": null,
               "identifier": "stream",
+              "description": null,
               "required": false,
               "type": {
                 "name": "boolean",
@@ -57,8 +57,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "getEmployee",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "EmployeeDetails",
@@ -73,8 +73,8 @@
           "pathParameters": [
             {
               "name": "employeeNumber",
-              "description": null,
               "identifier": "employeeNumber",
+              "description": null,
               "required": true,
               "type": {
                 "name": "Integer",
@@ -106,10 +106,8 @@
       "properties": [
         {
           "name": "employeeNumber",
-          "description": null,
           "identifier": "employeeNumber",
-          "readIdentifier": "getEmployeeNumber",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -124,10 +122,8 @@
         },
         {
           "name": "firstName",
-          "description": null,
           "identifier": "firstName",
-          "readIdentifier": "getFirstName",
-          "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -142,10 +138,8 @@
         },
         {
           "name": "lastName",
-          "description": null,
           "identifier": "lastName",
-          "readIdentifier": "getLastName",
-          "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -160,10 +154,8 @@
         },
         {
           "name": "gender",
-          "description": null,
           "identifier": "gender",
-          "readIdentifier": "getGender",
-          "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -178,10 +170,8 @@
         },
         {
           "name": "birthDate",
-          "description": null,
           "identifier": "birthDate",
-          "readIdentifier": "getBirthDate",
-          "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -196,10 +186,8 @@
         },
         {
           "name": "hireDate",
-          "description": null,
           "identifier": "hireDate",
-          "readIdentifier": "getHireDate",
-          "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -232,10 +220,8 @@
       "properties": [
         {
           "name": "salaries",
-          "description": null,
           "identifier": "salaries",
-          "readIdentifier": "getSalaries",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -267,10 +253,8 @@
       "properties": [
         {
           "name": "employeeNumber",
-          "description": null,
           "identifier": "employeeNumber",
-          "readIdentifier": "employeeNumber",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -285,10 +269,8 @@
         },
         {
           "name": "salary",
-          "description": null,
           "identifier": "salary",
-          "readIdentifier": "salary",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -303,10 +285,8 @@
         },
         {
           "name": "fromDate",
-          "description": null,
           "identifier": "fromDate",
-          "readIdentifier": "fromDate",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -321,10 +301,8 @@
         },
         {
           "name": "toDate",
-          "description": null,
           "identifier": "toDate",
-          "readIdentifier": "toDate",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {

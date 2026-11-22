@@ -143,8 +143,6 @@
         {
           "name": "id",
           "identifier": "ID",
-          "readIdentifier": "getID",
-          "writeIdentifier": null,
           "description": "The actor's ID.",
           "required": false,
           "deprecated": false,
@@ -161,8 +159,6 @@
         {
           "name": "firstName",
           "identifier": "firstName",
-          "readIdentifier": "getFirstName",
-          "writeIdentifier": null,
           "description": "The actor's first name.",
           "required": false,
           "deprecated": false,
@@ -179,8 +175,6 @@
         {
           "name": "lastName",
           "identifier": "lastName",
-          "readIdentifier": "getLastName",
-          "writeIdentifier": null,
           "description": "The actor's last name.",
           "required": false,
           "deprecated": false,
@@ -206,8 +200,6 @@
         {
           "name": "id",
           "identifier": "ID",
-          "readIdentifier": "getID",
-          "writeIdentifier": null,
           "description": "The category's ID.",
           "required": false,
           "deprecated": false,
@@ -224,8 +216,6 @@
         {
           "name": "name",
           "identifier": "name",
-          "readIdentifier": "getName",
-          "writeIdentifier": null,
           "description": "The name of the category.",
           "required": false,
           "deprecated": false,
@@ -251,8 +241,6 @@
         {
           "name": "id",
           "identifier": "ID",
-          "readIdentifier": "getID",
-          "writeIdentifier": null,
           "description": "The film's ID.",
           "required": false,
           "deprecated": false,
@@ -269,8 +257,6 @@
         {
           "name": "title",
           "identifier": "title",
-          "readIdentifier": "getTitle",
-          "writeIdentifier": null,
           "description": "The title of the film.",
           "required": true,
           "deprecated": false,
@@ -287,8 +273,6 @@
         {
           "name": "releaseDate",
           "identifier": "releaseDate",
-          "readIdentifier": "getReleaseDate",
-          "writeIdentifier": null,
           "description": "The date the film was released.",
           "required": false,
           "deprecated": false,
@@ -305,8 +289,6 @@
         {
           "name": "length",
           "identifier": "length",
-          "readIdentifier": "getLength",
-          "writeIdentifier": null,
           "description": "The length of the film, in minutes.",
           "required": false,
           "deprecated": false,
@@ -323,8 +305,6 @@
         {
           "name": "rating",
           "identifier": "rating",
-          "readIdentifier": "getRating",
-          "writeIdentifier": null,
           "description": "The film's rating.",
           "required": false,
           "deprecated": false,
@@ -359,8 +339,6 @@
         {
           "name": "description",
           "identifier": "description",
-          "readIdentifier": "getDescription",
-          "writeIdentifier": null,
           "description": "A description of the film.",
           "required": false,
           "deprecated": false,
@@ -377,8 +355,6 @@
         {
           "name": "actors",
           "identifier": "actors",
-          "readIdentifier": "getActors",
-          "writeIdentifier": "setActors",
           "description": "The actors that appeared in the film.",
           "required": false,
           "deprecated": false,
@@ -403,8 +379,6 @@
         {
           "name": "categories",
           "identifier": "categories",
-          "readIdentifier": "getCategories",
-          "writeIdentifier": "setCategories",
           "description": "The categories associated with the film.",
           "required": false,
           "deprecated": false,

@@ -237,8 +237,6 @@
         {
           "name": "id",
           "identifier": "ID",
-          "readIdentifier": "getID",
-          "writeIdentifier": "setID",
           "description": "The item's ID.",
           "required": false,
           "deprecated": false,
@@ -255,8 +253,6 @@
         {
           "name": "description",
           "identifier": "description",
-          "readIdentifier": "getDescription",
-          "writeIdentifier": "setDescription",
           "description": "The item's description.",
           "required": true,
           "deprecated": false,
@@ -273,8 +269,6 @@
         {
           "name": "price",
           "identifier": "price",
-          "readIdentifier": "getPrice",
-          "writeIdentifier": "setPrice",
           "description": "The item's price.",
           "required": true,
           "deprecated": false,
@@ -309,8 +303,6 @@
         {
           "name": "size",
           "identifier": "size",
-          "readIdentifier": "getSize",
-          "writeIdentifier": "setSize",
           "description": "The item's size.",
           "required": false,
           "deprecated": false,
@@ -327,8 +319,6 @@
         {
           "name": "color",
           "identifier": "color",
-          "readIdentifier": "getColor",
-          "writeIdentifier": "setColor",
           "description": "The item's color.",
           "required": false,
           "deprecated": false,
@@ -345,8 +335,6 @@
         {
           "name": "weight",
           "identifier": "weight",
-          "readIdentifier": "getWeight",
-          "writeIdentifier": "setWeight",
           "description": "The item's weight.",
           "required": false,
           "deprecated": false,
@@ -363,8 +351,6 @@
         {
           "name": "created",
           "identifier": "created",
-          "readIdentifier": "getCreated",
-          "writeIdentifier": "setCreated",
           "description": "The date the item was created.",
           "required": false,
           "deprecated": false,

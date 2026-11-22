@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "getPets",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Iterable",
@@ -34,8 +34,8 @@
           "queryParameters": [
             {
               "name": "owner",
-              "description": null,
               "identifier": "owner",
+              "description": null,
               "required": true,
               "type": {
                 "name": "String",
@@ -65,10 +65,8 @@
       "properties": [
         {
           "name": "name",
-          "description": null,
           "identifier": "name",
-          "readIdentifier": "getName",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -83,10 +81,8 @@
         },
         {
           "name": "owner",
-          "description": null,
           "identifier": "owner",
-          "readIdentifier": "getOwner",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -101,10 +97,8 @@
         },
         {
           "name": "species",
-          "description": null,
           "identifier": "species",
-          "readIdentifier": "getSpecies",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -119,10 +113,8 @@
         },
         {
           "name": "sex",
-          "description": null,
           "identifier": "sex",
-          "readIdentifier": "getSex",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -137,10 +129,8 @@
         },
         {
           "name": "birth",
-          "description": null,
           "identifier": "birth",
-          "readIdentifier": "getBirth",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -155,10 +145,8 @@
         },
         {
           "name": "death",
-          "description": null,
           "identifier": "death",
-          "readIdentifier": "getDeath",
-          "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {

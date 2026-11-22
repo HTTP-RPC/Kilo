@@ -81,8 +81,6 @@
         {
           "name": "first_name",
           "identifier": "firstName",
-          "readIdentifier": "getFirstName",
-          "writeIdentifier": "setFirstName",
           "description": null,
           "required": true,
           "deprecated": false,
@@ -99,8 +97,6 @@
         {
           "name": "last_name",
           "identifier": "lastName",
-          "readIdentifier": "getLastName",
-          "writeIdentifier": "setLastName",
           "description": null,
           "required": true,
           "deprecated": false,
