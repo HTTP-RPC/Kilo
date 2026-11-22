@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testGet",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "TestService$Response",
@@ -26,8 +26,8 @@
           "queryParameters": [
             {
               "name": "string",
-              "description": null,
               "identifier": "string",
+              "description": null,
               "required": true,
               "type": {
                 "name": "String",
@@ -41,8 +41,8 @@
             },
             {
               "name": "strings",
-              "description": null,
               "identifier": "strings",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Iterable",
@@ -64,8 +64,8 @@
             },
             {
               "name": "number",
-              "description": null,
               "identifier": "number",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -79,8 +79,8 @@
             },
             {
               "name": "numbers",
-              "description": null,
               "identifier": "numbers",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Iterable",
@@ -102,8 +102,8 @@
             },
             {
               "name": "flag",
-              "description": null,
               "identifier": "flag",
+              "description": null,
               "required": false,
               "type": {
                 "name": "boolean",
@@ -117,8 +117,8 @@
             },
             {
               "name": "dayOfWeek",
-              "description": null,
               "identifier": "dayOfWeek",
+              "description": null,
               "required": false,
               "type": {
                 "name": "DayOfWeek",
@@ -132,8 +132,8 @@
             },
             {
               "name": "date",
-              "description": null,
               "identifier": "date",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Instant",
@@ -147,8 +147,8 @@
             },
             {
               "name": "dates",
-              "description": null,
               "identifier": "dates",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Iterable",
@@ -170,8 +170,8 @@
             },
             {
               "name": "localDate",
-              "description": null,
               "identifier": "localDate",
+              "description": null,
               "required": false,
               "type": {
                 "name": "LocalDate",
@@ -185,8 +185,8 @@
             },
             {
               "name": "localTime",
-              "description": null,
               "identifier": "localTime",
+              "description": null,
               "required": false,
               "type": {
                 "name": "LocalTime",
@@ -200,8 +200,8 @@
             },
             {
               "name": "localDateTime",
-              "description": null,
               "identifier": "localDateTime",
+              "description": null,
               "required": false,
               "type": {
                 "name": "LocalDateTime",
@@ -215,8 +215,8 @@
             },
             {
               "name": "duration",
-              "description": null,
               "identifier": "duration",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Duration",
@@ -230,8 +230,8 @@
             },
             {
               "name": "period",
-              "description": null,
               "identifier": "period",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Period",
@@ -245,8 +245,8 @@
             },
             {
               "name": "uuid",
-              "description": null,
               "identifier": "uuid",
+              "description": null,
               "required": false,
               "type": {
                 "name": "UUID",
@@ -263,8 +263,8 @@
         },
         {
           "method": "GET",
-          "description": null,
           "identifier": "testTimeout",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "int",
@@ -281,8 +281,8 @@
           "queryParameters": [
             {
               "name": "value",
-              "description": null,
               "identifier": "value",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -296,8 +296,8 @@
             },
             {
               "name": "delay",
-              "description": null,
               "identifier": "delay",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -314,8 +314,8 @@
         },
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPost",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "void",
@@ -332,8 +332,8 @@
           "queryParameters": [
             {
               "name": "number",
-              "description": null,
               "identifier": "number",
+              "description": null,
               "required": true,
               "type": {
                 "name": "Integer",
@@ -348,8 +348,8 @@
           ],
           "bodyParameter": {
             "name": "strings",
-            "description": null,
             "identifier": "strings",
+            "description": null,
             "required": true,
             "type": {
               "name": "Iterable",
@@ -372,8 +372,8 @@
         },
         {
           "method": "PUT",
-          "description": null,
           "identifier": "testPut",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "void",
@@ -391,8 +391,8 @@
           ],
           "bodyParameter": {
             "name": "body",
-            "description": null,
             "identifier": "body",
+            "description": null,
             "required": true,
             "type": {
               "name": "Void",
@@ -412,8 +412,8 @@
       "operations": [
         {
           "method": "PUT",
-          "description": null,
           "identifier": "testEmptyPut",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "int",
@@ -428,8 +428,8 @@
           "pathParameters": [
             {
               "name": "id",
-              "description": null,
               "identifier": "id",
+              "description": null,
               "required": true,
               "type": {
                 "name": "int",
@@ -445,8 +445,8 @@
           "queryParameters": [
             {
               "name": "value",
-              "description": null,
               "identifier": "value",
+              "description": null,
               "required": false,
               "type": {
                 "name": "String",
@@ -461,8 +461,8 @@
           ],
           "bodyParameter": {
             "name": "body",
-            "description": null,
             "identifier": "body",
+            "description": null,
             "required": true,
             "type": {
               "name": "Void",
@@ -477,8 +477,8 @@
         },
         {
           "method": "DELETE",
-          "description": null,
           "identifier": "testDelete",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Integer",
@@ -493,8 +493,8 @@
           "pathParameters": [
             {
               "name": "id",
-              "description": null,
               "identifier": "id",
+              "description": null,
               "required": true,
               "type": {
                 "name": "Integer",
@@ -518,8 +518,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testKeys",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Map",
@@ -550,8 +550,8 @@
           "pathParameters": [
             {
               "name": "a",
-              "description": "First key.",
               "identifier": "a",
+              "description": "First key.",
               "required": true,
               "type": {
                 "name": "int",
@@ -565,8 +565,8 @@
             },
             {
               "name": "b",
-              "description": "Second key.",
               "identifier": "b",
+              "description": "Second key.",
               "required": true,
               "type": {
                 "name": "String",
@@ -580,8 +580,8 @@
             },
             {
               "name": "c",
-              "description": "Third key.",
               "identifier": "c",
+              "description": "Third key.",
               "required": true,
               "type": {
                 "name": "int",
@@ -595,8 +595,8 @@
             },
             {
               "name": "d",
-              "description": "Fourth key.",
               "identifier": "d",
+              "description": "Fourth key.",
               "required": true,
               "type": {
                 "name": "String",
@@ -620,8 +620,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostBody",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "TestService$Body",
@@ -639,8 +639,8 @@
           ],
           "bodyParameter": {
             "name": "body",
-            "description": null,
             "identifier": "body",
+            "description": null,
             "required": true,
             "type": {
               "name": "TestService$Body",
@@ -660,8 +660,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testGetC",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "TestService$C",
@@ -686,8 +686,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostCoordinates",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Coordinates",
@@ -705,8 +705,8 @@
           ],
           "bodyParameter": {
             "name": "coordinates",
-            "description": null,
             "identifier": "coordinates",
+            "description": null,
             "required": true,
             "type": {
               "name": "Coordinates",
@@ -726,8 +726,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostDeferred",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "int",
@@ -745,8 +745,8 @@
           ],
           "bodyParameter": {
             "name": "body",
-            "description": null,
             "identifier": "body",
+            "description": null,
             "required": true,
             "type": {
               "name": "Void",
@@ -766,8 +766,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testDeprecated",
+          "description": null,
           "deprecated": true,
           "produces": {
             "name": "TestService$TestRecord",
@@ -792,8 +792,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testGetE",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "TestService$E",
@@ -818,8 +818,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testError",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "void",
@@ -836,8 +836,8 @@
           "queryParameters": [
             {
               "name": "committed",
-              "description": null,
               "identifier": "committed",
+              "description": null,
               "required": false,
               "type": {
                 "name": "boolean",
@@ -859,8 +859,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testGetFibonacci",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Iterable",
@@ -885,8 +885,8 @@
           "queryParameters": [
             {
               "name": "count",
-              "description": null,
               "identifier": "count",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -908,8 +908,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testParameters",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Map",
@@ -940,8 +940,8 @@
           "pathParameters": [
             {
               "name": "x",
-              "description": null,
               "identifier": "x",
+              "description": null,
               "required": true,
               "type": {
                 "name": "int",
@@ -955,8 +955,8 @@
             },
             {
               "name": "y",
-              "description": null,
               "identifier": "y",
+              "description": null,
               "required": true,
               "type": {
                 "name": "int",
@@ -972,8 +972,8 @@
           "queryParameters": [
             {
               "name": "a",
-              "description": null,
               "identifier": "a",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -987,8 +987,8 @@
             },
             {
               "name": "b",
-              "description": null,
               "identifier": "b",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -1003,8 +1003,8 @@
           ],
           "bodyParameter": {
             "name": "values",
-            "description": null,
             "identifier": "values",
+            "description": null,
             "required": true,
             "type": {
               "name": "Iterable",
@@ -1032,8 +1032,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostFormData",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Map",
@@ -1067,8 +1067,8 @@
           ],
           "bodyParameter": {
             "name": "formContents",
-            "description": null,
             "identifier": "formContents",
+            "description": null,
             "required": true,
             "type": {
               "name": "TestService$FormContents",
@@ -1088,8 +1088,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testHeaders",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Map",
@@ -1130,8 +1130,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostImage",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "void",
@@ -1149,8 +1149,8 @@
           ],
           "bodyParameter": {
             "name": "body",
-            "description": null,
             "identifier": "body",
+            "description": null,
             "required": true,
             "type": {
               "name": "Void",
@@ -1170,8 +1170,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "testInvalidResult",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Iterable",
@@ -1204,8 +1204,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostList",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Iterable",
@@ -1231,8 +1231,8 @@
           ],
           "bodyParameter": {
             "name": "list",
-            "description": null,
             "identifier": "list",
+            "description": null,
             "required": true,
             "type": {
               "name": "Iterable",
@@ -1260,8 +1260,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostMap",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Map",
@@ -1295,8 +1295,8 @@
           ],
           "bodyParameter": {
             "name": "map",
-            "description": null,
             "identifier": "map",
+            "description": null,
             "required": true,
             "type": {
               "name": "Map",
@@ -1332,8 +1332,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "getSum",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "double",
@@ -1350,8 +1350,8 @@
           "queryParameters": [
             {
               "name": "a",
-              "description": null,
               "identifier": "a",
+              "description": null,
               "required": false,
               "type": {
                 "name": "double",
@@ -1365,8 +1365,8 @@
             },
             {
               "name": "b",
-              "description": null,
               "identifier": "b",
+              "description": null,
               "required": false,
               "type": {
                 "name": "double",
@@ -1383,8 +1383,8 @@
         },
         {
           "method": "GET",
-          "description": null,
           "identifier": "getSum",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "double",
@@ -1401,8 +1401,8 @@
           "queryParameters": [
             {
               "name": "values",
-              "description": null,
               "identifier": "values",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Iterable",
@@ -1432,8 +1432,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testVarargs",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Map",
@@ -1466,8 +1466,8 @@
           "queryParameters": [
             {
               "name": "numbers",
-              "description": null,
               "identifier": "numbers",
+              "description": null,
               "required": false,
               "type": {
                 "name": "Iterable",
@@ -1490,8 +1490,8 @@
           ],
           "bodyParameter": {
             "name": "strings",
-            "description": null,
             "identifier": "strings",
+            "description": null,
             "required": true,
             "type": {
               "name": "Iterable",
@@ -1519,8 +1519,8 @@
       "operations": [
         {
           "method": "POST",
-          "description": null,
           "identifier": "testPostXML",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Document",
@@ -1537,8 +1537,8 @@
           "queryParameters": [
             {
               "name": "a",
-              "description": null,
               "identifier": "a",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -1552,8 +1552,8 @@
             },
             {
               "name": "b",
-              "description": null,
               "identifier": "b",
+              "description": null,
               "required": false,
               "type": {
                 "name": "int",
@@ -1568,8 +1568,8 @@
           ],
           "bodyParameter": {
             "name": "document",
-            "description": null,
             "identifier": "document",
+            "description": null,
             "required": true,
             "type": {
               "name": "Document",
@@ -1592,44 +1592,44 @@
       "values": [
         {
           "name": "MONDAY",
-          "description": null,
           "identifier": "MONDAY",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "TUESDAY",
-          "description": null,
           "identifier": "TUESDAY",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "WEDNESDAY",
-          "description": null,
           "identifier": "WEDNESDAY",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "THURSDAY",
-          "description": null,
           "identifier": "THURSDAY",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "FRIDAY",
-          "description": null,
           "identifier": "FRIDAY",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "SATURDAY",
-          "description": null,
           "identifier": "SATURDAY",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "SUNDAY",
-          "description": null,
           "identifier": "SUNDAY",
+          "description": null,
           "deprecated": false
         }
       ]
@@ -1640,20 +1640,20 @@
       "values": [
         {
           "name": "ONE",
-          "description": null,
           "identifier": "ONE",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "TWO",
-          "description": null,
           "identifier": "TWO",
+          "description": null,
           "deprecated": false
         },
         {
           "name": "THREE",
-          "description": null,
           "identifier": "THREE",
+          "description": null,
           "deprecated": true
         }
       ]
@@ -1669,9 +1669,10 @@
       "properties": [
         {
           "name": "x",
-          "description": "The x-coordinate.",
+          "identifier": "x",
           "readIdentifier": "x",
           "writeIdentifier": null,
+          "description": "The x-coordinate.",
           "required": true,
           "deprecated": false,
           "type": {
@@ -1686,9 +1687,10 @@
         },
         {
           "name": "y",
-          "description": "The y-coordinate.",
+          "identifier": "y",
           "readIdentifier": "y",
           "writeIdentifier": null,
+          "description": "The y-coordinate.",
           "required": true,
           "deprecated": false,
           "type": {
@@ -1712,9 +1714,10 @@
       "properties": [
         {
           "name": "a",
-          "description": null,
+          "identifier": "a",
           "readIdentifier": "getA",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -1738,9 +1741,10 @@
       "properties": [
         {
           "name": "b",
-          "description": "B's version of B",
+          "identifier": "b",
           "readIdentifier": "getB",
           "writeIdentifier": null,
+          "description": "B's version of B",
           "required": false,
           "deprecated": false,
           "type": {
@@ -1764,9 +1768,10 @@
       "properties": [
         {
           "name": "string",
-          "description": null,
+          "identifier": "string",
           "readIdentifier": "getString",
           "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -1781,9 +1786,10 @@
         },
         {
           "name": "strings",
-          "description": null,
+          "identifier": "strings",
           "readIdentifier": "getStrings",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -1806,9 +1812,10 @@
         },
         {
           "name": "number",
-          "description": null,
+          "identifier": "number",
           "readIdentifier": "getNumber",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -1823,9 +1830,10 @@
         },
         {
           "name": "numbers",
-          "description": null,
+          "identifier": "numbers",
           "readIdentifier": "getNumbers",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -1848,9 +1856,10 @@
         },
         {
           "name": "flag",
-          "description": null,
+          "identifier": "flag",
           "readIdentifier": "getFlag",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -1892,9 +1901,10 @@
       "properties": [
         {
           "name": "b",
-          "description": "C's version of B",
+          "identifier": "b",
           "readIdentifier": "getB",
           "writeIdentifier": null,
+          "description": "C's version of B",
           "required": false,
           "deprecated": false,
           "type": {
@@ -1909,9 +1919,10 @@
         },
         {
           "name": "c",
-          "description": "An array of strings",
+          "identifier": "c",
           "readIdentifier": "getC",
           "writeIdentifier": null,
+          "description": "An array of strings",
           "required": false,
           "deprecated": false,
           "type": {
@@ -1943,9 +1954,10 @@
       "properties": [
         {
           "name": "d",
-          "description": null,
+          "identifier": "d",
           "readIdentifier": "getD",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -1978,9 +1990,10 @@
       "properties": [
         {
           "name": "e",
-          "description": null,
+          "identifier": "e",
           "readIdentifier": "getE",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2004,9 +2017,10 @@
       "properties": [
         {
           "name": "string",
-          "description": null,
+          "identifier": "string",
           "readIdentifier": "string",
           "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -2021,9 +2035,10 @@
         },
         {
           "name": "strings",
-          "description": null,
+          "identifier": "strings",
           "readIdentifier": "strings",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2046,9 +2061,10 @@
         },
         {
           "name": "number",
-          "description": null,
+          "identifier": "number",
           "readIdentifier": "number",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2063,9 +2079,10 @@
         },
         {
           "name": "date",
-          "description": null,
+          "identifier": "date",
           "readIdentifier": "date",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2080,9 +2097,10 @@
         },
         {
           "name": "file",
-          "description": null,
+          "identifier": "file",
           "readIdentifier": "file",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2097,9 +2115,10 @@
         },
         {
           "name": "files",
-          "description": null,
+          "identifier": "files",
           "readIdentifier": "files",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2131,9 +2150,10 @@
       "properties": [
         {
           "name": "string",
-          "description": null,
+          "identifier": "string",
           "readIdentifier": "getString",
           "writeIdentifier": null,
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -2148,9 +2168,10 @@
         },
         {
           "name": "strings",
-          "description": null,
+          "identifier": "strings",
           "readIdentifier": "getStrings",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2173,9 +2194,10 @@
         },
         {
           "name": "number",
-          "description": null,
+          "identifier": "number",
           "readIdentifier": "getNumber",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2190,9 +2212,10 @@
         },
         {
           "name": "numbers",
-          "description": null,
+          "identifier": "numbers",
           "readIdentifier": "getNumbers",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2215,9 +2238,10 @@
         },
         {
           "name": "flag",
-          "description": null,
+          "identifier": "flag",
           "readIdentifier": "getFlag",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2232,9 +2256,10 @@
         },
         {
           "name": "dayOfWeek",
-          "description": null,
+          "identifier": "dayOfWeek",
           "readIdentifier": "getDayOfWeek",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2249,9 +2274,10 @@
         },
         {
           "name": "date",
-          "description": null,
+          "identifier": "date",
           "readIdentifier": "getDate",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2266,9 +2292,10 @@
         },
         {
           "name": "dates",
-          "description": null,
+          "identifier": "dates",
           "readIdentifier": "getDates",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2291,9 +2318,10 @@
         },
         {
           "name": "localDate",
-          "description": null,
+          "identifier": "localDate",
           "readIdentifier": "getLocalDate",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2308,9 +2336,10 @@
         },
         {
           "name": "localTime",
-          "description": null,
+          "identifier": "localTime",
           "readIdentifier": "getLocalTime",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2325,9 +2354,10 @@
         },
         {
           "name": "localDateTime",
-          "description": null,
+          "identifier": "localDateTime",
           "readIdentifier": "getLocalDateTime",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2342,9 +2372,10 @@
         },
         {
           "name": "duration",
-          "description": null,
+          "identifier": "duration",
           "readIdentifier": "getDuration",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2359,9 +2390,10 @@
         },
         {
           "name": "period",
-          "description": null,
+          "identifier": "period",
           "readIdentifier": "getPeriod",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2376,9 +2408,10 @@
         },
         {
           "name": "uuid",
-          "description": null,
+          "identifier": "UUID",
           "readIdentifier": "getUUID",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2402,9 +2435,10 @@
       "properties": [
         {
           "name": "number",
-          "description": null,
+          "identifier": "number",
           "readIdentifier": "number",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -2419,9 +2453,10 @@
         },
         {
           "name": "testEnum",
-          "description": null,
+          "identifier": "testEnum",
           "readIdentifier": "testEnum",
           "writeIdentifier": null,
+          "description": null,
           "required": false,
           "deprecated": true,
           "type": {

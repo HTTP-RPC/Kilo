@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": null,
           "identifier": "getMembers",
+          "description": null,
           "deprecated": false,
           "produces": {
             "name": "Iterable",
@@ -34,8 +34,8 @@
           "queryParameters": [
             {
               "name": "first_name",
-              "description": null,
               "identifier": "firstName",
+              "description": null,
               "required": false,
               "type": {
                 "name": "String",
@@ -49,8 +49,8 @@
             },
             {
               "name": "last_name",
-              "description": null,
               "identifier": "lastName",
+              "description": null,
               "required": false,
               "type": {
                 "name": "String",
@@ -80,9 +80,10 @@
       "properties": [
         {
           "name": "first_name",
-          "description": null,
+          "identifier": "firstName",
           "readIdentifier": "getFirstName",
           "writeIdentifier": "setFirstName",
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {
@@ -97,9 +98,10 @@
         },
         {
           "name": "last_name",
-          "description": null,
+          "identifier": "lastName",
           "readIdentifier": "getLastName",
           "writeIdentifier": "setLastName",
+          "description": null,
           "required": true,
           "deprecated": false,
           "type": {

@@ -164,22 +164,6 @@ public class ProxyGenerator {
         }
     }
 
-    private static class AccessorDeclarationModifier implements TemplateEncoder.Modifier<PropertyDescriptor> {
-        @Override
-        public Object apply(PropertyDescriptor property, String argument, Locale locale, TimeZone timeZone, boolean last) {
-            // TODO
-            return "";
-        }
-    }
-
-    private static class MutatorDeclarationModifier implements TemplateEncoder.Modifier<PropertyDescriptor> {
-        @Override
-        public Object apply(PropertyDescriptor property, String argument, Locale locale, TimeZone timeZone, boolean last) {
-            // TODO
-            return "";
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
             System.out.println("Base URI is required.");
@@ -230,11 +214,14 @@ public class ProxyGenerator {
         }
 
         for (var structure : structures.values()) {
-            generate(packageName, structure.getName(), "structure.java", mapOf(
-                entry("supertypeDeclaration", new SupertypeDeclarationModifier()),
-                entry("accessorDeclaration", new AccessorDeclarationModifier()),
-                entry("mutatorDeclaration", new MutatorDeclarationModifier())
-            ), "structure", structure);
+            if (structure.isConcrete()) {
+                generate(packageName, structure.getName(), "concrete-structure.java", mapOf(
+                ), "structure", structure);
+            } else {
+                generate(packageName, structure.getName(), "abstract-structure.java", mapOf(
+                    entry("supertypeDeclaration", new SupertypeDeclarationModifier())
+                ), "structure", structure);
+            }
         }
     }
 

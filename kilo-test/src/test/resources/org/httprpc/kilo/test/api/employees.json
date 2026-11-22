@@ -107,6 +107,7 @@
         {
           "name": "employeeNumber",
           "description": null,
+          "identifier": "employeeNumber",
           "readIdentifier": "getEmployeeNumber",
           "writeIdentifier": null,
           "required": false,
@@ -124,6 +125,7 @@
         {
           "name": "firstName",
           "description": null,
+          "identifier": "firstName",
           "readIdentifier": "getFirstName",
           "writeIdentifier": null,
           "required": true,
@@ -141,6 +143,7 @@
         {
           "name": "lastName",
           "description": null,
+          "identifier": "lastName",
           "readIdentifier": "getLastName",
           "writeIdentifier": null,
           "required": true,
@@ -158,6 +161,7 @@
         {
           "name": "gender",
           "description": null,
+          "identifier": "gender",
           "readIdentifier": "getGender",
           "writeIdentifier": null,
           "required": true,
@@ -175,6 +179,7 @@
         {
           "name": "birthDate",
           "description": null,
+          "identifier": "birthDate",
           "readIdentifier": "getBirthDate",
           "writeIdentifier": null,
           "required": true,
@@ -192,6 +197,7 @@
         {
           "name": "hireDate",
           "description": null,
+          "identifier": "hireDate",
           "readIdentifier": "getHireDate",
           "writeIdentifier": null,
           "required": true,
@@ -227,6 +233,7 @@
         {
           "name": "salaries",
           "description": null,
+          "identifier": "salaries",
           "readIdentifier": "getSalaries",
           "writeIdentifier": null,
           "required": false,
@@ -261,6 +268,7 @@
         {
           "name": "employeeNumber",
           "description": null,
+          "identifier": "employeeNumber",
           "readIdentifier": "employeeNumber",
           "writeIdentifier": null,
           "required": false,
@@ -278,6 +286,7 @@
         {
           "name": "salary",
           "description": null,
+          "identifier": "salary",
           "readIdentifier": "salary",
           "writeIdentifier": null,
           "required": false,
@@ -295,6 +304,7 @@
         {
           "name": "fromDate",
           "description": null,
+          "identifier": "fromDate",
           "readIdentifier": "fromDate",
           "writeIdentifier": null,
           "required": false,
@@ -312,6 +322,7 @@
         {
           "name": "toDate",
           "description": null,
+          "identifier": "toDate",
           "readIdentifier": "toDate",
           "writeIdentifier": null,
           "required": false,

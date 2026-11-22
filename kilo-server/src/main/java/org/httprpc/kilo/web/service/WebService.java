@@ -202,9 +202,9 @@ public abstract class WebService extends HttpServlet {
      */
     public static class OperationDescriptor {
         private String method;
-        private String description;
-
         private String identifier;
+
+        private String description;
 
         private boolean deprecated;
 
@@ -218,9 +218,9 @@ public abstract class WebService extends HttpServlet {
         private OperationDescriptor(String method, Method handler) {
             this.method = method;
 
-            description = map(handler.getAnnotation(Description.class), Description::value);
-
             identifier = handler.getName();
+
+            description = map(handler.getAnnotation(Description.class), Description::value);
 
             deprecated = handler.getAnnotation(Deprecated.class) != null;
         }
@@ -236,16 +236,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns a description of the operation.
-         *
-         * @return
-         * The operation's description, or {@code null} for no description.
-         */
-        public String getDescription() {
-            return description;
-        }
-
-        /**
          * Returns the operation's identifier.
          *
          * @return
@@ -253,6 +243,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getIdentifier() {
             return identifier;
+        }
+
+        /**
+         * Returns a description of the operation.
+         *
+         * @return
+         * The operation's description, or {@code null} for no description.
+         */
+        public String getDescription() {
+            return description;
         }
 
         /**
@@ -324,9 +324,9 @@ public abstract class WebService extends HttpServlet {
      */
     public static class ParameterDescriptor {
         private String name;
-        private String description;
-
         private String identifier;
+
+        private String description;
 
         private boolean required = false;
 
@@ -337,9 +337,9 @@ public abstract class WebService extends HttpServlet {
 
             name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), () -> parameterName);
 
-            description = map(parameter.getAnnotation(Description.class), Description::value);
-
             identifier = parameterName;
+
+            description = map(parameter.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -353,16 +353,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns a description of the parameter.
-         *
-         * @return
-         * The parameter's description, or {@code null} for no description.
-         */
-        public String getDescription() {
-            return description;
-        }
-
-        /**
          * Returns the parameter's identifier.
          *
          * @return
@@ -370,6 +360,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getIdentifier() {
             return identifier;
+        }
+
+        /**
+         * Returns a description of the parameter.
+         *
+         * @return
+         * The parameter's description, or {@code null} for no description.
+         */
+        public String getDescription() {
+            return description;
         }
 
         /**
@@ -444,9 +444,9 @@ public abstract class WebService extends HttpServlet {
      */
     public static class ConstantDescriptor {
         private String name;
-        private String description;
-
         private String identifier;
+
+        private String description;
 
         private boolean deprecated;
 
@@ -459,10 +459,9 @@ public abstract class WebService extends HttpServlet {
             }
 
             name = constant.toString();
+            identifier = field.getName();
 
             description = map(field.getAnnotation(Description.class), Description::value);
-
-            identifier = field.getName();
 
             deprecated = field.getAnnotation(Deprecated.class) != null;
         }
@@ -478,16 +477,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns a description of the constant.
-         *
-         * @return
-         * The constant's description, or {@code null} for no description.
-         */
-        public String getDescription() {
-            return description;
-        }
-
-        /**
          * Returns the constant's identifier.
          *
          * @return
@@ -495,6 +484,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getIdentifier() {
             return identifier;
+        }
+
+        /**
+         * Returns a description of the constant.
+         *
+         * @return
+         * The constant's description, or {@code null} for no description.
+         */
+        public String getDescription() {
+            return description;
         }
 
         /**
@@ -586,28 +585,25 @@ public abstract class WebService extends HttpServlet {
      */
     public static class PropertyDescriptor {
         private String name;
-        private String description;
-
+        private String identifier;
         private String readIdentifier;
         private String writeIdentifier;
+
+        private String description;
 
         private boolean required;
         private boolean deprecated;
 
         private TypeDescriptor type = null;
 
-        private PropertyDescriptor(String name, Method accessor, Method mutator) {
+        private PropertyDescriptor(String name, String identifier, Method accessor, Method mutator) {
             this.name = name;
-
-            description = map(accessor.getAnnotation(Description.class), Description::value);
+            this.identifier = identifier;
 
             readIdentifier = accessor.getName();
+            writeIdentifier = map(mutator, Method::getName);
 
-            if (mutator != null) {
-                writeIdentifier = mutator.getName();
-            } else {
-                writeIdentifier = null;
-            }
+            description = map(accessor.getAnnotation(Description.class), Description::value);
 
             required = accessor.getAnnotation(Required.class) != null;
             deprecated = accessor.getAnnotation(Deprecated.class) != null;
@@ -624,13 +620,13 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns a description of the property.
+         * Returns the property's identifier.
          *
          * @return
-         * The property's description, or {@code null} for no description.
+         * The property's identifier.
          */
-        public String getDescription() {
-            return description;
+        public String getIdentifier() {
+            return identifier;
         }
 
         /**
@@ -652,6 +648,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getWriteIdentifier() {
             return writeIdentifier;
+        }
+
+        /**
+         * Returns a description of the property.
+         *
+         * @return
+         * The property's description, or {@code null} for no description.
+         */
+        public String getDescription() {
+            return description;
         }
 
         /**
@@ -1647,15 +1653,17 @@ public abstract class WebService extends HttpServlet {
             }
 
             for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+                var name = entry.getKey();
                 var property = entry.getValue();
 
+                var identifier = property.getName();
                 var accessor = property.getAccessor();
 
                 if (accessor.getDeclaringClass() != type) {
                     continue;
                 }
 
-                var propertyDescriptor = new PropertyDescriptor(entry.getKey(), accessor, property.getMutator());
+                var propertyDescriptor = new PropertyDescriptor(name, identifier, accessor, property.getMutator());
 
                 propertyDescriptor.type = describeGenericType(accessor.getGenericReturnType());
 

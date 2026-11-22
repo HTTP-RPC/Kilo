@@ -26,6 +26,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -78,12 +79,24 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * Represents a bean property or record component.
      */
     public static class Property {
+        private String name;
         private Method accessor;
         private Method mutator;
 
-        private Property(Method accessor, Method mutator) {
+        private Property(String name, Method accessor, Method mutator) {
+            this.name = name;
             this.accessor = accessor;
             this.mutator = mutator;
+        }
+
+        /**
+         * Returns the name of the property.
+         *
+         * @return
+         * The property's name.
+         */
+        public String getName() {
+            return name;
         }
 
         /**
@@ -1066,6 +1079,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
+        if (!type.isInterface() && (type.getModifiers() & Modifier.ABSTRACT) > 0) {
+            throw new IllegalArgumentException();
+        }
+
         return types.computeIfAbsent(type, BeanAdapter::computeProperties);
     }
 
@@ -1080,7 +1097,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 var accessor = recordComponent.getAccessor();
 
-                properties.put(getKey(accessor, recordComponent.getName()), new Property(accessor, null));
+                var name = recordComponent.getName();
+
+                properties.put(getKey(accessor, name), new Property(name, accessor, null));
             }
         } else {
             var accessors = new LinkedHashMap<String, Method>();
@@ -1122,7 +1141,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 var mutator = firstOf(filter(mutatorList, method -> method.getParameterTypes()[0] == propertyType));
 
-                properties.put(getKey(accessor, propertyName), new Property(accessor, mutator));
+                properties.put(getKey(accessor, propertyName), new Property(propertyName, accessor, mutator));
             }
         }
 

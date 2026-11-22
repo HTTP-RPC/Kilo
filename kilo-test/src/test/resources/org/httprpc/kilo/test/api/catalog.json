@@ -8,8 +8,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": "Returns a list of all items in the catalog.",
           "identifier": "getItems",
+          "description": "Returns a list of all items in the catalog.",
           "deprecated": false,
           "produces": {
             "name": "Iterable",
@@ -37,8 +37,8 @@
         },
         {
           "method": "POST",
-          "description": "Adds an item to the catalog.",
           "identifier": "addItem",
+          "description": "Adds an item to the catalog.",
           "deprecated": false,
           "produces": {
             "name": "ItemDetails",
@@ -56,8 +56,8 @@
           ],
           "bodyParameter": {
             "name": "item",
-            "description": "The item to add.",
             "identifier": "item",
+            "description": "The item to add.",
             "required": true,
             "type": {
               "name": "ItemDetails",
@@ -77,8 +77,8 @@
       "operations": [
         {
           "method": "GET",
-          "description": "Returns detailed information about a specific item.",
           "identifier": "getItem",
+          "description": "Returns detailed information about a specific item.",
           "deprecated": false,
           "produces": {
             "name": "ItemDetails",
@@ -93,8 +93,8 @@
           "pathParameters": [
             {
               "name": "itemID",
-              "description": "The item ID.",
               "identifier": "itemID",
+              "description": "The item ID.",
               "required": true,
               "type": {
                 "name": "Integer",
@@ -113,8 +113,8 @@
         },
         {
           "method": "PUT",
-          "description": "Updates an item.",
           "identifier": "updateItem",
+          "description": "Updates an item.",
           "deprecated": false,
           "produces": {
             "name": "ItemDetails",
@@ -129,8 +129,8 @@
           "pathParameters": [
             {
               "name": "itemID",
-              "description": "The item ID.",
               "identifier": "itemID",
+              "description": "The item ID.",
               "required": true,
               "type": {
                 "name": "Integer",
@@ -147,8 +147,8 @@
           ],
           "bodyParameter": {
             "name": "item",
-            "description": "The updated item.",
             "identifier": "item",
+            "description": "The updated item.",
             "required": true,
             "type": {
               "name": "ItemDetails",
@@ -163,8 +163,8 @@
         },
         {
           "method": "DELETE",
-          "description": "Deletes an item.",
           "identifier": "deleteItem",
+          "description": "Deletes an item.",
           "deprecated": false,
           "produces": {
             "name": "void",
@@ -179,8 +179,8 @@
           "pathParameters": [
             {
               "name": "itemID",
-              "description": "The item ID.",
               "identifier": "itemID",
+              "description": "The item ID.",
               "required": true,
               "type": {
                 "name": "Integer",
@@ -207,20 +207,20 @@
       "values": [
         {
           "name": "SMALL",
-          "description": "A small size.",
           "identifier": "SMALL",
+          "description": "A small size.",
           "deprecated": false
         },
         {
           "name": "MEDIUM",
-          "description": "A medium size.",
           "identifier": "MEDIUM",
+          "description": "A medium size.",
           "deprecated": false
         },
         {
           "name": "LARGE",
-          "description": "A large size.",
           "identifier": "LARGE",
+          "description": "A large size.",
           "deprecated": false
         }
       ]
@@ -236,9 +236,10 @@
       "properties": [
         {
           "name": "id",
-          "description": "The item's ID.",
+          "identifier": "ID",
           "readIdentifier": "getID",
           "writeIdentifier": "setID",
+          "description": "The item's ID.",
           "required": false,
           "deprecated": false,
           "type": {
@@ -253,9 +254,10 @@
         },
         {
           "name": "description",
-          "description": "The item's description.",
+          "identifier": "description",
           "readIdentifier": "getDescription",
           "writeIdentifier": "setDescription",
+          "description": "The item's description.",
           "required": true,
           "deprecated": false,
           "type": {
@@ -270,9 +272,10 @@
         },
         {
           "name": "price",
-          "description": "The item's price.",
+          "identifier": "price",
           "readIdentifier": "getPrice",
           "writeIdentifier": "setPrice",
+          "description": "The item's price.",
           "required": true,
           "deprecated": false,
           "type": {
@@ -305,9 +308,10 @@
       "properties": [
         {
           "name": "size",
-          "description": "The item's size.",
+          "identifier": "size",
           "readIdentifier": "getSize",
           "writeIdentifier": "setSize",
+          "description": "The item's size.",
           "required": false,
           "deprecated": false,
           "type": {
@@ -322,9 +326,10 @@
         },
         {
           "name": "color",
-          "description": "The item's color.",
+          "identifier": "color",
           "readIdentifier": "getColor",
           "writeIdentifier": "setColor",
+          "description": "The item's color.",
           "required": false,
           "deprecated": false,
           "type": {
@@ -339,9 +344,10 @@
         },
         {
           "name": "weight",
-          "description": "The item's weight.",
+          "identifier": "weight",
           "readIdentifier": "getWeight",
           "writeIdentifier": "setWeight",
+          "description": "The item's weight.",
           "required": false,
           "deprecated": false,
           "type": {
@@ -356,9 +362,10 @@
         },
         {
           "name": "created",
-          "description": "The date the item was created.",
+          "identifier": "created",
           "readIdentifier": "getCreated",
           "writeIdentifier": "setCreated",
+          "description": "The date the item was created.",
           "required": false,
           "deprecated": false,
           "type": {
