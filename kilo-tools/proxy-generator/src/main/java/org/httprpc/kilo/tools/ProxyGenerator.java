@@ -23,9 +23,9 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.web.WebServiceProxy;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -184,7 +184,7 @@ public class ProxyGenerator {
         Duration.class,
         Period.class,
         UUID.class
-    ), type -> entry(type.getName(), type)));
+    ), type -> entry(type.getSimpleName(), type)));
 
     private static String packageName = null;
 
@@ -355,19 +355,10 @@ public class ProxyGenerator {
     }
 
     private static void build(String packageName, String typeName, JCodeModel codeModel) throws IOException{
-        var workingPath = Path.of(System.getProperty("user.dir"));
-        var packagePath = workingPath.resolve(packageName.replace(".", "/"));
-
-        var filePath = packagePath.resolve(String.format("%s.java", typeName));
-
-        var file = filePath.toFile();
-
-        file.mkdirs();
-
         var writer = new JCMWriter(codeModel);
 
         writer.setJavaFeature(Runtime.version().feature());
 
-        writer.build(workingPath.toFile());
+        writer.build(new File(System.getProperty("user.dir")));
     }
 }

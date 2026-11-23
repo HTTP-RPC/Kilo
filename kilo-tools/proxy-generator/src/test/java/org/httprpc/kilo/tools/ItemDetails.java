@@ -3,6 +3,8 @@
  */
 package org.httprpc.kilo.tools;
 
+import java.time.Instant;
+
 
 /**
  * Represents detailed information about a catalog item.
