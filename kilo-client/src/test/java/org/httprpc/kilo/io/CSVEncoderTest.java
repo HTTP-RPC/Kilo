@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d"));
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e"));
 
         var writer = new StringWriter();
 
@@ -36,7 +37,8 @@ public class CSVEncoderTest {
                 entry("a", "ABC"),
                 entry("b", 123),
                 entry("c", true),
-                entry("d", new Date(0))
+                entry("d", new Date(0)),
+                entry("e", Instant.ofEpochMilli(0))
             ),
             mapOf(
                 entry("a", "DEF"),
@@ -45,7 +47,7 @@ public class CSVEncoderTest {
             )
         ), writer);
 
-        assertEquals("\"a\",\"b\",\"c\",\"d\"\r\n\"ABC\",123,true,0\r\n\"DEF\",456,false,\r\n", writer.toString());
+        assertEquals("\"a\",\"b\",\"c\",\"d\",\"e\"\r\n\"ABC\",123,true,0,0\r\n\"DEF\",456,false,,\r\n", writer.toString());
     }
 
     @Test

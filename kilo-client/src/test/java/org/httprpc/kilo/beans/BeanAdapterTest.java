@@ -84,14 +84,14 @@ public class BeanAdapterTest {
             entry("string", "abc"),
             entry("bigInteger", BigInteger.valueOf(8192L)),
             entry("dayOfWeek", DayOfWeek.MONDAY.toString()),
-            entry("instant", Instant.ofEpochMilli(0).toString()),
+            entry("instant", Instant.ofEpochMilli(0)),
             entry("date", new Date(0)),
-            entry("localDate", LocalDate.of(2018, 6, 28).toString()),
-            entry("localTime", LocalTime.of(10, 45).toString()),
-            entry("localDateTime", LocalDateTime.of(2018, 6, 28, 10, 45).toString()),
-            entry("duration", Duration.ofHours(2).plusMinutes(30).toString()),
-            entry("period", Period.ofYears(3).plusMonths(2).toString()),
-            entry("UUID", UUID.randomUUID().toString()),
+            entry("localDate", LocalDate.of(2018, 6, 28)),
+            entry("localTime", LocalTime.of(10, 45)),
+            entry("localDateTime", LocalDateTime.of(2018, 6, 28, 10, 45)),
+            entry("duration", Duration.ofHours(2).plusMinutes(30)),
+            entry("period", Period.ofYears(3).plusMonths(2)),
+            entry("UUID", UUID.randomUUID()),
             entry("URI", uri),
             entry("URL", uri.toURL()),
             entry("path", path),
@@ -125,14 +125,14 @@ public class BeanAdapterTest {
                 entry("i", 10),
                 entry("d", 123.0),
                 entry("s", "abc"),
-                entry("localDate", now.toString())
+                entry("localDate", now)
             )),
             entry("testRecordList", listOf(
                 mapOf(
                     entry("i", 20),
                     entry("d", 456.0),
                     entry("s", "xyz"),
-                    entry("localDate", now.toString())
+                    entry("localDate", now)
                 )
             ))
         );

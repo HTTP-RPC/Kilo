@@ -554,15 +554,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Character}</li>
      * <li>{@link CharSequence}</li>
      * <li>{@link Date}</li>
-     * <li>{@link URL} or {@link URI}</li>
-     * <li>{@link File} or {@link Path}</li>
-     * <li>{@link Document}</li>
-     * </ul>
-     * <p>
-     * Instances of the following types are converted to their string
-     * representations:
-     * <p>
-     * <ul>
      * <li>{@link Instant}</li>
      * <li>{@link LocalDate}</li>
      * <li>{@link LocalTime}</li>
@@ -570,6 +561,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Duration}</li>
      * <li>{@link Period}</li>
      * <li>{@link UUID}</li>
+     * <li>{@link URL} or {@link URI}</li>
+     * <li>{@link File} or {@link Path}</li>
+     * <li>{@link Document}</li>
      * </ul>
      * <p>
      * If the value is an {@link Enum} constant, it converted to a
@@ -604,18 +598,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Character
             || value instanceof CharSequence
             || value instanceof Date
-            || value instanceof URL || value instanceof URI
-            || value instanceof File || value instanceof Path
-            || value instanceof Document) {
-            return value;
-        } else if (value instanceof Instant
+            || value instanceof Instant
             || value instanceof LocalDate
             || value instanceof LocalTime
             || value instanceof LocalDateTime
             || value instanceof Duration
             || value instanceof Period
-            || value instanceof UUID) {
-            return value.toString();
+            || value instanceof UUID
+            || value instanceof URL || value instanceof URI
+            || value instanceof File || value instanceof Path
+            || value instanceof Document) {
+            return value;
         } else if (value instanceof Enum<?> constant) {
             try {
                 var field = constant.getClass().getDeclaredField(constant.name());

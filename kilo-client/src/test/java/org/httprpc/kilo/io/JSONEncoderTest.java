@@ -51,6 +51,7 @@ public class JSONEncoderTest {
         assertEquals("97", encode('a'));
 
         assertEquals("0", encode(new Date(0)));
+        assertEquals("0", encode(Instant.ofEpochMilli(0)));
 
         assertThrows(IllegalArgumentException.class, () -> encode(Float.NaN));
         assertThrows(IllegalArgumentException.class, () -> encode(Float.POSITIVE_INFINITY));
