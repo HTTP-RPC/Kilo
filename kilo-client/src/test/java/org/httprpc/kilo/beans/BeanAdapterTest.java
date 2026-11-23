@@ -464,6 +464,7 @@ public class BeanAdapterTest {
         assertEquals(Long.TYPE, propertyTypes.get("long"));
         assertEquals(Double.TYPE, propertyTypes.get("double"));
         assertEquals(String.class, propertyTypes.get("string"));
+        assertEquals(BigInteger.class, propertyTypes.get("bigInteger"));
         assertEquals(DayOfWeek.class, propertyTypes.get("dayOfWeek"));
         assertEquals(Instant.class, propertyTypes.get("instant"));
         assertEquals(Date.class, propertyTypes.get("date"));
