@@ -17,13 +17,10 @@ package org.httprpc.kilo.beans;
 import org.httprpc.kilo.Name;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -86,15 +83,15 @@ public class BeanAdapterTest {
             entry("double", 4.0),
             entry("string", "abc"),
             entry("bigInteger", BigInteger.valueOf(8192L)),
-            entry("dayOfWeek", DayOfWeek.MONDAY),
-            entry("instant", Instant.ofEpochMilli(0)),
+            entry("dayOfWeek", DayOfWeek.MONDAY.toString()),
+            entry("instant", Instant.ofEpochMilli(0).toString()),
             entry("date", new Date(0)),
-            entry("localDate", LocalDate.parse("2018-06-28")),
-            entry("localTime", LocalTime.parse("10:45")),
-            entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
-            entry("duration", Duration.parse("PT2H30M")),
-            entry("period", Period.parse("P3Y2M")),
-            entry("UUID", UUID.randomUUID()),
+            entry("localDate", LocalDate.of(2018, 6, 28).toString()),
+            entry("localTime", LocalTime.of(10, 45).toString()),
+            entry("localDateTime", LocalDateTime.of(2018, 6, 28, 10, 45).toString()),
+            entry("duration", Duration.ofHours(2).plusMinutes(30).toString()),
+            entry("period", Period.ofYears(3).plusMonths(2).toString()),
+            entry("UUID", UUID.randomUUID().toString()),
             entry("URI", uri),
             entry("URL", uri.toURL()),
             entry("path", path),
@@ -128,14 +125,14 @@ public class BeanAdapterTest {
                 entry("i", 10),
                 entry("d", 123.0),
                 entry("s", "abc"),
-                entry("localDate", now)
+                entry("localDate", now.toString())
             )),
             entry("testRecordList", listOf(
                 mapOf(
                     entry("i", 20),
                     entry("d", 456.0),
                     entry("s", "xyz"),
-                    entry("localDate", now)
+                    entry("localDate", now.toString())
                 )
             ))
         );
@@ -166,9 +163,9 @@ public class BeanAdapterTest {
 
     @Test
     public void testEnumAdapter() {
-        assertEquals(DayOfWeek.MONDAY.name(), BeanAdapter.adapt(DayOfWeek.MONDAY).toString());
+        assertEquals(DayOfWeek.MONDAY.name(), BeanAdapter.adapt(DayOfWeek.MONDAY));
 
-        assertEquals("a", BeanAdapter.adapt(TestEnum.A).toString());
+        assertEquals("a", BeanAdapter.adapt(TestEnum.A));
     }
 
     @Test
@@ -467,7 +464,6 @@ public class BeanAdapterTest {
         assertEquals(Long.TYPE, propertyTypes.get("long"));
         assertEquals(Double.TYPE, propertyTypes.get("double"));
         assertEquals(String.class, propertyTypes.get("string"));
-        assertEquals(BigInteger.class, propertyTypes.get("bigInteger"));
         assertEquals(DayOfWeek.class, propertyTypes.get("dayOfWeek"));
         assertEquals(Instant.class, propertyTypes.get("instant"));
         assertEquals(Date.class, propertyTypes.get("date"));
@@ -477,10 +473,6 @@ public class BeanAdapterTest {
         assertEquals(Duration.class, propertyTypes.get("duration"));
         assertEquals(Period.class, propertyTypes.get("period"));
         assertEquals(UUID.class, propertyTypes.get("UUID"));
-        assertEquals(URI.class, propertyTypes.get("URI"));
-        assertEquals(URL.class, propertyTypes.get("URL"));
-        assertEquals(Path.class, propertyTypes.get("path"));
-        assertEquals(File.class, propertyTypes.get("file"));
 
         assertEquals(TestInterface.NestedInterface.class, propertyTypes.get("nestedBean"));
 

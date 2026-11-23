@@ -70,51 +70,6 @@ public class QueryBuilder {
     private static final String WHERE = "where";
     private static final String AND = "and";
 
-    private static class EnumTransform implements Function<Object, Object> {
-        Class<?> type;
-
-        EnumTransform(Class<?> type) {
-            this.type = type;
-        }
-
-        @Override
-        public Object apply(Object value) {
-            if (value instanceof Number number) {
-                value = number.intValue();
-            }
-
-            var fields = type.getDeclaredFields();
-
-            for (var i = 0; i < fields.length; i++) {
-                var field = fields[i];
-
-                if (!field.isEnumConstant()) {
-                    continue;
-                }
-
-                Object constant;
-                try {
-                    constant = field.get(null);
-                } catch (IllegalAccessException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                Object identifier;
-                if (constant instanceof Numeric numeric) {
-                    identifier = numeric.value();
-                } else {
-                    identifier = constant.toString();
-                }
-
-                if (value.equals(identifier)) {
-                    return constant;
-                }
-            }
-
-            throw new IllegalArgumentException("Invalid value.");
-        }
-    }
-
     private static final Function<Object, Object> fromJSON = value -> {
         var jsonDecoder = new JSONDecoder();
 
@@ -212,9 +167,6 @@ public class QueryBuilder {
 
     /**
      * Creates a "select" query.
-     * <p>
-     * {@link Enum} properties will be decoded from either a string or
-     * {@link Numeric#value()}.
      * <p>
      * Properties annotated with {@link JSON} will be automatically
      * deserialized from a JSON string. Properties of type {@link Document}
@@ -357,9 +309,7 @@ public class QueryBuilder {
     private static Function<Object, Object> getReadTransform(Method accessor) {
         var returnType = accessor.getReturnType();
 
-        if (returnType.isEnum()) {
-            return new EnumTransform(returnType);
-        } else if (accessor.getAnnotation(JSON.class) != null) {
+        if (accessor.getAnnotation(JSON.class) != null) {
             return fromJSON;
         } else if (returnType == Document.class) {
             return fromXML;
@@ -1417,9 +1367,6 @@ public class QueryBuilder {
     /**
      * Executes a query.
      * <p>
-     * {@link Enum} values will be encoded to either a string or
-     * {@link Numeric#value()}.</p>
-     * <p>
      * Temporal values are converted as follows:
      * <p>
      * <ul>
@@ -1551,38 +1498,29 @@ public class QueryBuilder {
         for (var parameter : parameters) {
             var argument = arguments.get(parameter);
 
-            Object value;
-            if (argument instanceof Enum<?>) {
-                if (argument instanceof Numeric numeric) {
-                    value = numeric.value();
-                } else {
-                    value = argument.toString();
-                }
-            } else {
-                switch (argument) {
-                    case Date date -> value = date.getTime();
-                    case Instant instant -> value = instant.toEpochMilli();
-                    case LocalDate localDate -> value = java.sql.Date.valueOf(localDate);
-                    case LocalTime localTime -> value = java.sql.Time.valueOf(localTime);
-                    case null, default -> {
-                        var transform = transforms.get(parameter);
+            var value = switch (argument) {
+                case Date date -> date.getTime();
+                case Instant instant -> instant.toEpochMilli();
+                case LocalDate localDate -> java.sql.Date.valueOf(localDate);
+                case LocalTime localTime -> java.sql.Time.valueOf(localTime);
+                case null, default -> {
+                    var transform = transforms.get(parameter);
 
-                        if (transform != null && argument != null) {
-                            value = transform.apply(argument);
-                        } else {
-                            if (!whitespaceAllowed && argument instanceof String text) {
-                                var n = text.length();
+                    if (transform != null && argument != null) {
+                        yield transform.apply(argument);
+                    } else {
+                        if (!whitespaceAllowed && argument instanceof String text) {
+                            var n = text.length();
 
-                                if (n > 0 && (Character.isWhitespace(text.charAt(0)) || Character.isWhitespace(text.charAt(n - 1)))) {
-                                    throw new IllegalArgumentException("Value contains leading or trailing whitespace.");
-                                }
+                            if (n > 0 && (Character.isWhitespace(text.charAt(0)) || Character.isWhitespace(text.charAt(n - 1)))) {
+                                throw new IllegalArgumentException("Value contains leading or trailing whitespace.");
                             }
-
-                            value = argument;
                         }
+
+                        yield argument;
                     }
                 }
-            }
+            };
 
             statement.setObject(i++, value);
         }

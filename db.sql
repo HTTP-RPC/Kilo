@@ -38,7 +38,7 @@ create table item (
     id int not null auto_increment,
     description varchar(1024) not null,
     price double not null,
-    size tinyint not null,
+    size enum ('SMALL', 'MEDIUM', 'LARGE') not null,
     color varchar(128) not null,
     weight double not null,
     created bigint not null,

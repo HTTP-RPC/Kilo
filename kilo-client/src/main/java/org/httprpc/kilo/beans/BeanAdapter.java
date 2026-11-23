@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.lang.classfile.ClassFile;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,8 +39,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalAmount;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -120,43 +117,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static class EnumAdapter implements CharSequence {
-        String name;
-
-        EnumAdapter(Enum<?> constant) {
-            var name = constant.name();
-
-            Field field;
-            try {
-                field = constant.getClass().getDeclaredField(name);
-            } catch (NoSuchFieldException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            this.name = coalesce(map(field.getAnnotation(Name.class), Name::value), constant::name);
-        }
-
-        @Override
-        public int length() {
-            return name.length();
-        }
-
-        @Override
-        public char charAt(int index) {
-            return name.charAt(index);
-        }
-
-        @Override
-        public CharSequence subSequence(int start, int end) {
-            return name.subSequence(start, end);
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
-
     private static class ArrayAdapter extends AbstractList<Object> {
         Object array;
         int length;
@@ -192,11 +152,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     return adapt(get(i++));
                 }
             };
-        }
-
-        @Override
-        public String toString() {
-            return array.toString();
         }
     }
 
@@ -240,11 +195,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     return adapt(iterator.next());
                 }
             };
-        }
-
-        @Override
-        public String toString() {
-            return iterable.toString();
         }
     }
 
@@ -604,16 +554,26 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Character}</li>
      * <li>{@link CharSequence}</li>
      * <li>{@link Date}</li>
-     * <li>{@link TemporalAccessor}</li>
-     * <li>{@link TemporalAmount}</li>
-     * <li>{@link UUID}</li>
      * <li>{@link URL} or {@link URI}</li>
      * <li>{@link File} or {@link Path}</li>
      * <li>{@link Document}</li>
      * </ul>
      * <p>
-     * If the value is an {@link Enum}, it is wrapped in an adapter that
-     * converts it to a {@link CharSequence}.
+     * Instances of the following types are converted to their string
+     * representations:
+     * <p>
+     * <ul>
+     * <li>{@link Instant}</li>
+     * <li>{@link LocalDate}</li>
+     * <li>{@link LocalTime}</li>
+     * <li>{@link LocalDateTime}</li>
+     * <li>{@link Duration}</li>
+     * <li>{@link Period}</li>
+     * <li>{@link UUID}</li>
+     * </ul>
+     * <p>
+     * If the value is an {@link Enum} constant, it converted to a
+     * {@link String} representing the constant's name.
      * <p>
      * If the value is an array, it is wrapped in a {@link List} that will
      * recursively adapt the array's elements.
@@ -644,15 +604,26 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Character
             || value instanceof CharSequence
             || value instanceof Date
-            || value instanceof TemporalAccessor
-            || value instanceof TemporalAmount
-            || value instanceof UUID
             || value instanceof URL || value instanceof URI
             || value instanceof File || value instanceof Path
             || value instanceof Document) {
             return value;
+        } else if (value instanceof Instant
+            || value instanceof LocalDate
+            || value instanceof LocalTime
+            || value instanceof LocalDateTime
+            || value instanceof Duration
+            || value instanceof Period
+            || value instanceof UUID) {
+            return value.toString();
         } else if (value instanceof Enum<?> constant) {
-            return new EnumAdapter(constant);
+            try {
+                var field = constant.getClass().getDeclaredField(constant.name());
+
+                return coalesce(map(field.getAnnotation(Name.class), Name::value), constant::name);
+            } catch (NoSuchFieldException exception) {
+                throw new RuntimeException(exception);
+            }
         } else if (value.getClass().isArray()) {
             return new ArrayAdapter(value);
         } else if (value instanceof Iterable<?> iterable) {

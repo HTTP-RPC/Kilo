@@ -321,21 +321,10 @@ public record Coordinates(
 
 ```java
 @Description("Represents a size option.")
-public enum Size implements Numeric {
-    @Description("A small size.") SMALL(10),
-    @Description("A medium size.") MEDIUM(20),
-    @Description("A large size.") LARGE(30);
-
-    private final int value;
-
-    Size(int value) {
-        this.value = value;
-    }
-
-    @Override
-    public int value() {
-        return value;
-    }
+public enum Size {
+    @Description("A small size.") SMALL,
+    @Description("A medium size.") MEDIUM,
+    @Description("A large size.") LARGE;
 }
 ```  
 

@@ -18,7 +18,6 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -84,7 +83,6 @@ public class JSONEncoder extends Encoder<Object> {
             case Number number -> encode(number, writer);
             case Character character -> encode((int)character, writer);
             case Date date -> encode(date.getTime(), writer);
-            case Instant instant -> encode(instant.toEpochMilli(), writer);
             case CharSequence text -> encode(text, writer);
             case Iterable<?> iterable -> encode(iterable, writer);
             case Map<?, ?> map -> encode(map, writer);
