@@ -18,6 +18,7 @@ plugins {
 
 dependencies {
     implementation project(':kilo-client')
+    implementation "com.helger:jcodemodel:${jCodeModelVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
 
