@@ -656,7 +656,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link UUID}</li>
      * </ul>
      * <p>
-     * If the target type is an {@link Enum}, the resulting value is the first
+     * If the target type is an {@link Enum}, the resulting value is the
      * constant whose name matches the value's string representation.
      * <p>
      * If the target type is an array, the provided value must be an array or
