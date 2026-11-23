@@ -1191,20 +1191,21 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return null;
         }
 
-        var j = prefix.length();
         var n = methodName.length();
 
-        if (j == n) {
+        var i = prefix.length();
+
+        if (i == n) {
             return null;
         }
 
-        var c = methodName.charAt(j++);
+        var c = methodName.charAt(i++);
 
-        if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+        if (i == n || Character.isLowerCase(methodName.charAt(i))) {
             c = Character.toLowerCase(c);
         }
 
-        return c + methodName.substring(j);
+        return c + methodName.substring(i);
     }
 
     private static String getKey(Method accessor, String propertyName) {

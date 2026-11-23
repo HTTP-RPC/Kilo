@@ -70,6 +70,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -703,6 +704,17 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
+         * Indicates that an iterable contains unique elements.
+         *
+         * @return
+         * {@code true} if the type is an iterable that contains unique
+         * elements; {@code false}, otherwise.
+         */
+        public boolean isUnique() {
+            return false;
+        }
+
+        /**
          * Returns the element type.
          *
          * @return
@@ -748,16 +760,23 @@ public abstract class WebService extends HttpServlet {
      */
     public static class IterableTypeDescriptor extends TypeDescriptor {
         private TypeDescriptor elementType;
+        private boolean unique;
 
-        private IterableTypeDescriptor(TypeDescriptor elementType) {
+        private IterableTypeDescriptor(TypeDescriptor elementType, boolean unique) {
             super(Iterable.class, true);
 
             this.elementType = elementType;
+            this.unique = unique;
         }
 
         @Override
         public boolean isIterable() {
             return true;
+        }
+
+        @Override
+        public boolean isUnique() {
+            return unique;
         }
 
         @Override
@@ -1534,7 +1553,7 @@ public abstract class WebService extends HttpServlet {
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (Iterable.class.isAssignableFrom(rawType)) {
-                return new IterableTypeDescriptor(describeGenericType(actualTypeArguments[0]));
+                return new IterableTypeDescriptor(describeGenericType(actualTypeArguments[0]), Set.class.isAssignableFrom(rawType));
             } else if (Map.class.isAssignableFrom(rawType)) {
                 return new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
             } else {
@@ -1547,12 +1566,12 @@ public abstract class WebService extends HttpServlet {
 
     private TypeDescriptor describeRawType(Class<?> type) {
         if (type.isPrimitive()
+            || type == Void.class
             || type == Object.class
             || Number.class.isAssignableFrom(type)
             || type == Boolean.class
             || type == Character.class
             || CharSequence.class.isAssignableFrom(type)
-            || type == Void.class
             || Date.class.isAssignableFrom(type)
             || type == Instant.class
             || type == LocalDate.class
@@ -1566,7 +1585,7 @@ public abstract class WebService extends HttpServlet {
             || type == Document.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
-            return new IterableTypeDescriptor(describeRawType(type.getComponentType()));
+            return new IterableTypeDescriptor(describeRawType(type.getComponentType()), false);
         } else if (type.isEnum()) {
             return describeEnumeration(type);
         } else {
