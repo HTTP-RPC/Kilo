@@ -3,6 +3,8 @@
  */
 package org.httprpc.kilo.tools;
 
+import org.httprpc.kilo.Name;
+
 
 /**
  * Represents a film rating.
@@ -22,6 +24,7 @@ public enum Rating {
     /**
      * A "PG-13" rating.
      */
+    @Name("PG-13")
     PG_13,
 
     /**
@@ -32,5 +35,6 @@ public enum Rating {
     /**
      * An "NC-17" rating.
      */
+    @Name("NC-17")
     NC_17;
 }

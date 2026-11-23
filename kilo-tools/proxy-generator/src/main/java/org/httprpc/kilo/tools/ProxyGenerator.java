@@ -17,6 +17,7 @@ package org.httprpc.kilo.tools;
 import com.helger.jcodemodel.JCodeModel;
 import com.helger.jcodemodel.exceptions.JCodeModelException;
 import com.helger.jcodemodel.writer.JCMWriter;
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.web.WebServiceProxy;
 
@@ -192,11 +193,26 @@ public class ProxyGenerator {
         perform(enumeration.getDescription(), description -> enumType.javadoc().add(description));
 
         for (var constant : enumeration.getValues()) {
-            var enumConstant = enumType.enumConstant(constant.getIdentifier());
+            var name = constant.getName();
+            var identifier = constant.getIdentifier();
+
+            var enumConstant = enumType.enumConstant(identifier);
 
             perform(constant.getDescription(), description -> enumConstant.javadoc().add(description));
+
+            if (!name.equals(identifier)) {
+                enumConstant.annotate(Name.class).param(name);
+            }
         }
 
+        build(packageName, typeName, codeModel);
+    }
+
+    private static void generate(String packageName, StructureDescriptor structure) throws JCodeModelException, IOException {
+        // TODO
+    }
+
+    private static void build(String packageName, String typeName, JCodeModel codeModel) throws IOException{
         var workingPath = Path.of(System.getProperty("user.dir"));
         var packagePath = workingPath.resolve(packageName.replace(".", "/"));
 
@@ -211,9 +227,5 @@ public class ProxyGenerator {
         writer.setJavaFeature(Runtime.version().feature());
 
         writer.build(workingPath.toFile());
-    }
-
-    private static void generate(String packageName, StructureDescriptor structure) throws JCodeModelException, IOException {
-        // TODO
     }
 }
