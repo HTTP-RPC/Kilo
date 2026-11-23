@@ -14,24 +14,14 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.web.service.Description;
 
 @Description("Represents a film rating.")
 public enum Rating {
-    @Description("A \"G\" rating.") G("G"),
-    @Description("A \"PG\" rating.") PG("PG"),
-    @Description("A \"PG-13\" rating.") PG_13("PG-13"),
-    @Description("An \"R\" rating.") R("R"),
-    @Description("An \"NC-17\" rating.") NC_17("NC-17");
-
-    private final String value;
-
-    Rating(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
+    @Description("A \"G\" rating.") G,
+    @Description("A \"PG\" rating.") PG,
+    @Description("A \"PG-13\" rating.") @Name("PG-13") PG_13,
+    @Description("An \"R\" rating.") R,
+    @Description("An \"NC-17\" rating.") @Name("NC-17") NC_17;
 }

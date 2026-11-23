@@ -165,6 +165,13 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testEnumAdapter() {
+        assertEquals(DayOfWeek.MONDAY.name(), BeanAdapter.adapt(DayOfWeek.MONDAY).toString());
+
+        assertEquals("a", BeanAdapter.adapt(TestEnum.A).toString());
+    }
+
+    @Test
     public void testArrayAdapter() {
         assertEquals(listOf(1, 2, 3), BeanAdapter.adapt(new int[] {1, 2, 3}));
     }
@@ -291,6 +298,8 @@ public class BeanAdapterTest {
     @Test
     public void testEnumCoercion() {
         assertEquals(DayOfWeek.MONDAY, BeanAdapter.coerce(DayOfWeek.MONDAY.toString(), DayOfWeek.class));
+
+        assertEquals(TestEnum.A, BeanAdapter.coerce("a", TestEnum.class));
     }
 
     @Test

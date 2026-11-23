@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.classfile.ClassFile;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -119,6 +120,43 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    private static class EnumAdapter implements CharSequence {
+        String name;
+
+        EnumAdapter(Enum<?> constant) {
+            var name = constant.name();
+
+            Field field;
+            try {
+                field = constant.getClass().getDeclaredField(name);
+            } catch (NoSuchFieldException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            this.name = coalesce(map(field.getAnnotation(Name.class), Name::value), constant::name);
+        }
+
+        @Override
+        public int length() {
+            return name.length();
+        }
+
+        @Override
+        public char charAt(int index) {
+            return name.charAt(index);
+        }
+
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            return name.subSequence(start, end);
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
     private static class ArrayAdapter extends AbstractList<Object> {
         Object array;
         int length;
@@ -154,6 +192,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     return adapt(get(i++));
                 }
             };
+        }
+
+        @Override
+        public String toString() {
+            return array.toString();
         }
     }
 
@@ -197,6 +240,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     return adapt(iterator.next());
                 }
             };
+        }
+
+        @Override
+        public String toString() {
+            return iterable.toString();
         }
     }
 
@@ -555,7 +603,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Boolean}</li>
      * <li>{@link Character}</li>
      * <li>{@link CharSequence}</li>
-     * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
      * <li>{@link TemporalAccessor}</li>
      * <li>{@link TemporalAmount}</li>
@@ -564,6 +611,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link File} or {@link Path}</li>
      * <li>{@link Document}</li>
      * </ul>
+     * <p>
+     * If the value is an {@link Enum}, it is wrapped in an adapter that
+     * converts it to a {@link CharSequence}.
      * <p>
      * If the value is an array, it is wrapped in a {@link List} that will
      * recursively adapt the array's elements.
@@ -593,7 +643,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Boolean
             || value instanceof Character
             || value instanceof CharSequence
-            || value instanceof Enum
             || value instanceof Date
             || value instanceof TemporalAccessor
             || value instanceof TemporalAmount
@@ -602,6 +651,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof File || value instanceof Path
             || value instanceof Document) {
             return value;
+        } else if (value instanceof Enum<?> constant) {
+            return new EnumAdapter(constant);
         } else if (value.getClass().isArray()) {
             return new ArrayAdapter(value);
         } else if (value instanceof Iterable<?> iterable) {
@@ -641,14 +692,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link UUID}</li>
      * </ul>
      * <p>
+     * If the target type is an {@link Enum}, the resulting value is the first
+     * constant whose name matches the value's string representation.
+     * <p>
      * If the target type is an array, the provided value must be an array or
      * {@link Collection}. The return value is an array of the same length as
      * the provided value whose elements have been coerced to the array's
      * component type.
-     * <p>
-     * If the target type is an {@link Enum}, the resulting value is the first
-     * constant whose string representation matches the value's string
-     * representation.
      * <p>
      * If none of the previous conditions apply, the provided value is assumed
      * to be a map. If the if the target type is a {@link Record}, the
@@ -858,6 +908,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return Period.parse(value.toString());
             } else if (type == UUID.class) {
                 return UUID.fromString(value.toString());
+            } else if (type.isEnum()) {
+                return toEnum(value.toString(), type);
             } else if (type.isArray()) {
                 if (value.getClass().isArray()) {
                     return toArray(new ArrayAdapter(value), type);
@@ -866,8 +918,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else {
                     throw new IllegalArgumentException("Value is not an array or collection.");
                 }
-            } else if (type.isEnum()) {
-                return toEnum(value.toString(), type);
             } else {
                 if (!(value instanceof Map<?, ?> map)) {
                     throw new IllegalArgumentException("Value is not a map.");
@@ -882,6 +932,30 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    private static Object toEnum(String value, Class<?> type) {
+        var fields = type.getDeclaredFields();
+
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+
+            if (!field.isEnumConstant()) {
+                continue;
+            }
+
+            var name = coalesce(map(field.getAnnotation(Name.class), Name::value), field::getName);
+
+            if (value.equals(name)) {
+                try {
+                    return field.get(null);
+                } catch (IllegalAccessException exception) {
+                    throw new RuntimeException(exception);
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Invalid value.");
+    }
+
     private static Object toArray(Collection<?> collection, Class<?> type) {
         var componentType = type.getComponentType();
 
@@ -894,31 +968,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         return array;
-    }
-
-    private static Object toEnum(String value, Class<?> type) {
-        var fields = type.getDeclaredFields();
-
-        for (var i = 0; i < fields.length; i++) {
-            var field = fields[i];
-
-            if (!field.isEnumConstant()) {
-                continue;
-            }
-
-            Object constant;
-            try {
-                constant = field.get(null);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            if (value.equals(constant.toString())) {
-                return constant;
-            }
-        }
-
-        throw new IllegalArgumentException("Invalid value.");
     }
 
     private static Object toRecord(Map<?, ?> map, Class<?> type) {

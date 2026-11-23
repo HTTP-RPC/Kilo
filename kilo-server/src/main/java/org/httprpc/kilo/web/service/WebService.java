@@ -336,7 +336,6 @@ public abstract class WebService extends HttpServlet {
             var parameterName = parameter.getName();
 
             name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), () -> parameterName);
-
             identifier = parameterName;
 
             description = map(parameter.getAnnotation(Description.class), Description::value);
@@ -451,15 +450,10 @@ public abstract class WebService extends HttpServlet {
         private boolean deprecated;
 
         private ConstantDescriptor(Field field) {
-            Object constant;
-            try {
-                constant = field.get(null);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
+            var fieldName = field.getName();
 
-            name = constant.toString();
-            identifier = field.getName();
+            name = coalesce(map(field.getAnnotation(Name.class), Name::value), () -> fieldName);
+            identifier = fieldName;
 
             description = map(field.getAnnotation(Description.class), Description::value);
 

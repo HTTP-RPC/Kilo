@@ -623,7 +623,7 @@ System.out.println(weather.getLow()); // 43.5
 
 Note that concrete types are coerced "eagerly" (before the `coerce()` method returns), while interfaces are coerced "lazily" (when a property is accessed).
 
-The `Required` and `Name` annotations introduced previously can also be used with bean properties.
+The `Required` annotation introduced previously can also be used with bean properties and record components. The `Name` annotation can be applied to bean properties, record components, and enum constants.
 
 # QueryBuilder and ResultSetAdapter
 The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following tables (adapted from the MySQL tutorial):
