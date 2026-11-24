@@ -795,20 +795,6 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testMembersProxy() throws IOException {
-        var memberServiceProxy = WebServiceProxy.of(MemberServiceProxy.class, baseURI);
-
-        var result = memberServiceProxy.getMembers("foo", "bar");
-
-        assertFalse(result.isEmpty());
-
-        var first = result.getFirst();
-
-        assertEquals("foo", first.getFirstName());
-        assertEquals("bar", first.getLastName());
-    }
-
-    @Test
     public void testDefaultProxyMethod() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 

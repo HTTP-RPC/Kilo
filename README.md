@@ -440,7 +440,7 @@ Path variables and body content are handled as described for [`WebService`](#web
 The [proxy generator](kilo-tools/proxy-generator/README.md) tool can be used to automatically create proxy types for one or more services. For example:
 
 ```
-proxy-generator org.httprpc.kilo.tools http://localhost:8080/kilo-test/ catalog films
+proxy-generator org.httprpc.kilo.tools http://localhost:8080/kilo-test/ catalog films members
 ```
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
