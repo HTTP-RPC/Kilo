@@ -23,6 +23,9 @@ public class Category {
 
     /**
      * The category's ID. (write)
+     * 
+     * @param id
+     *     The category's ID.
      */
     public void setID(Integer id) {
         this.id = id;
@@ -37,6 +40,9 @@ public class Category {
 
     /**
      * The name of the category. (write)
+     * 
+     * @param name
+     *     The name of the category.
      */
     public void setName(String name) {
         this.name = name;

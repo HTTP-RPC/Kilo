@@ -28,6 +28,9 @@ public class Film {
 
     /**
      * The film's ID. (write)
+     * 
+     * @param id
+     *     The film's ID.
      */
     public void setID(Integer id) {
         this.id = id;
@@ -43,6 +46,9 @@ public class Film {
 
     /**
      * The title of the film. (write)
+     * 
+     * @param title
+     *     The title of the film.
      */
     public void setTitle(String title) {
         this.title = title;
@@ -57,6 +63,9 @@ public class Film {
 
     /**
      * The date the film was released. (write)
+     * 
+     * @param releaseDate
+     *     The date the film was released.
      */
     public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
@@ -71,6 +80,9 @@ public class Film {
 
     /**
      * The length of the film, in minutes. (write)
+     * 
+     * @param length
+     *     The length of the film, in minutes.
      */
     public void setLength(Integer length) {
         this.length = length;
@@ -85,6 +97,9 @@ public class Film {
 
     /**
      * The film's rating. (write)
+     * 
+     * @param rating
+     *     The film's rating.
      */
     public void setRating(Rating rating) {
         this.rating = rating;

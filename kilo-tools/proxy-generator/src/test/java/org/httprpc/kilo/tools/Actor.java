@@ -24,6 +24,9 @@ public class Actor {
 
     /**
      * The actor's ID. (write)
+     * 
+     * @param id
+     *     The actor's ID.
      */
     public void setID(Integer id) {
         this.id = id;
@@ -38,6 +41,9 @@ public class Actor {
 
     /**
      * The actor's first name. (write)
+     * 
+     * @param firstName
+     *     The actor's first name.
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -52,6 +58,9 @@ public class Actor {
 
     /**
      * The actor's last name. (write)
+     * 
+     * @param lastName
+     *     The actor's last name.
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;

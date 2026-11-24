@@ -18,6 +18,7 @@ import com.helger.jcodemodel.AbstractJClass;
 import com.helger.jcodemodel.JCodeModel;
 import com.helger.jcodemodel.JDefinedClass;
 import com.helger.jcodemodel.JExpr;
+import com.helger.jcodemodel.JMethod;
 import com.helger.jcodemodel.JMod;
 import com.helger.jcodemodel.exceptions.JCodeModelException;
 import com.helger.jcodemodel.vars.JFieldVar;
@@ -25,6 +26,9 @@ import com.helger.jcodemodel.writer.JCMWriter;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.web.RequestMethod;
+import org.httprpc.kilo.web.ResourcePath;
+import org.httprpc.kilo.web.ServicePath;
 import org.httprpc.kilo.web.WebServiceProxy;
 
 import java.io.File;
@@ -248,7 +252,90 @@ public class ProxyGenerator {
     }
 
     private static void buildServiceProxy(String packageName, ServiceDescriptor service) throws JCodeModelException, IOException {
-        // TODO
+        var codeModel = new JCodeModel();
+
+        var typeName = service.getName();
+
+        var proxyType = codeModel._package(packageName)._interface(String.format("%sProxy", typeName));
+
+        addHeaderComment(proxyType);
+
+        var typeDescription = service.getDescription();
+
+        if (typeDescription != null) {
+            proxyType.javadoc().add(typeDescription);
+        }
+
+        var servicePath = service.getPath();
+
+        var n = servicePath.length();
+
+        proxyType.annotate(ServicePath.class).param(servicePath);
+
+        for (var endpoint : service.getEndpoints()) {
+            var endpointPath = endpoint.getPath();
+
+            if (endpointPath.length() > n) {
+                endpointPath = endpoint.getPath().substring(n + 1);
+            } else {
+                endpointPath = "";
+            }
+
+            for (var operation : endpoint.getOperations()) {
+                var method = proxyType.method(0, operation.getProduces().describe(codeModel), operation.getIdentifier());
+
+                var methodDescription = operation.getDescription();
+
+                if (methodDescription != null) {
+                    method.javadoc().add(methodDescription);
+                }
+
+                method.annotate(RequestMethod.class).param(operation.getMethod());
+
+                if (!endpointPath.isEmpty()) {
+                    method.annotate(ResourcePath.class).param(endpointPath);
+                }
+
+                for (var parameter : operation.getPathParameters()) {
+                    addParameter(method, parameter, codeModel);
+                }
+
+                for (var parameter : operation.getQueryParameters()) {
+                    addParameter(method, parameter, codeModel);
+                }
+
+                var bodyParameter = operation.getBodyParameter();
+
+                if (bodyParameter != null) {
+                    addParameter(method, bodyParameter, codeModel);
+                }
+
+                method._throws(IOException.class);
+            }
+        }
+
+        build(packageName, typeName, codeModel);
+    }
+
+    private static void addParameter(JMethod method, ParameterDescriptor parameter, JCodeModel codeModel) {
+        var name = parameter.getName();
+        var description = parameter.getDescription();
+
+        var identifier = parameter.getIdentifier();
+
+        var variable = method.param(parameter.getType().describe(codeModel), getVariableName(identifier));
+
+        if (description != null) {
+            method.javadoc().addParam(variable).add(description);
+        }
+
+        if (!name.equals(identifier)) {
+            variable.annotate(Name.class).param(name);
+        }
+
+        if (parameter.isRequired()) {
+            variable.annotate(Required.class);
+        }
     }
 
     private static void buildEnumeration(String packageName, EnumerationDescriptor enumeration) throws JCodeModelException, IOException {
@@ -337,13 +424,17 @@ public class ProxyGenerator {
 
             var mutatorMethod = beanType.method(JMod.PUBLIC, Void.TYPE, getMethodName("set", identifier));
 
-            mutatorMethod.body().assign(JExpr._this().ref(field), mutatorMethod.param(modelType, fieldName));
+            var variable = mutatorMethod.param(modelType, fieldName);
+
+            mutatorMethod.body().assign(JExpr._this().ref(field), variable);
 
             var propertyDescription = property.getDescription();
 
             if (propertyDescription != null) {
                 accessorMethod.javadoc().add(String.format("%s (read)", propertyDescription));
+
                 mutatorMethod.javadoc().add(String.format("%s (write)", propertyDescription));
+                mutatorMethod.javadoc().addParam(variable).add(propertyDescription);
             }
 
             if (!name.equals(identifier)) {
@@ -389,13 +480,15 @@ public class ProxyGenerator {
 
             var mutatorMethod = beanType.method(0, Void.TYPE, getMethodName("set", identifier));
 
-            mutatorMethod.param(modelType, identifier);
+            var variable = mutatorMethod.param(modelType, getVariableName(identifier));
 
             var propertyDescription = property.getDescription();
 
             if (propertyDescription != null) {
                 accessorMethod.javadoc().add(String.format("%s (read)", propertyDescription));
+
                 mutatorMethod.javadoc().add(String.format("%s (write)", propertyDescription));
+                mutatorMethod.javadoc().addParam(variable).add(propertyDescription);
             }
 
             if (!name.equals(identifier)) {

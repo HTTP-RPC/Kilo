@@ -20,6 +20,9 @@ public interface ItemDetails
 
     /**
      * The item's size. (write)
+     * 
+     * @param size
+     *     The item's size.
      */
     void setSize(Size size);
 
@@ -30,6 +33,9 @@ public interface ItemDetails
 
     /**
      * The item's color. (write)
+     * 
+     * @param color
+     *     The item's color.
      */
     void setColor(String color);
 
@@ -40,6 +46,9 @@ public interface ItemDetails
 
     /**
      * The item's weight. (write)
+     * 
+     * @param weight
+     *     The item's weight.
      */
     void setWeight(Double weight);
 
@@ -50,6 +59,9 @@ public interface ItemDetails
 
     /**
      * The date the item was created. (write)
+     * 
+     * @param created
+     *     The date the item was created.
      */
     void setCreated(Instant created);
 }

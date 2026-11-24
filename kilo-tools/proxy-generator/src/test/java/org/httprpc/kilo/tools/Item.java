@@ -20,8 +20,11 @@ public interface Item {
 
     /**
      * The item's ID. (write)
+     * 
+     * @param id
+     *     The item's ID.
      */
-    void setID(Integer ID);
+    void setID(Integer id);
 
     /**
      * The item's description. (read)
@@ -31,6 +34,9 @@ public interface Item {
 
     /**
      * The item's description. (write)
+     * 
+     * @param description
+     *     The item's description.
      */
     void setDescription(String description);
 
@@ -42,6 +48,9 @@ public interface Item {
 
     /**
      * The item's price. (write)
+     * 
+     * @param price
+     *     The item's price.
      */
     void setPrice(Double price);
 }

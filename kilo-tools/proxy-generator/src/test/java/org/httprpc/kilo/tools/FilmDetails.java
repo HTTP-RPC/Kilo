@@ -25,6 +25,9 @@ public class FilmDetails
 
     /**
      * A description of the film. (write)
+     * 
+     * @param description
+     *     A description of the film.
      */
     public void setDescription(String description) {
         this.description = description;
@@ -39,6 +42,9 @@ public class FilmDetails
 
     /**
      * The actors that appeared in the film. (write)
+     * 
+     * @param actors
+     *     The actors that appeared in the film.
      */
     public void setActors(List<Actor> actors) {
         this.actors = actors;
@@ -53,6 +59,9 @@ public class FilmDetails
 
     /**
      * The categories associated with the film. (write)
+     * 
+     * @param categories
+     *     The categories associated with the film.
      */
     public void setCategories(List<Category> categories) {
         this.categories = categories;
