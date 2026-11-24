@@ -561,8 +561,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Duration}</li>
      * <li>{@link Period}</li>
      * <li>{@link UUID}</li>
-     * <li>{@link URL} or {@link URI}</li>
-     * <li>{@link File} or {@link Path}</li>
+     * <li>{@link URI} or {@link URL}</li>
+     * <li>{@link Path} or {@link File}</li>
      * <li>{@link Document}</li>
      * </ul>
      * <p>
@@ -605,8 +605,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Duration
             || value instanceof Period
             || value instanceof UUID
-            || value instanceof URL || value instanceof URI
-            || value instanceof File || value instanceof Path
+            || value instanceof URI || value instanceof URL
+            || value instanceof Path || value instanceof File
             || value instanceof Document) {
             return value;
         } else if (value instanceof Enum<?> constant) {

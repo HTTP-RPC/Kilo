@@ -60,17 +60,24 @@ public interface TestInterface {
 
     BigInteger getBigInteger();
     DayOfWeek getDayOfWeek();
+
     Instant getInstant();
+
     default Date getDate() {
         return map(getInstant(), Date::from);
     }
+
     LocalDate getLocalDate();
     LocalTime getLocalTime();
     LocalDateTime getLocalDateTime();
+
     Duration getDuration();
     Period getPeriod();
+
     UUID getUUID();
+
     URI getURI();
+
     default URL getURL() {
         return map(getURI(), uri -> {
             try {
@@ -80,7 +87,9 @@ public interface TestInterface {
             }
         });
     }
+
     Path getPath();
+
     default File getFile() {
         return map(getPath(), Path::toFile);
     }

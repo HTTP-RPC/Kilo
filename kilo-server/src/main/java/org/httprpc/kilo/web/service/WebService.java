@@ -1580,8 +1580,8 @@ public abstract class WebService extends HttpServlet {
             || type == Duration.class
             || type == Period.class
             || type == UUID.class
-            || type == URL.class || type == URI.class
-            || type == File.class || type == Path.class
+            || type == URI.class || type == URL.class
+            || type == Path.class || type == File.class
             || type == Document.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
