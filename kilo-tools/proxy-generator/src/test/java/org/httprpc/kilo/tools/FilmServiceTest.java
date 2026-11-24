@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URI;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class FilmServiceTest {
     private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
@@ -34,9 +36,9 @@ public class FilmServiceTest {
 
         var film = filmServiceProxy.getFilm(films.getFirst().getID());
 
-        Assertions.assertEquals('n', Character.toLowerCase(film.getTitle().charAt(0)));
+        assertEquals('n', Character.toLowerCase(film.getTitle().charAt(0)));
 
-        Assertions.assertFalse(film.getActors().isEmpty());
-        Assertions.assertFalse(film.getCategories().isEmpty());
+        assertFalse(film.getActors().isEmpty());
+        assertFalse(film.getCategories().isEmpty());
     }
 }

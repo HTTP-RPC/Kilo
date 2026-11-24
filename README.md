@@ -25,7 +25,7 @@ Classes provided by the Kilo framework include:
   * [Optionals](#optionals)
   * [Iterables](#iterables)
 
-Each is discussed in more detail below. Java 21 or later is required.
+Each is discussed in more detail below. Java 25 or later is required.
 
 # WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, resource-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/6.1/).
@@ -436,6 +436,12 @@ var average = mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0)); // 3
 The [`Required`](#required-parameters) and [`Name`](#custom-parameter-names) annotations may also be applied to proxy method parameters. The `WebServiceProxy.Configuration` annotation can be used to further customize request processing.
 
 Path variables and body content are handled as described for [`WebService`](#webservice). Body parameters are required for `POST` and `PUT` methods. A body parameter of type `Void` may be used to indicate that a method does not accept a body.
+
+The [proxy generator](kilo-tools/proxy-generator/README.md) tool can be used to automatically create proxy types for one or more services. For example:
+
+```
+proxy-generator org.httprpc.kilo.tools http://localhost:8080/kilo-test/ catalog films
+```
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 

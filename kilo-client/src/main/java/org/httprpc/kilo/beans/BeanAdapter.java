@@ -566,7 +566,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Document}</li>
      * </ul>
      * <p>
-     * If the value is an {@link Enum} constant, it converted to a
+     * If the value is an {@link Enum} constant, it is converted to a
      * {@link String} representing the constant's name.
      * <p>
      * If the value is an array, it is wrapped in a {@link List} that will
@@ -1061,7 +1061,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the properties defined by a given type.
+     * Returns the properties defined by a given bean or record type.
      *
      * @param type
      * The requested type.
