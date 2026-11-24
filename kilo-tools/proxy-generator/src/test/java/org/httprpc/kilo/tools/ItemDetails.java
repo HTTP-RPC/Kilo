@@ -14,42 +14,42 @@ public interface ItemDetails
 {
 
     /**
-     * The item's size. (getter)
+     * The item's size. (read)
      */
     Size getSize();
 
     /**
-     * The item's size. (setter)
+     * The item's size. (write)
      */
     void setSize(Size size);
 
     /**
-     * The item's color. (getter)
+     * The item's color. (read)
      */
     String getColor();
 
     /**
-     * The item's color. (setter)
+     * The item's color. (write)
      */
     void setColor(String color);
 
     /**
-     * The item's weight. (getter)
+     * The item's weight. (read)
      */
     Double getWeight();
 
     /**
-     * The item's weight. (setter)
+     * The item's weight. (write)
      */
     void setWeight(Double weight);
 
     /**
-     * The date the item was created. (getter)
+     * The date the item was created. (read)
      */
     Instant getCreated();
 
     /**
-     * The date the item was created. (setter)
+     * The date the item was created. (write)
      */
     void setCreated(Instant created);
 }

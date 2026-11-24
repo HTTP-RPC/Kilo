@@ -12,33 +12,33 @@ import org.httprpc.kilo.Name;
 public interface Actor {
 
     /**
-     * The actor's ID. (getter)
+     * The actor's ID. (read)
      */
     @Name("id")
     Integer getID();
 
     /**
-     * The actor's ID. (setter)
+     * The actor's ID. (write)
      */
     void setID(Integer ID);
 
     /**
-     * The actor's first name. (getter)
+     * The actor's first name. (read)
      */
     String getFirstName();
 
     /**
-     * The actor's first name. (setter)
+     * The actor's first name. (write)
      */
     void setFirstName(String firstName);
 
     /**
-     * The actor's last name. (getter)
+     * The actor's last name. (read)
      */
     String getLastName();
 
     /**
-     * The actor's last name. (setter)
+     * The actor's last name. (write)
      */
     void setLastName(String lastName);
 }

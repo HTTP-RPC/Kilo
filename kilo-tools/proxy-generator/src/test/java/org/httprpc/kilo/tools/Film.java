@@ -13,53 +13,53 @@ import org.httprpc.kilo.Name;
 public interface Film {
 
     /**
-     * The film's ID. (getter)
+     * The film's ID. (read)
      */
     @Name("id")
     Integer getID();
 
     /**
-     * The film's ID. (setter)
+     * The film's ID. (write)
      */
     void setID(Integer ID);
 
     /**
-     * The title of the film. (getter)
+     * The title of the film. (read)
      */
     String getTitle();
 
     /**
-     * The title of the film. (setter)
+     * The title of the film. (write)
      */
     void setTitle(String title);
 
     /**
-     * The date the film was released. (getter)
+     * The date the film was released. (read)
      */
     LocalDate getReleaseDate();
 
     /**
-     * The date the film was released. (setter)
+     * The date the film was released. (write)
      */
     void setReleaseDate(LocalDate releaseDate);
 
     /**
-     * The length of the film, in minutes. (getter)
+     * The length of the film, in minutes. (read)
      */
     Integer getLength();
 
     /**
-     * The length of the film, in minutes. (setter)
+     * The length of the film, in minutes. (write)
      */
     void setLength(Integer length);
 
     /**
-     * The film's rating. (getter)
+     * The film's rating. (read)
      */
     Rating getRating();
 
     /**
-     * The film's rating. (setter)
+     * The film's rating. (write)
      */
     void setRating(Rating rating);
 }

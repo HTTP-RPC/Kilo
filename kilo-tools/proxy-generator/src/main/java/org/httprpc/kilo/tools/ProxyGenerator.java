@@ -310,11 +310,9 @@ public class ProxyGenerator {
 
             var propertyType = property.getType();
 
-            var accessorPrefix = propertyType.isBoolean() ? "is" : "get";
-
             var modelType = propertyType.describe(codeModel);
 
-            var accessorMethod = beanType.method(0, modelType, getMethodName(accessorPrefix, identifier));
+            var accessorMethod = beanType.method(0, modelType, getMethodName(propertyType.isBoolean() ? "is" : "get", identifier));
 
             var mutatorMethod = beanType.method(0, Void.TYPE, getMethodName("set", identifier));
 
@@ -323,8 +321,8 @@ public class ProxyGenerator {
             var propertyDescription = property.getDescription();
 
             if (propertyDescription != null) {
-                accessorMethod.javadoc().add(String.format("%s (getter)", propertyDescription));
-                mutatorMethod.javadoc().add(String.format("%s (setter)", propertyDescription));
+                accessorMethod.javadoc().add(String.format("%s (read)", propertyDescription));
+                mutatorMethod.javadoc().add(String.format("%s (write)", propertyDescription));
             }
 
             if (!name.equals(identifier)) {

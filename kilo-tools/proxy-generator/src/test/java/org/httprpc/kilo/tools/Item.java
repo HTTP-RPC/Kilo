@@ -12,33 +12,33 @@ import org.httprpc.kilo.Name;
 public interface Item {
 
     /**
-     * The item's ID. (getter)
+     * The item's ID. (read)
      */
     @Name("id")
     Integer getID();
 
     /**
-     * The item's ID. (setter)
+     * The item's ID. (write)
      */
     void setID(Integer ID);
 
     /**
-     * The item's description. (getter)
+     * The item's description. (read)
      */
     String getDescription();
 
     /**
-     * The item's description. (setter)
+     * The item's description. (write)
      */
     void setDescription(String description);
 
     /**
-     * The item's price. (getter)
+     * The item's price. (read)
      */
     Double getPrice();
 
     /**
-     * The item's price. (setter)
+     * The item's price. (write)
      */
     void setPrice(Double price);
 }

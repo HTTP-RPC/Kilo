@@ -12,23 +12,23 @@ import org.httprpc.kilo.Name;
 public interface Category {
 
     /**
-     * The category's ID. (getter)
+     * The category's ID. (read)
      */
     @Name("id")
     Integer getID();
 
     /**
-     * The category's ID. (setter)
+     * The category's ID. (write)
      */
     void setID(Integer ID);
 
     /**
-     * The name of the category. (getter)
+     * The name of the category. (read)
      */
     String getName();
 
     /**
-     * The name of the category. (setter)
+     * The name of the category. (write)
      */
     void setName(String name);
 }

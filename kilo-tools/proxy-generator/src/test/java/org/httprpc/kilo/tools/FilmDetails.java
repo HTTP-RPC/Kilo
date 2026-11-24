@@ -14,32 +14,32 @@ public interface FilmDetails
 {
 
     /**
-     * A description of the film. (getter)
+     * A description of the film. (read)
      */
     String getDescription();
 
     /**
-     * A description of the film. (setter)
+     * A description of the film. (write)
      */
     void setDescription(String description);
 
     /**
-     * The actors that appeared in the film. (getter)
+     * The actors that appeared in the film. (read)
      */
     List<Actor> getActors();
 
     /**
-     * The actors that appeared in the film. (setter)
+     * The actors that appeared in the film. (write)
      */
     void setActors(List<Actor> actors);
 
     /**
-     * The categories associated with the film. (getter)
+     * The categories associated with the film. (read)
      */
     List<Category> getCategories();
 
     /**
-     * The categories associated with the film. (setter)
+     * The categories associated with the film. (write)
      */
     void setCategories(List<Category> categories);
 }
