@@ -9,26 +9,36 @@ import org.httprpc.kilo.Name;
 /**
  * Represents a film category.
  */
-public interface Category {
+public class Category {
+    private Integer id;
+    private String name;
 
     /**
      * The category's ID. (read)
      */
     @Name("id")
-    Integer getID();
+    public Integer getID() {
+        return id;
+    }
 
     /**
      * The category's ID. (write)
      */
-    void setID(Integer ID);
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     /**
      * The name of the category. (read)
      */
-    String getName();
+    public String getName() {
+        return name;
+    }
 
     /**
      * The name of the category. (write)
      */
-    void setName(String name);
+    public void setName(String name) {
+        this.name = name;
+    }
 }

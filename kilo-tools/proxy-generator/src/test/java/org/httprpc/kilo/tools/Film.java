@@ -5,61 +5,88 @@ package org.httprpc.kilo.tools;
 
 import java.time.LocalDate;
 import org.httprpc.kilo.Name;
+import org.httprpc.kilo.Required;
 
 
 /**
  * Represents a film.
  */
-public interface Film {
+public class Film {
+    private Integer id;
+    private String title;
+    private LocalDate releaseDate;
+    private Integer length;
+    private Rating rating;
 
     /**
      * The film's ID. (read)
      */
     @Name("id")
-    Integer getID();
+    public Integer getID() {
+        return id;
+    }
 
     /**
      * The film's ID. (write)
      */
-    void setID(Integer ID);
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     /**
      * The title of the film. (read)
      */
-    String getTitle();
+    @Required
+    public String getTitle() {
+        return title;
+    }
 
     /**
      * The title of the film. (write)
      */
-    void setTitle(String title);
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     /**
      * The date the film was released. (read)
      */
-    LocalDate getReleaseDate();
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
 
     /**
      * The date the film was released. (write)
      */
-    void setReleaseDate(LocalDate releaseDate);
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
+    }
 
     /**
      * The length of the film, in minutes. (read)
      */
-    Integer getLength();
+    public Integer getLength() {
+        return length;
+    }
 
     /**
      * The length of the film, in minutes. (write)
      */
-    void setLength(Integer length);
+    public void setLength(Integer length) {
+        this.length = length;
+    }
 
     /**
      * The film's rating. (read)
      */
-    Rating getRating();
+    public Rating getRating() {
+        return rating;
+    }
 
     /**
      * The film's rating. (write)
      */
-    void setRating(Rating rating);
+    public void setRating(Rating rating) {
+        this.rating = rating;
+    }
 }

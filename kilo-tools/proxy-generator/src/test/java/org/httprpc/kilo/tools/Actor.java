@@ -9,36 +9,51 @@ import org.httprpc.kilo.Name;
 /**
  * Represents a film actor.
  */
-public interface Actor {
+public class Actor {
+    private Integer id;
+    private String firstName;
+    private String lastName;
 
     /**
      * The actor's ID. (read)
      */
     @Name("id")
-    Integer getID();
+    public Integer getID() {
+        return id;
+    }
 
     /**
      * The actor's ID. (write)
      */
-    void setID(Integer ID);
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     /**
      * The actor's first name. (read)
      */
-    String getFirstName();
+    public String getFirstName() {
+        return firstName;
+    }
 
     /**
      * The actor's first name. (write)
      */
-    void setFirstName(String firstName);
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
     /**
      * The actor's last name. (read)
      */
-    String getLastName();
+    public String getLastName() {
+        return lastName;
+    }
 
     /**
      * The actor's last name. (write)
      */
-    void setLastName(String lastName);
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 }

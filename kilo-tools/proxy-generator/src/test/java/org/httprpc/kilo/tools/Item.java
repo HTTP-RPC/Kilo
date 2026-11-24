@@ -4,6 +4,7 @@
 package org.httprpc.kilo.tools;
 
 import org.httprpc.kilo.Name;
+import org.httprpc.kilo.Required;
 
 
 /**
@@ -25,6 +26,7 @@ public interface Item {
     /**
      * The item's description. (read)
      */
+    @Required
     String getDescription();
 
     /**
@@ -35,6 +37,7 @@ public interface Item {
     /**
      * The item's price. (read)
      */
+    @Required
     Double getPrice();
 
     /**

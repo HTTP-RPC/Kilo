@@ -9,37 +9,52 @@ import java.util.List;
 /**
  * Represents detailed information about a film.
  */
-public interface FilmDetails
+public class FilmDetails
     extends Film
 {
+    private String description;
+    private List<Actor> actors;
+    private List<Category> categories;
 
     /**
      * A description of the film. (read)
      */
-    String getDescription();
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * A description of the film. (write)
      */
-    void setDescription(String description);
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     /**
      * The actors that appeared in the film. (read)
      */
-    List<Actor> getActors();
+    public List<Actor> getActors() {
+        return actors;
+    }
 
     /**
      * The actors that appeared in the film. (write)
      */
-    void setActors(List<Actor> actors);
+    public void setActors(List<Actor> actors) {
+        this.actors = actors;
+    }
 
     /**
      * The categories associated with the film. (read)
      */
-    List<Category> getCategories();
+    public List<Category> getCategories() {
+        return categories;
+    }
 
     /**
      * The categories associated with the film. (write)
      */
-    void setCategories(List<Category> categories);
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
 }
