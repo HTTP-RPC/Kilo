@@ -15,7 +15,6 @@
 package org.httprpc.kilo.tools;
 
 import org.httprpc.kilo.web.WebServiceProxy;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class FilmServiceTest {
 
         var films = filmServiceProxy.getFilms("n*");
 
-        Assertions.assertFalse(films.isEmpty());
+        assertFalse(films.isEmpty());
 
         var film = filmServiceProxy.getFilm(films.getFirst().getID());
 
