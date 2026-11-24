@@ -30,8 +30,4 @@ public interface MathServiceProxy {
     @RequestMethod("GET")
     @ResourcePath("sum")
     double getSum(List<Double> values) throws IOException;
-
-    default double getAverage(List<Double> values) throws IOException {
-        return getSum(values) / values.size();
-    }
 }

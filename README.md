@@ -254,7 +254,7 @@ An index of all active services can be found at the application's context root:
 GET http://localhost:8080/kilo-test
 ```
 
-Documentation for a specific service can be viewed by appending ".html" to the service's base URL:
+Documentation for a specific service can be viewed by appending ".html" to the service's base URI:
 
 ```
 GET http://localhost:8080/kilo-test/catalog.html
@@ -417,10 +417,6 @@ public interface MathServiceProxy {
     @RequestMethod("GET")
     @ResourcePath("sum")
     double getSum(List<Double> values) throws IOException;
-
-    default double getAverage(List<Double> values) throws IOException {
-        return getSum(values) / values.size();
-    }
 }
 ```
 
@@ -429,8 +425,6 @@ var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURI);
 
 var sum1 = mathServiceProxy.getSum(4.0, 2.0); // 6.0
 var sum2 = mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0)); // 6.0
-
-var average = mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0)); // 3.0
 ```
 
 The [`Required`](#required-parameters) and [`Name`](#custom-parameter-names) annotations may also be applied to proxy method parameters. The `WebServiceProxy.Configuration` annotation can be used to further customize request processing.

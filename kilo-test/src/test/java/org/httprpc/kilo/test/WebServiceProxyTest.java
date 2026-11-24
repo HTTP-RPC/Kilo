@@ -733,10 +733,6 @@ public class WebServiceProxyTest {
 
         assertEquals(6.0, sum1);
         assertEquals(6.0, sum2);
-
-        var average = mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0)); // 3.0
-
-        assertEquals(3.0, average);
     }
 
     @Test
