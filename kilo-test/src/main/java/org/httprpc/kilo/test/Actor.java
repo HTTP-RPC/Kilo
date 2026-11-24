@@ -23,20 +23,42 @@ import org.httprpc.kilo.web.service.Description;
 
 @Table("actor")
 @Description("Represents a film actor.")
-public interface Actor {
+public class Actor {
+    private Integer id;
+    private String firstName;
+    private String lastName;
+
     @Name("id")
     @Column("actor_id")
     @PrimaryKey
     @Description("The actor's ID.")
-    Integer getID();
+    public Integer getID() {
+        return id;
+    }
+
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     @Column("first_name")
     @Index(2)
     @Description("The actor's first name.")
-    String getFirstName();
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
     @Column("last_name")
     @Index(1)
     @Description("The actor's last name.")
-    String getLastName();
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 }

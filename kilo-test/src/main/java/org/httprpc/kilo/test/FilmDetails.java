@@ -20,16 +20,37 @@ import org.httprpc.kilo.web.service.Description;
 import java.util.List;
 
 @Description("Represents detailed information about a film.")
-public interface FilmDetails extends Film {
+public class FilmDetails extends Film {
+    private String description;
+
+    private List<Actor> actors;
+    private List<Category> categories;
+
     @Column("description")
     @Description("A description of the film.")
-    String getDescription();
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Description("The actors that appeared in the film.")
-    List<Actor> getActors();
-    void setActors(List<Actor> actors);
+    public List<Actor> getActors() {
+        return actors;
+    }
+
+    public void setActors(List<Actor> actors) {
+        this.actors = actors;
+    }
 
     @Description("The categories associated with the film.")
-    List<Category> getCategories();
-    void setCategories(List<Category> categories);
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
 }

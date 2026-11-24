@@ -23,15 +23,30 @@ import org.httprpc.kilo.web.service.Description;
 
 @Table("category")
 @Description("Represents a film category.")
-public interface Category {
+public class Category {
+    private Integer id;
+    private String name;
+
     @Name("id")
     @Column("category_id")
     @PrimaryKey
     @Description("The category's ID.")
-    Integer getID();
+    public Integer getID() {
+        return id;
+    }
+
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     @Column("name")
     @Index
     @Description("The name of the category.")
-    String getName();
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

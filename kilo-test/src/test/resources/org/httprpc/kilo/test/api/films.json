@@ -141,7 +141,7 @@
     {
       "name": "Actor",
       "description": "Represents a film actor.",
-      "concrete": false,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [
@@ -201,7 +201,7 @@
     {
       "name": "Category",
       "description": "Represents a film category.",
-      "concrete": false,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [
@@ -244,7 +244,7 @@
     {
       "name": "Film",
       "description": "Represents a film.",
-      "concrete": false,
+      "concrete": true,
       "supertypes": [
       ],
       "properties": [
@@ -338,7 +338,7 @@
     {
       "name": "FilmDetails",
       "description": "Represents detailed information about a film.",
-      "concrete": false,
+      "concrete": true,
       "supertypes": [
         {
           "name": "Film",

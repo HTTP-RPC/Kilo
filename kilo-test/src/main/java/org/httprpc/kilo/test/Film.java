@@ -26,28 +26,64 @@ import java.time.LocalDate;
 
 @Table("film")
 @Description("Represents a film.")
-public interface Film {
+public class Film {
+    private Integer id;
+    private String title;
+    private LocalDate releaseDate;
+    private Integer length;
+    private Rating rating;
+
     @Name("id")
     @Column("film_id")
     @PrimaryKey
     @Description("The film's ID.")
-    Integer getID();
+    public Integer getID() {
+        return id;
+    }
+
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     @Column("title")
     @Index
     @Description("The title of the film.")
     @Required
-    String getTitle();
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @Column("release_year")
     @Description("The date the film was released.")
-    LocalDate getReleaseDate();
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
+    }
 
     @Column("length")
     @Description("The length of the film, in minutes.")
-    Integer getLength();
+    public Integer getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
+    }
 
     @Column("rating")
     @Description("The film's rating.")
-    Rating getRating();
+    public Rating getRating() {
+        return rating;
+    }
+
+    public void setRating(Rating rating) {
+        this.rating = rating;
+    }
 }
