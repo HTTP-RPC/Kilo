@@ -400,9 +400,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private Map<String, Property> properties;
 
-    private static final String GET_PREFIX = "get";
     private static final String IS_PREFIX = "is";
-
+    private static final String GET_PREFIX = "get";
     private static final String SET_PREFIX = "set";
 
     private static final Map<Class<?>, Map<String, Property>> types = new ConcurrentHashMap<>();
@@ -1175,16 +1174,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         var parameterCount = method.getParameterCount();
 
         String prefix;
-        if (methodName.startsWith(GET_PREFIX)
-            && returnType != Void.TYPE && returnType != Void.class
-            && parameterCount == 0) {
-            prefix = GET_PREFIX;
-        } else if (methodName.startsWith(IS_PREFIX)
+        if (methodName.startsWith(IS_PREFIX)
             && (returnType == Boolean.TYPE || returnType == Boolean.class)
             && parameterCount == 0) {
             prefix = IS_PREFIX;
+        } else if (methodName.startsWith(GET_PREFIX)
+            && returnType != Void.TYPE
+            && parameterCount == 0) {
+            prefix = GET_PREFIX;
         } else if (methodName.startsWith(SET_PREFIX)
-            && (returnType == Void.TYPE || returnType == Void.class)
+            && returnType == Void.TYPE
             && parameterCount == 1) {
             prefix = SET_PREFIX;
         } else {
