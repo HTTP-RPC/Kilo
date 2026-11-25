@@ -18,7 +18,6 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.w3c.dom.Document;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.classfile.ClassFile;
 import java.lang.reflect.Array;
@@ -30,8 +29,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -560,8 +557,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Duration}</li>
      * <li>{@link Period}</li>
      * <li>{@link UUID}</li>
-     * <li>{@link URI} or {@link URL}</li>
-     * <li>{@link Path} or {@link File}</li>
+     * <li>{@link Path}</li>
      * <li>{@link Document}</li>
      * </ul>
      * <p>
@@ -604,8 +600,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Duration
             || value instanceof Period
             || value instanceof UUID
-            || value instanceof URI || value instanceof URL
-            || value instanceof Path || value instanceof File
+            || value instanceof Path
             || value instanceof Document) {
             return value;
         } else if (value instanceof Enum<?> constant) {

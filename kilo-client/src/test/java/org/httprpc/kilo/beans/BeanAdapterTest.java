@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -71,11 +69,8 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testBeanAdapter() throws MalformedURLException {
+    public void testBeanAdapter() {
         var now = LocalDate.now();
-
-        var uri = URI.create("http://localhost:8080");
-        var path = Paths.get(System.getProperty("user.home"));
 
         var map = mapOf(
             entry("i", 1),
@@ -92,10 +87,7 @@ public class BeanAdapterTest {
             entry("duration", Duration.ofHours(2).plusMinutes(30)),
             entry("period", Period.ofYears(3).plusMonths(2)),
             entry("UUID", UUID.randomUUID()),
-            entry("URI", uri),
-            entry("URL", uri.toURL()),
-            entry("path", path),
-            entry("file", path.toFile()),
+            entry("path", Paths.get(System.getProperty("user.home"))),
             entry("nestedBean", mapOf(
                 entry("flag", true),
                 entry("character", 'y')
