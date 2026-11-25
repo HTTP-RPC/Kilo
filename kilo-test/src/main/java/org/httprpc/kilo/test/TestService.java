@@ -58,16 +58,12 @@ public class TestService extends AbstractDatabaseService {
     }
 
     public interface B {
-        @Description("B's version of B")
         double getB();
     }
 
     public interface C extends A, B {
         @Override
-        @Description("C's version of B")
         double getB();
-
-        @Description("An array of strings")
         String[] getC();
     }
 

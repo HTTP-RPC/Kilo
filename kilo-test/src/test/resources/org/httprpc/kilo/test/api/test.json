@@ -1797,7 +1797,7 @@
         {
           "name": "b",
           "identifier": "b",
-          "description": "B's version of B",
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {
@@ -1953,26 +1953,9 @@
       ],
       "properties": [
         {
-          "name": "b",
-          "identifier": "b",
-          "description": "C's version of B",
-          "required": false,
-          "deprecated": false,
-          "type": {
-            "name": "Double",
-            "intrinsic": true,
-            "iterable": false,
-            "unique": false,
-            "elementType": null,
-            "map": false,
-            "keyType": null,
-            "valueType": null
-          }
-        },
-        {
           "name": "c",
           "identifier": "c",
-          "description": "An array of strings",
+          "description": null,
           "required": false,
           "deprecated": false,
           "type": {

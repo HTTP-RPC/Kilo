@@ -1661,7 +1661,7 @@ public abstract class WebService extends HttpServlet {
                 var identifier = property.getName();
                 var accessor = property.getAccessor();
 
-                if (accessor.getDeclaringClass() != type) {
+                if (accessor.getDeclaringClass() != type || isOverride(accessor)) {
                     continue;
                 }
 
@@ -1674,5 +1674,39 @@ public abstract class WebService extends HttpServlet {
         }
 
         return new TypeDescriptor(type, false);
+    }
+
+    private static boolean isOverride(Method method) {
+        var type = method.getDeclaringClass();
+
+        var baseType = type.getSuperclass();
+
+        while (baseType != null) {
+            if (isDeclared(method, baseType)) {
+                return true;
+            }
+
+            baseType = baseType.getSuperclass();
+        }
+
+        var interfaces = type.getInterfaces();
+
+        for (var i = 0; i < interfaces.length; i++) {
+            if (isDeclared(method, interfaces[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean isDeclared(Method method, Class<?> type) {
+        try {
+            type.getDeclaredMethod(method.getName(), method.getParameterTypes());
+
+            return true;
+        } catch (NoSuchMethodException exception) {
+            return false;
+        }
     }
 }
