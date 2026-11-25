@@ -72,7 +72,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -113,7 +113,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "boolean",
+                "name": "Boolean",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -285,7 +285,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -304,7 +304,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -320,7 +320,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -443,7 +443,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -460,7 +460,7 @@
               "description": null,
               "required": true,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -590,7 +590,7 @@
               "description": "First key.",
               "required": true,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -622,7 +622,7 @@
               "description": "Third key.",
               "required": true,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -775,7 +775,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -890,7 +890,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "boolean",
+                "name": "Boolean",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -942,7 +942,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1001,7 +1001,7 @@
               "description": null,
               "required": true,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1017,7 +1017,7 @@
               "description": null,
               "required": true,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1035,7 +1035,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1051,7 +1051,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1420,7 +1420,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "double",
+            "name": "Double",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -1439,7 +1439,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "double",
+                "name": "Double",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1455,7 +1455,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "double",
+                "name": "Double",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1474,7 +1474,7 @@
           "description": null,
           "deprecated": false,
           "produces": {
-            "name": "double",
+            "name": "Double",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -1568,7 +1568,7 @@
                 "iterable": true,
                 "unique": false,
                 "elementType": {
-                  "name": "int",
+                  "name": "Integer",
                   "intrinsic": true,
                   "iterable": false,
                   "unique": false,
@@ -1639,7 +1639,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1655,7 +1655,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "int",
+                "name": "Integer",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
@@ -1775,7 +1775,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -1801,7 +1801,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "double",
+            "name": "Double",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -1913,7 +1913,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "boolean",
+            "name": "Boolean",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -1959,7 +1959,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "double",
+            "name": "Double",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -2011,7 +2011,7 @@
           "required": true,
           "deprecated": false,
           "type": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -2028,7 +2028,7 @@
           "required": true,
           "deprecated": false,
           "type": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -2054,7 +2054,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -2090,7 +2090,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "double",
+            "name": "Double",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -2331,7 +2331,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "boolean",
+            "name": "Boolean",
             "intrinsic": true,
             "iterable": false,
             "unique": false,
@@ -2519,7 +2519,7 @@
           "required": false,
           "deprecated": false,
           "type": {
-            "name": "int",
+            "name": "Integer",
             "intrinsic": true,
             "iterable": false,
             "unique": false,

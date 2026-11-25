@@ -40,7 +40,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "boolean",
+                "name": "Boolean",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,

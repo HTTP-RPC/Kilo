@@ -669,9 +669,7 @@ public abstract class WebService extends HttpServlet {
         private boolean intrinsic;
 
         private TypeDescriptor(Class<?> type, boolean intrinsic) {
-            if (type == Void.TYPE) {
-                this.type = Void.class;
-            } else if (type == Byte.TYPE) {
+            if (type == Byte.TYPE) {
                 this.type = Byte.class;
             } else if (type == Short.TYPE) {
                 this.type = Short.class;

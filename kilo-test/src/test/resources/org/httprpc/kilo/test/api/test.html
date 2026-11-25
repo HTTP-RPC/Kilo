@@ -302,25 +302,25 @@
                 <!--  -->
                 <tr>
                     <td><code>strings</code></td>
-                    <td><code>[String]</code></td>
+                    <td><code>List&lt;String&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>number</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>numbers</code></td>
-                    <td><code>[Integer]</code></td>
+                    <td><code>Set&lt;Integer&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>flag</code></td>
-                    <td><code>boolean</code></td>
+                    <td><code>Boolean</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -338,7 +338,7 @@
                 <!--  -->
                 <tr>
                     <td><code>dates</code></td>
-                    <td><code>[Instant]</code></td>
+                    <td><code>List&lt;Instant&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -384,7 +384,7 @@
             </table>
             <!--  -->
             <!--  -->
-            <pre><span class="method GET">GET</span> : int</pre>
+            <pre><span class="method GET">GET</span> : Integer</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -401,13 +401,13 @@
                 <!--  -->
                 <tr>
                     <td><code>value</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>delay</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -444,7 +444,7 @@
                 <tbody>
                 <tr>
                     <td><code>strings</code></td>
-                    <td><code>[String]&nbsp;•</code></td>
+                    <td><code>List&lt;String&gt;&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -482,7 +482,7 @@
         <section id="/test/?">
             <h2><code>/test/?</code></h2>
             <!--  -->
-            <pre><span class="method PUT">PUT</span> : int</pre>
+            <pre><span class="method PUT">PUT</span> : Integer</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -498,7 +498,7 @@
                 <!--  -->
                 <tr>
                     <td><code>id</code></td>
-                    <td><code>int&nbsp;•</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -559,7 +559,7 @@
         <section id="/test/a#/?/b*/?/c@/?/d=/?">
             <h2><code>/test/a#/?/b*/?/c@/?/d=/?</code></h2>
             <!--  -->
-            <pre><span class="method GET">GET</span> : [String: Object]</pre>
+            <pre><span class="method GET">GET</span> : Map&lt;String, Object&gt;</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -575,7 +575,7 @@
                 <!--  -->
                 <tr>
                     <td><code>a</code></td>
-                    <td><code>int&nbsp;•</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
                     <td>First key.</td>
                 </tr>
                 <!--  -->
@@ -587,7 +587,7 @@
                 <!--  -->
                 <tr>
                     <td><code>c</code></td>
-                    <td><code>int&nbsp;•</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
                     <td>Third key.</td>
                 </tr>
                 <!--  -->
@@ -678,7 +678,7 @@
         <section id="/test/deferred">
             <h2><code>/test/deferred</code></h2>
             <!--  -->
-            <pre><span class="method POST">POST</span> : int</pre>
+            <pre><span class="method POST">POST</span> : Integer</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -743,7 +743,7 @@
                 <!--  -->
                 <tr>
                     <td><code>committed</code></td>
-                    <td><code>boolean</code></td>
+                    <td><code>Boolean</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -758,7 +758,7 @@
         <section id="/test/fibonacci">
             <h2><code>/test/fibonacci</code></h2>
             <!--  -->
-            <pre><span class="method GET">GET</span> : [Number]</pre>
+            <pre><span class="method GET">GET</span> : List&lt;Number&gt;</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -775,7 +775,7 @@
                 <!--  -->
                 <tr>
                     <td><code>count</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -790,7 +790,7 @@
         <section id="/test/foo/?/bar/?">
             <h2><code>/test/foo/?/bar/?</code></h2>
             <!--  -->
-            <pre><span class="method POST">POST</span> : [String: Object]</pre>
+            <pre><span class="method POST">POST</span> : Map&lt;String, Object&gt;</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -806,13 +806,13 @@
                 <!--  -->
                 <tr>
                     <td><code>x</code></td>
-                    <td><code>int&nbsp;•</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>y</code></td>
-                    <td><code>int&nbsp;•</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -823,13 +823,13 @@
                 <!--  -->
                 <tr>
                     <td><code>a</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>b</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -839,7 +839,7 @@
                 <tbody>
                 <tr>
                     <td><code>values</code></td>
-                    <td><code>[Double]&nbsp;•</code></td>
+                    <td><code>List&lt;Double&gt;&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -852,7 +852,7 @@
         <section id="/test/form-data">
             <h2><code>/test/form-data</code></h2>
             <!--  -->
-            <pre><span class="method POST">POST</span> : [String: Object]</pre>
+            <pre><span class="method POST">POST</span> : Map&lt;String, Object&gt;</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -882,7 +882,7 @@
         <section id="/test/headers">
             <h2><code>/test/headers</code></h2>
             <!--  -->
-            <pre><span class="method GET">GET</span> : [String: String]</pre>
+            <pre><span class="method GET">GET</span> : Map&lt;String, String&gt;</pre>
             <!--  -->
             <!--  -->
             <!--  -->
@@ -921,7 +921,7 @@
         <section id="/test/invalid-result">
             <h2><code>/test/invalid-result</code></h2>
             <!--  -->
-            <pre><span class="method GET">GET</span> : [Double]</pre>
+            <pre><span class="method GET">GET</span> : List&lt;Double&gt;</pre>
             <!--  -->
             <!--  -->
             <!--  -->
@@ -930,7 +930,7 @@
         <section id="/test/list">
             <h2><code>/test/list</code></h2>
             <!--  -->
-            <pre><span class="method POST">POST</span> : [String]</pre>
+            <pre><span class="method POST">POST</span> : List&lt;String&gt;</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -947,7 +947,7 @@
                 <tbody>
                 <tr>
                     <td><code>list</code></td>
-                    <td><code>[String]&nbsp;•</code></td>
+                    <td><code>List&lt;String&gt;&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -960,7 +960,7 @@
         <section id="/test/map">
             <h2><code>/test/map</code></h2>
             <!--  -->
-            <pre><span class="method POST">POST</span> : [String: Double]</pre>
+            <pre><span class="method POST">POST</span> : Map&lt;String, Double&gt;</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -977,7 +977,7 @@
                 <tbody>
                 <tr>
                     <td><code>map</code></td>
-                    <td><code>[String: Double]&nbsp;•</code></td>
+                    <td><code>Map&lt;String, Double&gt;&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -990,7 +990,7 @@
         <section id="/test/math/sum">
             <h2><code>/test/math/sum</code></h2>
             <!--  -->
-            <pre><span class="method GET">GET</span> : double</pre>
+            <pre><span class="method GET">GET</span> : Double</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -1007,13 +1007,13 @@
                 <!--  -->
                 <tr>
                     <td><code>a</code></td>
-                    <td><code>double</code></td>
+                    <td><code>Double</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>b</code></td>
-                    <td><code>double</code></td>
+                    <td><code>Double</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1023,7 +1023,7 @@
             </table>
             <!--  -->
             <!--  -->
-            <pre><span class="method GET">GET</span> : double</pre>
+            <pre><span class="method GET">GET</span> : Double</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -1040,7 +1040,7 @@
                 <!--  -->
                 <tr>
                     <td><code>values</code></td>
-                    <td><code>[Double]</code></td>
+                    <td><code>List&lt;Double&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1055,7 +1055,7 @@
         <section id="/test/varargs">
             <h2><code>/test/varargs</code></h2>
             <!--  -->
-            <pre><span class="method POST">POST</span> : [String: Object]</pre>
+            <pre><span class="method POST">POST</span> : Map&lt;String, Object&gt;</pre>
             <!--  -->
             <!--  -->
             <table>
@@ -1072,7 +1072,7 @@
                 <!--  -->
                 <tr>
                     <td><code>numbers</code></td>
-                    <td><code>[int]</code></td>
+                    <td><code>List&lt;Integer&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1082,7 +1082,7 @@
                 <tbody>
                 <tr>
                     <td><code>strings</code></td>
-                    <td><code>[String]&nbsp;•</code></td>
+                    <td><code>List&lt;String&gt;&nbsp;•</code></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -1112,13 +1112,13 @@
                 <!--  -->
                 <tr>
                     <td><code>a</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>b</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1246,7 +1246,7 @@
                 <!--  -->
                 <tr>
                     <td><code>a</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1269,7 +1269,7 @@
                 <!--  -->
                 <tr>
                     <td><code>b</code></td>
-                    <td><code>double</code></td>
+                    <td><code>Double</code></td>
                     <td>B's version of B</td>
                 </tr>
                 <!--  -->
@@ -1298,7 +1298,7 @@
                 <!--  -->
                 <tr>
                     <td><code>strings</code></td>
-                    <td><code>[String]</code></td>
+                    <td><code>List&lt;String&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1310,13 +1310,13 @@
                 <!--  -->
                 <tr>
                     <td><code>numbers</code></td>
-                    <td><code>[Integer]</code></td>
+                    <td><code>Set&lt;Integer&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>flag</code></td>
-                    <td><code>boolean</code></td>
+                    <td><code>Boolean</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1339,13 +1339,13 @@
                 <!--  -->
                 <tr>
                     <td><code>b</code></td>
-                    <td><code>double</code></td>
+                    <td><code>Double</code></td>
                     <td>C's version of B</td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>c</code></td>
-                    <td><code>[String]</code></td>
+                    <td><code>List&lt;String&gt;</code></td>
                     <td>An array of strings</td>
                 </tr>
                 <!--  -->
@@ -1370,13 +1370,13 @@
                 <!--  -->
                 <tr>
                     <td><code>x</code></td>
-                    <td><code>int&nbsp;•</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
                     <td>The x-coordinate.</td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>y</code></td>
-                    <td><code>int&nbsp;•</code></td>
+                    <td><code>Integer&nbsp;•</code></td>
                     <td>The y-coordinate.</td>
                 </tr>
                 <!--  -->
@@ -1399,7 +1399,7 @@
                 <!--  -->
                 <tr>
                     <td><code>d</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1422,7 +1422,7 @@
                 <!--  -->
                 <tr>
                     <td><code>e</code></td>
-                    <td><code>double</code></td>
+                    <td><code>Double</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1451,7 +1451,7 @@
                 <!--  -->
                 <tr>
                     <td><code>strings</code></td>
-                    <td><code>[String]</code></td>
+                    <td><code>List&lt;String&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1475,7 +1475,7 @@
                 <!--  -->
                 <tr>
                     <td><code>files</code></td>
-                    <td><code>[Path]</code></td>
+                    <td><code>List&lt;Path&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1504,7 +1504,7 @@
                 <!--  -->
                 <tr>
                     <td><code>strings</code></td>
-                    <td><code>[String]</code></td>
+                    <td><code>List&lt;String&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1516,13 +1516,13 @@
                 <!--  -->
                 <tr>
                     <td><code>numbers</code></td>
-                    <td><code>[Integer]</code></td>
+                    <td><code>Set&lt;Integer&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
                 <tr>
                     <td><code>flag</code></td>
-                    <td><code>boolean</code></td>
+                    <td><code>Boolean</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1540,7 +1540,7 @@
                 <!--  -->
                 <tr>
                     <td><code>dates</code></td>
-                    <td><code>[Instant]</code></td>
+                    <td><code>List&lt;Instant&gt;</code></td>
                     <td></td>
                 </tr>
                 <!--  -->
@@ -1599,7 +1599,7 @@
                 <!--  -->
                 <tr>
                     <td><code>number</code></td>
-                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
                     <td></td>
                 </tr>
                 <!--  -->

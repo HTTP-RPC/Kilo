@@ -126,7 +126,7 @@ public List<Pet> getPets(@Required String owner) throws SQLException {
 }
 ```
 
-`List`, `Set`, and array parameters are implicitly required, since these values will never be `null` (though they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
+If a required value is not provided, HTTP 403 will be returned.
 
 ### Custom Parameter Names
 The `Name` annotation can be used to associate a custom name with a method parameter. For example:
