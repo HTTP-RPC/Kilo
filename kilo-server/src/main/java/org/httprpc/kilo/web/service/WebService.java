@@ -35,7 +35,6 @@ import org.xml.sax.SAXException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -47,8 +46,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -1599,8 +1596,7 @@ public abstract class WebService extends HttpServlet {
             || type == Duration.class
             || type == Period.class
             || type == UUID.class
-            || type == URI.class || type == URL.class
-            || type == Path.class || type == File.class
+            || type == Path.class
             || type == Document.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {

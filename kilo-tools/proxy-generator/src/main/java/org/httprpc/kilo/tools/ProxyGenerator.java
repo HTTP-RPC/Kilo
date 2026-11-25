@@ -30,10 +30,12 @@ import org.httprpc.kilo.web.RequestMethod;
 import org.httprpc.kilo.web.ResourcePath;
 import org.httprpc.kilo.web.ServicePath;
 import org.httprpc.kilo.web.WebServiceProxy;
+import org.w3c.dom.Document;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -192,7 +194,9 @@ public class ProxyGenerator {
         LocalDateTime.class,
         Duration.class,
         Period.class,
-        UUID.class
+        UUID.class,
+        Path.class,
+        Document.class
     ), type -> entry(type.getSimpleName(), type)));
 
     private static String packageName = null;
