@@ -419,7 +419,7 @@
             "name": "body",
             "identifier": "body",
             "description": null,
-            "required": true,
+            "required": false,
             "type": {
               "name": "Void",
               "intrinsic": true,
@@ -493,7 +493,7 @@
             "name": "body",
             "identifier": "body",
             "description": null,
-            "required": true,
+            "required": false,
             "type": {
               "name": "Void",
               "intrinsic": true,
@@ -793,7 +793,7 @@
             "name": "body",
             "identifier": "body",
             "description": null,
-            "required": true,
+            "required": false,
             "type": {
               "name": "Void",
               "intrinsic": true,
@@ -1222,7 +1222,7 @@
             "name": "body",
             "identifier": "body",
             "description": null,
-            "required": true,
+            "required": false,
             "type": {
               "name": "Void",
               "intrinsic": true,

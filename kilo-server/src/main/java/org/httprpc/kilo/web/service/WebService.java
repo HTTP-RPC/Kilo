@@ -1332,7 +1332,7 @@ public abstract class WebService extends HttpServlet {
             } else {
                 var returnType = handler.getReturnType();
 
-                if (returnType == Void.TYPE || returnType == Void.class) {
+                if (returnType == Void.TYPE) {
                     response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 } else {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -1544,7 +1544,7 @@ public abstract class WebService extends HttpServlet {
 
                             operation.queryParameters.add(parameterDescriptor);
                         } else {
-                            parameterDescriptor.required = true;
+                            parameterDescriptor.required = parameter.getType() != Void.class;
 
                             operation.bodyParameter = parameterDescriptor;
                         }
