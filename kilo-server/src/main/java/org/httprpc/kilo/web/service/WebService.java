@@ -43,6 +43,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -1657,7 +1658,7 @@ public abstract class WebService extends HttpServlet {
                 var identifier = property.getName();
                 var accessor = property.getAccessor();
 
-                if (accessor.getDeclaringClass() != type || isOverride(accessor)) {
+                if (accessor.getDeclaringClass() != type || isOverride(accessor, type)) {
                     continue;
                 }
 
@@ -1672,36 +1673,32 @@ public abstract class WebService extends HttpServlet {
         return new TypeDescriptor(type, false);
     }
 
-    private static boolean isOverride(Method method) {
-        var type = method.getDeclaringClass();
+    private static boolean isOverride(Method accessor, Class<?> type) {
+        if (type == null) {
+            return false;
+        }
 
-        var baseType = type.getSuperclass();
-
-        while (baseType != null) {
-            if (isDeclared(method, baseType)) {
-                return true;
-            }
-
-            baseType = baseType.getSuperclass();
+        if (isOverride(accessor, type.getSuperclass())) {
+            return true;
         }
 
         var interfaces = type.getInterfaces();
 
         for (var i = 0; i < interfaces.length; i++) {
-            if (isDeclared(method, interfaces[i])) {
+            if (isOverride(accessor, interfaces[i])) {
                 return true;
             }
         }
 
-        return false;
-    }
+        if (accessor.getDeclaringClass() != type) {
+            try {
+                var declaredMethod = type.getDeclaredMethod(accessor.getName(), accessor.getParameterTypes());
 
-    private static boolean isDeclared(Method method, Class<?> type) {
-        try {
-            type.getDeclaredMethod(method.getName(), method.getParameterTypes());
-
-            return true;
-        } catch (NoSuchMethodException exception) {
+                return Modifier.isPublic(declaredMethod.getModifiers());
+            } catch (NoSuchMethodException exception) {
+                return false;
+            }
+        } else {
             return false;
         }
     }

@@ -90,7 +90,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             throw new IllegalArgumentException();
         }
 
-        if ((type.getModifiers() & Modifier.FINAL) == 0) {
+        if (!Modifier.isFinal(type.getModifiers())) {
             throw new IllegalArgumentException();
         }
 
