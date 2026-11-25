@@ -641,8 +641,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testDefaultContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "default-content-type.txt");
+    public void testEscape() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "escape.txt");
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 

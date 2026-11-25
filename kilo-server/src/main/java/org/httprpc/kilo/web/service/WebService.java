@@ -669,7 +669,28 @@ public abstract class WebService extends HttpServlet {
         private boolean intrinsic;
 
         private TypeDescriptor(Class<?> type, boolean intrinsic) {
-            this.type = type;
+            if (type == Void.TYPE) {
+                this.type = Void.class;
+            } else if (type == Byte.TYPE) {
+                this.type = Byte.class;
+            } else if (type == Short.TYPE) {
+                this.type = Short.class;
+            } else if (type == Integer.TYPE) {
+                this.type = Integer.class;
+            } else if (type == Long.TYPE) {
+                this.type = Long.class;
+            } else if (type == Float.TYPE) {
+                this.type = Float.class;
+            } else if (type == Double.TYPE) {
+                this.type = Double.class;
+            } else if (type == Boolean.TYPE) {
+                this.type = Boolean.class;
+            } else if (type == Character.TYPE) {
+                this.type = Character.class;
+            } else {
+                this.type = type;
+            }
+
             this.intrinsic = intrinsic;
         }
 
