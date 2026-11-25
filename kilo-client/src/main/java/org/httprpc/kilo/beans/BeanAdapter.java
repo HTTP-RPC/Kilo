@@ -944,14 +944,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         var i = 0;
 
         for (var entry : properties.entrySet()) {
-            var key = entry.getKey();
+            var name = entry.getKey();
 
             var accessor = entry.getValue().accessor;
 
-            var value = map.get(key);
+            var value = map.get(name);
 
             if (accessor.getAnnotation(Required.class) != null && value == null) {
-                throw new RequiredValueException(key, type);
+                throw new RequiredValueException(name, type);
             }
 
             parameterTypes[i] = accessor.getReturnType();
@@ -994,7 +994,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             for (var entry : getProperties(type).entrySet()) {
-                var key = entry.getKey();
+                var name = entry.getKey();
 
                 var property = entry.getValue();
 
@@ -1002,10 +1002,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     continue;
                 }
 
-                var value = map.get(key);
+                var value = map.get(name);
 
                 if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                    throw new RequiredValueException(key, type);
+                    throw new RequiredValueException(name, type);
                 }
 
                 try {
