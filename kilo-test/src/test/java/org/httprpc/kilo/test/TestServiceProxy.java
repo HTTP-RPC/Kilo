@@ -106,7 +106,7 @@ public interface TestServiceProxy {
 
     @RequestMethod("PUT")
     @ResourcePath("?")
-    int testEmptyPut(int id, String value, Void body) throws IOException;
+    int testEmptyPut(int id, CharSequence value, Void body) throws IOException;
 
     @RequestMethod("GET")
     @WebServiceProxy.Configuration(connectTimeout = 500, readTimeout = 4000)

@@ -478,7 +478,7 @@
               "description": null,
               "required": false,
               "type": {
-                "name": "String",
+                "name": "CharSequence",
                 "intrinsic": true,
                 "iterable": false,
                 "unique": false,
