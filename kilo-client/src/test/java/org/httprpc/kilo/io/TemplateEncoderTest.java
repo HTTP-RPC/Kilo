@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,7 +31,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -575,8 +576,7 @@ public class TemplateEncoderTest {
     public void testDateFormatModifiers() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "format2.txt");
 
-        var date = new Date();
-        var instant = date.toInstant();
+        var instant = Instant.now().truncatedTo(ChronoUnit.MILLIS);
         var localDate = LocalDate.now();
         var localTime = LocalTime.now();
         var localDateTime = LocalDateTime.now();
@@ -590,21 +590,18 @@ public class TemplateEncoderTest {
         var writer = new StringWriter();
 
         templateEncoder.write(mapOf(
-            entry("timestamp", date.getTime()),
-            entry("date", date),
+            entry("timestamp", instant.toEpochMilli()),
             entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime)
         ), writer);
 
-        var now = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        var now = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
 
         var lineSeparator = System.lineSeparator();
 
         assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
-            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
             + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
             + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
             + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator

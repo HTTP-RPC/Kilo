@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +79,6 @@ public class BeanAdapterTest {
             entry("bigInteger", BigInteger.valueOf(8192L)),
             entry("dayOfWeek", DayOfWeek.MONDAY.toString()),
             entry("instant", Instant.ofEpochMilli(0)),
-            entry("date", new Date(0)),
             entry("localDate", LocalDate.of(2018, 6, 28)),
             entry("localTime", LocalTime.of(10, 45)),
             entry("localDateTime", LocalDateTime.of(2018, 6, 28, 10, 45)),
@@ -243,11 +241,6 @@ public class BeanAdapterTest {
 
         assertEquals('\0', BeanAdapter.coerce(null, Character.TYPE));
         assertEquals('a', BeanAdapter.coerce(0x61, Character.TYPE));
-    }
-
-    @Test
-    public void testDateCoercion() {
-        assertEquals(new Date(0), BeanAdapter.coerce(0, Date.class));
     }
 
     @Test
@@ -459,7 +452,6 @@ public class BeanAdapterTest {
         assertEquals(BigInteger.class, propertyTypes.get("bigInteger"));
         assertEquals(DayOfWeek.class, propertyTypes.get("dayOfWeek"));
         assertEquals(Instant.class, propertyTypes.get("instant"));
-        assertEquals(Date.class, propertyTypes.get("date"));
         assertEquals(LocalDate.class, propertyTypes.get("localDate"));
         assertEquals(LocalTime.class, propertyTypes.get("localTime"));
         assertEquals(LocalDateTime.class, propertyTypes.get("localDateTime"));

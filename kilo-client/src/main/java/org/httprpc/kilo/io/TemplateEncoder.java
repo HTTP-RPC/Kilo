@@ -35,7 +35,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -137,7 +136,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
             var temporalAccessor = switch (value) {
                 case Number number -> ZonedDateTime.ofInstant(Instant.ofEpochMilli(number.longValue()), zoneId);
-                case Date date -> ZonedDateTime.ofInstant(date.toInstant(), zoneId);
                 case Instant instant -> ZonedDateTime.ofInstant(instant, zoneId);
                 case LocalDate localDate -> ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
                 case LocalTime localTime -> ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);

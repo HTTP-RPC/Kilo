@@ -41,7 +41,6 @@ import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -549,7 +548,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Boolean}</li>
      * <li>{@link Character}</li>
      * <li>{@link CharSequence}</li>
-     * <li>{@link Date}</li>
      * <li>{@link Instant}</li>
      * <li>{@link LocalDate}</li>
      * <li>{@link LocalTime}</li>
@@ -592,7 +590,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Boolean
             || value instanceof Character
             || value instanceof CharSequence
-            || value instanceof Date
             || value instanceof Instant
             || value instanceof LocalDate
             || value instanceof LocalTime
@@ -640,7 +637,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Boolean} or {@code boolean}</li>
      * <li>{@link Character} or {@code char}</li>
      * <li>{@link String}</li>
-     * <li>{@link Date}</li>
      * <li>{@link Instant}</li>
      * <li>{@link LocalDate}</li>
      * <li>{@link LocalTime}</li>
@@ -838,12 +834,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             if (type == String.class) {
                 return value.toString();
-            } else if (type == Date.class) {
-                if (value instanceof Number number) {
-                    return new Date(number.longValue());
-                } else {
-                    throw new IllegalArgumentException("Value is not a number.");
-                }
             } else if (type == Instant.class) {
                 if (value instanceof Number number) {
                     return Instant.ofEpochMilli(number.longValue());

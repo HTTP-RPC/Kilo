@@ -20,7 +20,6 @@ import org.httprpc.kilo.Required;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Table("temporal_accessor_test")
 public interface TemporalAccessorTest {
@@ -29,19 +28,18 @@ public interface TemporalAccessorTest {
     @PrimaryKey
     Integer getID();
 
+    @Name("date")
     @Column("local_date")
     @Required
-    LocalDate getDate();
+    LocalDate getLocalDate();
 
+    @Name("time")
     @Column("local_time")
     @Required
-    LocalTime getTime();
+    LocalTime getLocalTime();
 
+    @Name("timestamp")
     @Column("instant")
     @Required
     Instant getInstant();
-
-    @Column("timestamp")
-    @Required
-    Date getTimestamp();
 }

@@ -26,12 +26,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.httprpc.kilo.util.Optionals.*;
 
 public interface TestInterface {
     interface NestedInterface {
@@ -58,10 +55,6 @@ public interface TestInterface {
     DayOfWeek getDayOfWeek();
 
     Instant getInstant();
-
-    default Date getDate() {
-        return map(getInstant(), Date::from);
-    }
 
     LocalDate getLocalDate();
     LocalTime getLocalTime();

@@ -42,7 +42,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,7 +190,6 @@ public class ProxyGenerator {
         Character.class,
         CharSequence.class,
         String.class,
-        Date.class,
         Instant.class,
         LocalDate.class,
         LocalTime.class,

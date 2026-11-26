@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -40,32 +39,29 @@ public class ResultSetAdapterTest {
 
     @Test
     public void testTemporalAccessors() throws SQLException {
-        var date = LocalDate.now();
-        var time = LocalTime.now();
+        var localDate = LocalDate.now();
+        var localTime = LocalTime.now();
         var instant = Instant.now();
-        var timestamp = new Date();
 
-        var id = insertTemporalAccessorTest(date, time, instant, timestamp);
+        var id = insertTemporalAccessorTest(localDate, localTime, instant);
 
         var temporalAccessorTest = selectTemporalAccessorTest(id);
 
         assertEquals(id, temporalAccessorTest.getID());
-        assertEquals(date, temporalAccessorTest.getDate());
-        assertEquals(time.truncatedTo(ChronoUnit.SECONDS), temporalAccessorTest.getTime());
+        assertEquals(localDate, temporalAccessorTest.getLocalDate());
+        assertEquals(localTime.truncatedTo(ChronoUnit.SECONDS), temporalAccessorTest.getLocalTime());
         assertEquals(instant.truncatedTo(ChronoUnit.MILLIS), temporalAccessorTest.getInstant());
-        assertEquals(timestamp, temporalAccessorTest.getTimestamp());
     }
 
-    private int insertTemporalAccessorTest(LocalDate date, LocalTime time, Instant instant, Date timestamp) throws SQLException {
+    private int insertTemporalAccessorTest(LocalDate localDate, LocalTime localTime, Instant instant) throws SQLException {
         var queryBuilder = QueryBuilder.insert(TemporalAccessorTest.class);
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
-                entry("date", date),
-                entry("time", time),
-                entry("instant", instant),
-                entry("timestamp", timestamp)
+                entry("date", localDate),
+                entry("time", localTime),
+                entry("timestamp", instant)
             ));
         }
 

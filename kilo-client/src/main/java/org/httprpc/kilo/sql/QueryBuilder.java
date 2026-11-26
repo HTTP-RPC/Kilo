@@ -37,7 +37,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -1370,7 +1369,6 @@ public class QueryBuilder {
      * Temporal values are converted as follows:
      * <p>
      * <ul>
-     * <li>{@link Date} - {@link Date#getTime()}</li>
      * <li>{@link Instant} - {@link Instant#toEpochMilli()}</li>
      * <li>{@link LocalDate} - {@link java.sql.Date}</li>
      * <li>{@link LocalTime} - {@link java.sql.Time}</li>
@@ -1499,7 +1497,6 @@ public class QueryBuilder {
             var argument = arguments.get(parameter);
 
             var value = switch (argument) {
-                case Date date -> date.getTime();
                 case Instant instant -> instant.toEpochMilli();
                 case LocalDate localDate -> java.sql.Date.valueOf(localDate);
                 case LocalTime localTime -> java.sql.Time.valueOf(localTime);

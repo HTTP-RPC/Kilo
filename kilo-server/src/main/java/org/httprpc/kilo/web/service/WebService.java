@@ -62,7 +62,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -1589,7 +1588,6 @@ public abstract class WebService extends HttpServlet {
             || type == Boolean.class
             || type == Character.class
             || CharSequence.class.isAssignableFrom(type)
-            || Date.class.isAssignableFrom(type)
             || type == Instant.class
             || type == LocalDate.class
             || type == LocalTime.class

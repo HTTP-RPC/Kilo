@@ -192,7 +192,7 @@ Return values are converted to JSON as follows:
 * `Iterable` or array: array
 * `java.util.Map`, bean, or record type: object
 
-`Character` or `char` values are converted to a number. Instances of `java.util.Date` or `java.time.Instant` are converted to a number representing epoch time in milliseconds. Instances of other types are converted to their string representations.
+`Character` or `char` values are converted to a number. Instances of `java.time.Instant` are converted to a number representing epoch time in milliseconds. Instances of other types are converted to their string representations.
 
 Alternatively, a method may return an instance of `org.w3c.dom.Document` to produce an XML response.
 

@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -50,7 +49,6 @@ public class JSONEncoderTest {
 
         assertEquals("97", encode('a'));
 
-        assertEquals("0", encode(new Date(0)));
         assertEquals("0", encode(Instant.ofEpochMilli(0)));
 
         assertThrows(IllegalArgumentException.class, () -> encode(Float.NaN));
