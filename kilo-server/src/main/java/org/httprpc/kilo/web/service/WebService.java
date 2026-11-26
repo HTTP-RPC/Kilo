@@ -1585,17 +1585,11 @@ public abstract class WebService extends HttpServlet {
         if (type.isPrimitive()
             || type == Void.class
             || type == Object.class
-            || type == Number.class
-            || type == Byte.class
-            || type == Short.class
-            || type == Integer.class
-            || type == Long.class
-            || type == Float.class
-            || type == Double.class
+            || Number.class.isAssignableFrom(type)
             || type == Boolean.class
             || type == Character.class
-            || type == String.class
-            || type == Date.class
+            || CharSequence.class.isAssignableFrom(type)
+            || Date.class.isAssignableFrom(type)
             || type == Instant.class
             || type == LocalDate.class
             || type == LocalTime.class

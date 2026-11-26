@@ -189,6 +189,7 @@ public class ProxyGenerator {
         Double.class,
         Boolean.class,
         Character.class,
+        CharSequence.class,
         String.class,
         Date.class,
         Instant.class,
