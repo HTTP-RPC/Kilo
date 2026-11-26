@@ -772,7 +772,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         throw new IllegalArgumentException("Value is not a collection.");
                     }
                 } else {
-                    throw new IllegalArgumentException("Invalid type.");
+                    throw new IllegalArgumentException("Invalid parameterized type.");
                 }
             }
             case null, default -> throw new IllegalArgumentException();

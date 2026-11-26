@@ -67,7 +67,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -1569,11 +1573,25 @@ public abstract class WebService extends HttpServlet {
                 var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
                 if (Iterable.class.isAssignableFrom(rawType)) {
-                    yield new IterableTypeDescriptor(describeGenericType(actualTypeArguments[0]), Set.class.isAssignableFrom(rawType));
-                } else if (Map.class.isAssignableFrom(rawType)) {
-                    yield new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
+                    var elementType = actualTypeArguments[0];
+
+                    boolean unique;
+                    if (rawType == Iterable.class || rawType == List.class) {
+                        unique = false;
+                    } else if (rawType == Set.class || rawType == SequencedSet.class || rawType == SortedSet.class) {
+                        unique = true;
+                    } else {
+                        throw new IllegalStateException("Unsupported iterable type.");
+                    }
+
+                    yield new IterableTypeDescriptor(describeGenericType(elementType), unique);
+                } else if (rawType == Map.class || rawType == SequencedMap.class || rawType == SortedMap.class) {
+                    var keyType = actualTypeArguments[0];
+                    var valueType = actualTypeArguments[1];
+
+                    yield new MapTypeDescriptor(describeGenericType(keyType), describeGenericType(valueType));
                 } else {
-                    throw new IllegalStateException("Unsupported type.");
+                    throw new IllegalStateException("Unsupported parameterized type.");
                 }
             }
             case null, default -> throw new IllegalArgumentException();
@@ -1637,6 +1655,13 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeStructure(Class<?> type) {
+        if (Number.class.isAssignableFrom(type)
+            || CharSequence.class.isAssignableFrom(type)
+            || Iterable.class.isAssignableFrom(type)
+            || Map.class.isAssignableFrom(type)) {
+            throw new IllegalStateException("Unsupported type.");
+        }
+
         if (!serviceDescriptor.structures.containsKey(type)) {
             var structure = new StructureDescriptor(type);
 
