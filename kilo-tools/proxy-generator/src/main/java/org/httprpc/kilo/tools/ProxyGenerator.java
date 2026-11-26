@@ -177,7 +177,6 @@ public class ProxyGenerator {
     }
 
     private static Map<String, Class<?>> intrinsicTypes = immutableMapOf(mapAll(listOf(
-        Void.class,
         Object.class,
         Number.class,
         Byte.class,
@@ -198,7 +197,8 @@ public class ProxyGenerator {
         Period.class,
         UUID.class,
         Path.class,
-        Document.class
+        Document.class,
+        Void.class
     ), type -> entry(type.getSimpleName(), type)));
 
     private static String packageName = null;

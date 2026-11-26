@@ -819,63 +819,59 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else {
                 return Boolean.parseBoolean(value.toString());
             }
-        } else if (type == Character.class || type == Character.TYPE) {
+        } else if (type == Character.TYPE || type == Character.class) {
             if (value == null) {
-                return '\0';
+                return (type == Character.TYPE) ? '\0' : null;
             } else if (value instanceof Number number) {
                 return (char)number.intValue();
             } else {
                 throw new IllegalArgumentException("Value is not a number.");
             }
+        } else if (value == null) {
+            return null;
+        } else if (type == String.class) {
+            return value.toString();
+        } else if (type == Instant.class) {
+            if (value instanceof Number number) {
+                return Instant.ofEpochMilli(number.longValue());
+            } else {
+                return Instant.parse(value.toString());
+            }
+        } else if (type == LocalDate.class) {
+            return LocalDate.parse(value.toString());
+        } else if (type == LocalTime.class) {
+            return LocalTime.parse(value.toString());
+        } else if (type == LocalDateTime.class) {
+            return LocalDateTime.parse(value.toString());
+        } else if (type == Duration.class) {
+            if (value instanceof Number number) {
+                return Duration.ofMillis(number.longValue());
+            } else {
+                return Duration.parse(value.toString());
+            }
+        } else if (type == Period.class) {
+            return Period.parse(value.toString());
+        } else if (type == UUID.class) {
+            return UUID.fromString(value.toString());
+        } else if (type.isEnum()) {
+            return toEnum(value.toString(), type);
+        } else if (type.isArray()) {
+            if (value.getClass().isArray()) {
+                return toArray(new ArrayAdapter(value), type);
+            } else if (value instanceof Collection<?> collection) {
+                return toArray(collection, type);
+            } else {
+                throw new IllegalArgumentException("Value is not an array or collection.");
+            }
         } else {
-            if (value == null) {
-                return null;
+            if (!(value instanceof Map<?, ?> map)) {
+                throw new IllegalArgumentException("Value is not a map.");
             }
 
-            if (type == String.class) {
-                return value.toString();
-            } else if (type == Instant.class) {
-                if (value instanceof Number number) {
-                    return Instant.ofEpochMilli(number.longValue());
-                } else {
-                    return Instant.parse(value.toString());
-                }
-            } else if (type == LocalDate.class) {
-                return LocalDate.parse(value.toString());
-            } else if (type == LocalTime.class) {
-                return LocalTime.parse(value.toString());
-            } else if (type == LocalDateTime.class) {
-                return LocalDateTime.parse(value.toString());
-            } else if (type == Duration.class) {
-                if (value instanceof Number number) {
-                    return Duration.ofMillis(number.longValue());
-                } else {
-                    return Duration.parse(value.toString());
-                }
-            } else if (type == Period.class) {
-                return Period.parse(value.toString());
-            } else if (type == UUID.class) {
-                return UUID.fromString(value.toString());
-            } else if (type.isEnum()) {
-                return toEnum(value.toString(), type);
-            } else if (type.isArray()) {
-                if (value.getClass().isArray()) {
-                    return toArray(new ArrayAdapter(value), type);
-                } else if (value instanceof Collection<?> collection) {
-                    return toArray(collection, type);
-                } else {
-                    throw new IllegalArgumentException("Value is not an array or collection.");
-                }
+            if (type.isRecord()) {
+                return toRecord(map, type);
             } else {
-                if (!(value instanceof Map<?, ?> map)) {
-                    throw new IllegalArgumentException("Value is not a map.");
-                }
-
-                if (type.isRecord()) {
-                    return toRecord(map, type);
-                } else {
-                    return toBean(map, type);
-                }
+                return toBean(map, type);
             }
         }
     }

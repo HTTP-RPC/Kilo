@@ -1582,7 +1582,6 @@ public abstract class WebService extends HttpServlet {
 
     private TypeDescriptor describeRawType(Class<?> type) {
         if (type.isPrimitive()
-            || type == Void.class
             || type == Object.class
             || type == Number.class
             || type == Byte.class
@@ -1603,7 +1602,8 @@ public abstract class WebService extends HttpServlet {
             || type == Period.class
             || type == UUID.class
             || type == Path.class
-            || type == Document.class) {
+            || type == Document.class
+            || type == Void.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
             return new IterableTypeDescriptor(describeRawType(type.getComponentType()), false);
