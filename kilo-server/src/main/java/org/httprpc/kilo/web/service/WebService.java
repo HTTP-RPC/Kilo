@@ -1580,8 +1580,6 @@ public abstract class WebService extends HttpServlet {
             nominalType = Boolean.class;
         } else if (type == Character.TYPE) {
             nominalType = Character.class;
-        } else if (CharSequence.class.isAssignableFrom(type)) {
-            nominalType = String.class;
         } else if (Date.class.isAssignableFrom(type)) {
             nominalType = Date.class;
         } else {

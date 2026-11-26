@@ -85,7 +85,7 @@ public class JSONEncoder extends Encoder<Object> {
             case Character character -> encode((int)character, writer);
             case Date date -> encode(date.getTime(), writer);
             case Instant instant -> encode(instant.toEpochMilli(), writer);
-            case CharSequence text -> encode(text, writer);
+            case String text -> encode(text, writer);
             case Iterable<?> iterable -> encode(iterable, writer);
             case Map<?, ?> map -> encode(map, writer);
             default -> encode(value.toString(), writer);
@@ -100,7 +100,7 @@ public class JSONEncoder extends Encoder<Object> {
         writer.write(number.toString());
     }
 
-    private void encode(CharSequence text, Writer writer) throws IOException {
+    private void encode(String text, Writer writer) throws IOException {
         writer.write("\"");
 
         for (int i = 0, n = text.length(); i < n; i++) {

@@ -632,7 +632,7 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private static Object escape(Object value) {
-        if (value instanceof CharSequence text) {
+        if (value instanceof String text) {
             var stringBuilder = new StringBuilder();
 
             for (int i = 0, n = text.length(); i < n; i++) {
@@ -660,7 +660,7 @@ public class TemplateEncoder extends Encoder<Object> {
     private static boolean exists(Object value) {
         return (value instanceof Iterable<?> iterable && iterable.iterator().hasNext())
             || (value instanceof Map<?, ?> map && !map.isEmpty())
-            || (value instanceof CharSequence text && !text.isEmpty())
+            || (value instanceof String text && !text.isEmpty())
             || (value instanceof Number number && number.doubleValue() != 0.0)
             || (value instanceof Boolean flag && flag);
     }

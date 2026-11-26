@@ -188,7 +188,7 @@ Return values are converted to JSON as follows:
 
 * `Boolean`/`boolean`: boolean
 * `Number`/numeric primitive: number
-* `CharSequence`: string
+* `String`: string
 * `Iterable`: array
 * `java.util.Map`, bean, or record type: object
 

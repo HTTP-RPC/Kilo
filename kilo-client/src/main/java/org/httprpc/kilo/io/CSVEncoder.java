@@ -172,14 +172,14 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         }
 
         switch (value) {
-            case CharSequence text -> encode(text, writer);
+            case String text -> encode(text, writer);
             case Number number -> encode(number, writer);
             case Boolean flag -> encode(flag, writer);
             default -> encode(value.toString(), writer);
         }
     }
 
-    private void encode(CharSequence text, Writer writer) throws IOException {
+    private void encode(String text, Writer writer) throws IOException {
         writer.write('"');
 
         for (int i = 0, n = text.length(); i < n; i++) {
