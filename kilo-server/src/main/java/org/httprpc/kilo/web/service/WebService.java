@@ -1562,22 +1562,22 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeGenericType(Type type) {
-        if (type instanceof Class<?>) {
-            return describeRawType((Class<?>)type);
-        } else if (type instanceof ParameterizedType parameterizedType) {
-            var rawType = (Class<?>)parameterizedType.getRawType();
-            var actualTypeArguments = parameterizedType.getActualTypeArguments();
+        return switch (type) {
+            case Class<?> rawType -> describeRawType(rawType);
+            case ParameterizedType parameterizedType -> {
+                var rawType = (Class<?>)parameterizedType.getRawType();
+                var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            if (Iterable.class.isAssignableFrom(rawType)) {
-                return new IterableTypeDescriptor(describeGenericType(actualTypeArguments[0]), Set.class.isAssignableFrom(rawType));
-            } else if (Map.class.isAssignableFrom(rawType)) {
-                return new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
-            } else {
-                throw new IllegalArgumentException("Unsupported parameterized type.");
+                if (Iterable.class.isAssignableFrom(rawType)) {
+                    yield new IterableTypeDescriptor(describeGenericType(actualTypeArguments[0]), Set.class.isAssignableFrom(rawType));
+                } else if (Map.class.isAssignableFrom(rawType)) {
+                    yield new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
+                } else {
+                    throw new IllegalStateException("Unsupported type.");
+                }
             }
-        } else {
-            throw new IllegalArgumentException("Unsupported type.");
-        }
+            case null, default -> throw new IllegalArgumentException();
+        };
     }
 
     private TypeDescriptor describeRawType(Class<?> type) {
