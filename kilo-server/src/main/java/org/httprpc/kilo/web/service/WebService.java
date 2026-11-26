@@ -667,7 +667,26 @@ public abstract class WebService extends HttpServlet {
         private boolean intrinsic;
 
         private TypeDescriptor(Class<?> type, boolean intrinsic) {
-            this.type = type;
+            if (type == Byte.TYPE) {
+                this.type = Byte.class;
+            } else if (type == Short.TYPE) {
+                this.type = Short.class;
+            } else if (type == Integer.TYPE) {
+                this.type = Integer.class;
+            } else if (type == Long.TYPE) {
+                this.type = Long.class;
+            } else if (type == Float.TYPE) {
+                this.type = Float.class;
+            } else if (type == Double.TYPE) {
+                this.type = Double.class;
+            } else if (type == Boolean.TYPE) {
+                this.type = Boolean.class;
+            } else if (type == Character.TYPE) {
+                this.type = Character.class;
+            } else {
+                this.type = type;
+            }
+
             this.intrinsic = intrinsic;
         }
 
@@ -1563,54 +1582,36 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeRawType(Class<?> type) {
-        Class<?> nominalType;
-        if (type == Byte.TYPE) {
-            nominalType = Byte.class;
-        } else if (type == Short.TYPE) {
-            nominalType = Short.class;
-        } else if (type == Integer.TYPE) {
-            nominalType = Integer.class;
-        } else if (type == Long.TYPE) {
-            nominalType = Long.class;
-        } else if (type == Float.TYPE) {
-            nominalType = Float.class;
-        } else if (type == Double.TYPE) {
-            nominalType = Double.class;
-        } else if (type == Boolean.TYPE) {
-            nominalType = Boolean.class;
-        } else if (type == Character.TYPE) {
-            nominalType = Character.class;
-        } else if (CharSequence.class.isAssignableFrom(type)) {
-            nominalType = String.class;
-        } else if (Date.class.isAssignableFrom(type)) {
-            nominalType = Date.class;
+        if (type.isPrimitive()
+            || type == Void.class
+            || type == Object.class
+            || type == Number.class
+            || type == Byte.class
+            || type == Short.class
+            || type == Integer.class
+            || type == Long.class
+            || type == Float.class
+            || type == Double.class
+            || type == Boolean.class
+            || type == Character.class
+            || type == String.class
+            || type == Date.class
+            || type == Instant.class
+            || type == LocalDate.class
+            || type == LocalTime.class
+            || type == LocalDateTime.class
+            || type == Duration.class
+            || type == Period.class
+            || type == UUID.class
+            || type == Path.class
+            || type == Document.class) {
+            return new TypeDescriptor(type, true);
+        } else if (type.isArray()) {
+            return new IterableTypeDescriptor(describeRawType(type.getComponentType()), false);
+        } else if (type.isEnum()) {
+            return describeEnumeration(type);
         } else {
-            nominalType = type;
-        }
-
-        if (nominalType == Void.TYPE || nominalType == Void.class
-            || nominalType == Object.class
-            || Number.class.isAssignableFrom(nominalType)
-            || nominalType == Boolean.class
-            || nominalType == Character.class
-            || nominalType == String.class
-            || nominalType == Date.class
-            || nominalType == Instant.class
-            || nominalType == LocalDate.class
-            || nominalType == LocalTime.class
-            || nominalType == LocalDateTime.class
-            || nominalType == Duration.class
-            || nominalType == Period.class
-            || nominalType == UUID.class
-            || nominalType == Path.class
-            || nominalType == Document.class) {
-            return new TypeDescriptor(nominalType, true);
-        } else if (nominalType.isArray()) {
-            return new IterableTypeDescriptor(describeRawType(nominalType.getComponentType()), false);
-        } else if (nominalType.isEnum()) {
-            return describeEnumeration(nominalType);
-        } else {
-            return describeStructure(nominalType);
+            return describeStructure(type);
         }
     }
 
