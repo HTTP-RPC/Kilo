@@ -548,7 +548,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
      * <li>{@link Character}</li>
-     * <li>{@link String}</li>
+     * <li>{@link CharSequence}</li>
      * <li>{@link Date}</li>
      * <li>{@link Instant}</li>
      * <li>{@link LocalDate}</li>
@@ -591,7 +591,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Number
             || value instanceof Boolean
             || value instanceof Character
-            || value instanceof String
+            || value instanceof CharSequence
             || value instanceof Date
             || value instanceof Instant
             || value instanceof LocalDate
