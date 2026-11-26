@@ -164,12 +164,6 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testVoidCoercion() {
-        assertNull(BeanAdapter.coerce(1, Void.TYPE));
-        assertNull(BeanAdapter.coerce(1, Void.class));
-    }
-
-    @Test
     public void testPrimitiveCoercion() {
         assertEquals((byte)0, BeanAdapter.coerce(null, Byte.TYPE));
         assertEquals((byte)1, BeanAdapter.coerce("1", Byte.TYPE));
@@ -204,6 +198,12 @@ public class BeanAdapterTest {
 
         assertEquals('\0', BeanAdapter.coerce(null, Character.TYPE));
         assertEquals('a', BeanAdapter.coerce(0x61, Character.TYPE));
+    }
+
+    @Test
+    public void testVoidCoercion() {
+        assertNull(BeanAdapter.coerce(1, Void.TYPE));
+        assertNull(BeanAdapter.coerce(1, Void.class));
     }
 
     @Test
