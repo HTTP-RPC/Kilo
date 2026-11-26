@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SequencedMap;
 import java.util.SequencedSet;
 import java.util.Set;
 import java.util.SortedMap;
@@ -730,7 +731,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         var keyType = actualTypeArguments[0];
                         var valueType = actualTypeArguments[1];
 
-                        var genericMap = (rawType == SortedMap.class) ? new TreeMap<>() : new LinkedHashMap<>(map.size());
+                        Map<Object, Object> genericMap;
+                        if (rawType == Map.class || rawType == SequencedMap.class) {
+                            genericMap = new LinkedHashMap<>(map.size());
+                        } else if (rawType == SortedMap.class) {
+                            genericMap = new TreeMap<>();
+                        } else {
+                            throw new IllegalArgumentException("Invalid map type.");
+                        }
 
                         for (var entry : map.entrySet()) {
                             genericMap.put(coerceGeneric(entry.getKey(), keyType), coerceGeneric(entry.getValue(), valueType));
@@ -746,7 +754,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     } else if (value instanceof Collection<?> collection) {
                         var elementType = actualTypeArguments[0];
 
-                        var genericSet = (rawType == SortedSet.class) ? new TreeSet<>() : new LinkedHashSet<>(collection.size());
+                        Set<Object> genericSet;
+                        if (rawType == Set.class || rawType == SequencedSet.class) {
+                            genericSet = new LinkedHashSet<>(collection.size());
+                        } else if (rawType == SortedSet.class) {
+                            genericSet = new TreeSet<>();
+                        } else {
+                            throw new IllegalArgumentException("Invalid set type.");
+                        }
 
                         for (var element : collection) {
                             genericSet.add(coerceGeneric(element, elementType));
