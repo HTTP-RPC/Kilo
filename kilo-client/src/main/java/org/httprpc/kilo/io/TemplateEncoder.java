@@ -357,7 +357,7 @@ public class TemplateEncoder extends Encoder<Object> {
                 c = reader.read();
 
                 if (c == EOF) {
-                    continue;
+                    break;
                 }
 
                 if (c == '{') {
@@ -413,7 +413,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             c = reader.read();
 
                             if (c == EOF) {
-                                continue;
+                                break;
                             }
 
                             if (c == ':' || c == '}') {
@@ -518,7 +518,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                     }
                                 }
                             } else {
-                                encode(null, new NullWriter(), reader);
+                                encode(null, Writer.nullWriter(), reader);
                             }
 
                             sectionNames.pop();
@@ -531,7 +531,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             if (exists(value)) {
                                 encode(value, writer, reader);
                             } else {
-                                encode(null, new NullWriter(), reader);
+                                encode(null, Writer.nullWriter(), reader);
                             }
 
                             sectionNames.pop();
@@ -544,7 +544,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             if (!exists(value)) {
                                 encode(value, writer, reader);
                             } else {
-                                encode(null, new NullWriter(), reader);
+                                encode(null, Writer.nullWriter(), reader);
                             }
 
                             sectionNames.pop();

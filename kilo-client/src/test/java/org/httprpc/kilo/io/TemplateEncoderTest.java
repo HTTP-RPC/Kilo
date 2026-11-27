@@ -597,18 +597,16 @@ public class TemplateEncoderTest {
 
         var now = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
 
-        var lineSeparator = System.lineSeparator();
-
-        assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
-            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
-            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDateTime.of(localDate, LocalTime.MIDNIGHT)) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(LocalDateTime.of(LocalDate.now(), localTime)) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(zonedLocalDate) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).format(zonedLocalTime) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(zonedLocalDateTime), writer.toString());
+        assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "\n"
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "\n"
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "\n"
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "\n"
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDateTime.of(localDate, LocalTime.MIDNIGHT)) + "\n"
+            + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(LocalDateTime.of(LocalDate.now(), localTime)) + "\n"
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime) + "\n"
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(zonedLocalDate) + "\n"
+            + DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).format(zonedLocalTime) + "\n"
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(zonedLocalDateTime) + "\n", writer.toString());
     }
 
     @Test
