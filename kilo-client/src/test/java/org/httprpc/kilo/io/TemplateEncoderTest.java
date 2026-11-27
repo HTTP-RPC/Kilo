@@ -244,6 +244,28 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testConditionalSectionMap() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", mapOf(entry("b", 1)))), writer);
+
+        assertEquals("found", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSectionEmptyMap() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", mapOf())), writer);
+
+        assertEquals("", writer.toString());
+    }
+
+    @Test
     public void testConditionalSectionString() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
@@ -413,12 +435,12 @@ public class TemplateEncoderTest {
         var templateEncoder = new TemplateEncoder(getClass(), "inheritance.txt");
 
         var dictionary = mapOf(
-            entry("a", "$"),
+            entry("a", "A"),
             entry("b", mapOf(
                 entry("c", "C")
             )),
             entry("d", mapOf(
-                entry("a", "A"),
+                entry("a", "a"),
                 entry("list", listOf(1, 2, 3)),
                 entry("e", null)
             )),
@@ -429,7 +451,7 @@ public class TemplateEncoderTest {
 
         templateEncoder.write(dictionary, writer);
 
-        assertEquals("AC1\nAC2\nAC3\n", writer.toString());
+        assertEquals("A[aC1aC2aC3]E", writer.toString());
     }
 
     @Test

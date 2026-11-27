@@ -602,31 +602,29 @@ public class TemplateEncoder extends Encoder<Object> {
     private Object getMarkerValue(String name) {
         var path = new LinkedList<>(Arrays.asList(name.split("/")));
 
-        for (var dictionary : dictionaries) {
-            if (!dictionary.containsKey(path.peek())) {
-                continue;
-            }
+        var key = path.pop();
 
-            return valueAt(dictionary, path);
+        for (var dictionary : dictionaries) {
+            if (dictionary.containsKey(key)) {
+                var value = dictionary.get(key);
+
+                while (!path.isEmpty()) {
+                    key = path.pop();
+
+                    if (value != null) {
+                        if (value instanceof Map<?, ?> map) {
+                            value = map.get(key);
+                        } else {
+                            throw new IllegalArgumentException("Value is not a map.");
+                        }
+                    }
+                }
+
+                return value;
+            }
         }
 
         return null;
-    }
-
-    private static Object valueAt(Map<?, ?> root, Deque<?> path) {
-        var value = root.get(path.pop());
-
-        if (path.isEmpty()) {
-            return value;
-        }
-
-        if (value == null) {
-            return null;
-        } else if (value instanceof Map<?, ?> map) {
-            return valueAt(map, path);
-        } else {
-            throw new IllegalArgumentException("Value is not a map.");
-        }
     }
 
     private static Object escape(Object value) {
