@@ -34,7 +34,6 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -600,16 +599,18 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private Object getMarkerValue(String name) {
-        var path = new LinkedList<>(Arrays.asList(name.split("/")));
+        var path = name.split("/");
 
-        var key = path.pop();
+        var i = 0;
+
+        var key = path[i++];
 
         for (var dictionary : dictionaries) {
             if (dictionary.containsKey(key)) {
                 var value = dictionary.get(key);
 
-                while (!path.isEmpty()) {
-                    key = path.pop();
+                while (i < path.length) {
+                    key = path[i++];
 
                     if (value != null) {
                         if (value instanceof Map<?, ?> map) {
