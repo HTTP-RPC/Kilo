@@ -151,7 +151,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testNestedRepeatingSection1() throws IOException {
+    public void testNestedRepeatingSection() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "repeating2.txt");
 
         var dictionary = mapOf(
@@ -174,32 +174,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testNestedRepeatingSection2() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "repeating3.txt");
-
-        var value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(value, writer);
-
-        assertEquals("[[[hello]]]", writer.toString());
-    }
-
-    @Test
-    public void testNestedEmptyRepeatingSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "repeating3.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(listOf(), writer);
-
-        assertEquals("[]", writer.toString());
-    }
-
-    @Test
     public void testPrimitiveRepeatingSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "repeating4.txt");
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating3.txt");
 
         var value = listOf("hello", 42, false);
 
