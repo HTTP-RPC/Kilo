@@ -553,6 +553,10 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
+        if (uri.getRawQuery() != null || uri.getRawFragment() != null) {
+            throw new IllegalArgumentException();
+        }
+
         this.method = method.toUpperCase();
         this.uri = uri;
     }
@@ -783,10 +787,6 @@ public class WebServiceProxy {
         var uri = this.uri;
 
         if (!arguments.isEmpty()) {
-            if (uri.getRawQuery() != null || uri.getRawFragment() != null) {
-                throw new IllegalStateException("Query or fragment is already defined.");
-            }
-
             try {
                 uri = new URI(String.format("%s?%s", uri, encodeQuery(arguments)));
             } catch (URISyntaxException exception) {

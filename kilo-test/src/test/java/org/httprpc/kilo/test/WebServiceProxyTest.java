@@ -801,23 +801,11 @@ public class WebServiceProxyTest {
 
     @Test
     public void testQueryDefined() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test?foo=bar"));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("foo", "bar")
-        ));
-
-        assertThrows(IllegalStateException.class, webServiceProxy::invoke);
+        assertThrows(IllegalArgumentException.class, () -> new WebServiceProxy("GET", baseURI.resolve("test?foo=bar")));
     }
 
     @Test
     public void testFragmentDefined() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test#foo"));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("foo", "bar")
-        ));
-
-        assertThrows(IllegalStateException.class, webServiceProxy::invoke);
+        assertThrows(IllegalArgumentException.class, () -> new WebServiceProxy("GET", baseURI.resolve("test#foo")));
     }
 }
