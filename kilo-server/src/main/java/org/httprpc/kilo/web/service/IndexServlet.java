@@ -22,6 +22,7 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -60,6 +61,22 @@ public class IndexServlet extends HttpServlet {
             var serviceDescriptor = instance.getServiceDescriptor();
 
             serviceDescriptors.put(serviceDescriptor.getPath(), serviceDescriptor);
+        }
+
+        var typeNames = new HashSet<String>();
+
+        for (var serviceDescriptor : serviceDescriptors.values()) {
+            for (var enumeration : serviceDescriptor.getEnumerations()) {
+                if (!typeNames.add(enumeration.getName())) {
+                    throw new IllegalStateException("Duplicate type name.");
+                }
+            }
+
+            for (var structure : serviceDescriptor.getStructures()) {
+                if (!typeNames.add(structure.getName())) {
+                    throw new IllegalStateException("Duplicate type name.");
+                }
+            }
         }
     }
 
