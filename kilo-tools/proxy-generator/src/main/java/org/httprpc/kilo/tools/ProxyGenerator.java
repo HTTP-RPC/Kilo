@@ -51,6 +51,7 @@ import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 public class ProxyGenerator {
     public interface ServiceDescriptor {
@@ -151,6 +152,10 @@ public class ProxyGenerator {
         TypeDescriptor getKeyType();
         TypeDescriptor getValueType();
 
+        default boolean isVoid() {
+            return getName().equals(Void.TYPE.getSimpleName());
+        }
+
         default boolean isBoolean() {
             var name = getName();
 
@@ -165,10 +170,8 @@ public class ProxyGenerator {
             } else {
                 var name = getName();
 
-                var intrinsicType = intrinsicTypes.get(name);
-
-                if (intrinsicType != null) {
-                    return codeModel.ref(intrinsicType);
+                if (isIntrinsic()) {
+                    return codeModel.ref(intrinsicTypes.get(name));
                 } else {
                     return codeModel.directClass(String.format("%s.%s", packageName, name));
                 }
@@ -288,7 +291,9 @@ public class ProxyGenerator {
             }
 
             for (var operation : endpoint.getOperations()) {
-                var method = proxyType.method(0, operation.getProduces().describe(codeModel), operation.getIdentifier());
+                var returnType = map(operation.getProduces(), type -> type.isVoid() ? codeModel.VOID : type.describe(codeModel));
+
+                var method = proxyType.method(0, returnType, operation.getIdentifier());
 
                 var methodDescription = operation.getDescription();
 
