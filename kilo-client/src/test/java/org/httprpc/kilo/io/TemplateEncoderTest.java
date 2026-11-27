@@ -32,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -610,16 +611,32 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testCustomModifier() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "upper.txt");
+    public void testCustomModifier1() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "custom-modifier1.txt");
 
-        templateEncoder.bind("upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
+        templateEncoder.bind("to-upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 
         var writer = new StringWriter();
 
         templateEncoder.write("hello", writer);
 
         assertEquals("HELLO", writer.toString());
+    }
+
+    @Test
+    public void testCustomModifier2() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "custom-modifier2.txt");
+
+        templateEncoder.bind("map-value", (value, argument, locale, timeZone) -> ((Map<?, ?>)value).get(argument));
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(
+            entry("a", mapOf(
+                entry("b", "c")
+            ))), writer);
+
+        assertEquals("c", writer.toString());
     }
 
     @Test
